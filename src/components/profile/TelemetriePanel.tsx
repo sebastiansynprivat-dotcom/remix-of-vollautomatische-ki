@@ -26,14 +26,14 @@ export function TelemetriePanel() {
     setLoading(true);
     const { data, error } = await supabase
       .from("sim_telemetry")
-      .select("offer_no, offer_price_cents, offer_purchased, model_total_chars, fan_total_chars, repetition_dropped, persona")
+      .select(TELEMETRY_COLUMNS)
       .order("created_at", { ascending: false })
       .limit(10000);
     if (error) {
       setError(error.message);
     } else {
       setError(null);
-      const agg = aggregate((data ?? []) as never[]);
+      const agg = aggregate((data ?? []) as unknown as TelemetryRow[]);
       setByStage(agg.byStage);
       setByPersona(agg.byPersona);
     }
