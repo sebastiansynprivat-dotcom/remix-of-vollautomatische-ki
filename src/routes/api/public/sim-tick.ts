@@ -322,6 +322,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
     : [...rows]
         .reverse()
         .find((r: Json) => r.content_type === "ppv" && Number(r.ppv_price_cents ?? 0) > 0 && !r.ppv_is_purchased);
+  let offerPurchased: boolean | null = null;
   if (openPpvRow) {
     const pre = computeFunnelState(messages, fanId, funnelOpts);
     const purchasedCount = messages.filter((m) => m.ppv?.isPurchased).length;
@@ -331,6 +332,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       discountPct: pre.discountPct,
       purchasedCount,
     });
+    offerPurchased = !!buys;
     if (buys) {
       await admin.from("messages").update({ ppv_is_purchased: true }).eq("id", openPpvRow.id);
       const idx = messages.findIndex((m) => m.id === String(openPpvRow.id));
@@ -585,6 +587,33 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
   } else if (fanEndsSession) {
     nextPhase = purchasesInSession > 0 && nextFollowupDay < simDay ? "followup_due" : "break";
   }
+
+  // ---- 6b) Telemetrie pro Zug (Auswertung von Funnel & Wiederholungen) ----
+  try {
+    const { error: telError } = await admin.from("sim_telemetry").insert({
+      sim_run_id: run.id,
+      conversation_id: convId,
+      persona: persona.key,
+      sim_day: simDay,
+      turn_count: Number(run.turn_count ?? 0) + 1,
+      offer_no: funnelNow?.stage?.offerNo ?? null,
+      offer_price_cents: funnelNow?.stage?.priceCents ?? null,
+      offer_purchased: offerPurchased,
+      offer_retry_count: funnelNow?.retryCount ?? 0,
+      model_msg_count: parts.length,
+      fan_msg_count: fanTexts.length,
+      model_total_chars: parts.reduce((s: number, p: string) => s + p.length, 0),
+      fan_total_chars: fanTexts.reduce((s: number, t: string) => s + t.length, 0),
+      repetition_dropped: dropped.length,
+      phase: nextPhase,
+      session_turn: nextSessionTurn,
+      model_id: modelId,
+    });
+    if (telError) log.push(`telemetrie-FEHLER:${telError.message.slice(0, 60)}`);
+  } catch {
+    // Telemetrie darf einen Zug niemals scheitern lassen
+  }
+
 
   return {
     note: log.join(" "),

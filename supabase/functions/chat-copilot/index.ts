@@ -401,6 +401,44 @@ ABSOLUTE NO-GOS (Generic-AI Anti-Pattern):
 `.trim();
 
 // ============================================================
+// FEW-SHOT TURNS — konkrete Beispiel-Turns als Stil-Referenz
+// ============================================================
+const FEW_SHOT_TURNS = `
+=== FEW-SHOT — SO KLINGT ES WENN ES GUT IST (Stil-Referenz, nicht 1:1 kopieren) ===
+
+Turn 1 — Welcome (Fan folgt gerade):
+  Fan: "hey"
+  Model: "hey du 🥰 freu mich dass du da bist... wie heißt du?"
+
+Turn 2 — Qualify (Fan hat Namen gesagt, einsilbig):
+  Fan: "luka"
+  Model: "schöner name luka 🤭 und was machst du so beruflich?"
+
+Turn 3 — Bond + Tease (Fan hat Job genannt):
+  Fan: "bin handwerker"
+  Model: "boah handwerker, ich steh auf männer die mit den händen arbeiten hehe — woher kommst du?"
+
+Turn 4 — Tease + Bridge (Fan reagiert auf Stimmung):
+  Fan: "aus hamburg, und du?"
+  Model: "ich lieg grad im bett mit serie an, total platt vom tag 🙈 — magst du eigentlich versaute dinge oder bist du der brave typ?"
+
+Turn 5 — After-Care (Fan hat PPV gekauft):
+  Fan: "war geil danke"
+  Model: "danke süßer... bin grad noch ganz weg von dir 🥰 was machst du grad?"
+
+WAS MAN HIER LERNT (nicht explizit in den Output schreiben — nur internalisieren):
+- Jede Model-Antwort knüpft KONKRET an die letzte Fan-Nachricht an
+- Erst reagieren/statement, DANN erst eine Frage (nie umgekehrt)
+- max 1 Fragezeichen pro Antwort
+- Kleingeschrieben, kein Punkt am Ende, 1 Emoji max
+- Kein Echo ("Luka? schön..."), kein Nachbohren ("was für Handwerk?")
+- Statements > Fragen; die eigene Aussage führt weiter
+- Kosenamen erst ab Turn 4-5; davor neutral-warm
+
+=== FEW-SHOT ENDE ===
+`.trim();
+
+// ============================================================
 // LENGTH STATS — wie lang schreibt DER FAN gerade?
 // ============================================================
 function computeLengthStats(msgs: RecentMsg[]): { lastFanLen: number; fanAvgLen: number } {
@@ -997,7 +1035,7 @@ Deno.serve(async (req) => {
      * Wiederholung von vornherein zu verhindern.
      */
     const avoidLines: string[] = Array.isArray(body.avoidLines)
-      ? (body.avoidLines as unknown[]).map((s) => String(s).trim()).filter(Boolean).slice(0, 40)
+      ? (body.avoidLines as unknown[]).map((s) => String(s).trim()).filter(Boolean).slice(0, 60)
       : [];
 
 
@@ -1106,6 +1144,8 @@ Deno.serve(async (req) => {
       "",
       personaBlock,
       "",
+      FEW_SHOT_TURNS,
+      "",
       `=== ZEIT-KONTEXT ===`,
       `Aktuelle Zeit (Deutschland, Europe/Berlin): ${berlinTimeStr} Uhr.`,
       `Tageszeit-Energy: ${dayPart}.`,
@@ -1168,7 +1208,7 @@ Deno.serve(async (req) => {
           `=== VERBRAUCHT — NICHT WIEDERHOLEN (harte Regel, gilt für alle Slots) ===`,
           `Das Model hat diese Zeilen gerade schon geschickt. Nichts davon darf inhaltlich,`,
           `im Bild oder im Satzbau wiederkommen — auch nicht umformuliert:`,
-          ...avoidLines.slice(0, 24).map((l) => `· "${l.slice(0, 110)}"`),
+          ...avoidLines.slice(0, 60).map((l) => `· "${l.slice(0, 110)}"`),
           ...(openers.length ? [`Gesperrte Satzanfänge: ${openers.join(", ")}.`] : []),
           `→ Setze einen NEUEN Beat: anderes Thema, eigene Mini-Story, konkreter Callback auf`,
           `  ein Detail, das noch nicht dran war. Keine Dauerschleifen-Muster ("wetten du…",`,
