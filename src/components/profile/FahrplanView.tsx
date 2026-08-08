@@ -21,7 +21,7 @@ export function FahrplanView() {
         border: "1px solid hsla(0,0%,100%,0.06)",
         borderRadius: 10, padding: 4,
       }}>
-        {([["fahrplan", "Fahrplan"], ["v2", "Leitfaden v2"], ["v1", "v1 (Archiv)"]] as const).map(([id, label]) => {
+        {([["fahrplan", "Fahrplan"], ["v2", "Leitfaden v2"], ["v1", "v1 (Archiv)"], ["telemetrie", "Telemetrie"]] as const).map(([id, label]) => {
           const active = variant === id;
           return (
             <button
@@ -40,9 +40,13 @@ export function FahrplanView() {
         })}
       </div>
 
-      <div className="leitfaden-md premium-card" style={{ padding: "28px 32px", lineHeight: 1.65, fontSize: 14, color: "var(--text-strong)" }}>
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{md}</ReactMarkdown>
-      </div>
+      {variant === "telemetrie" ? (
+        <TelemetriePanel />
+      ) : (
+        <div className="leitfaden-md premium-card" style={{ padding: "28px 32px", lineHeight: 1.65, fontSize: 14, color: "var(--text-strong)" }}>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{md}</ReactMarkdown>
+        </div>
+      )}
 
       <style>{`
         .leitfaden-md h1 { font-size: 22px; font-weight: 700; margin: 0 0 12px; color: var(--text-strong); letter-spacing: -0.4px; }
