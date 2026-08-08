@@ -1144,6 +1144,8 @@ Deno.serve(async (req) => {
       "",
       personaBlock,
       "",
+      FEW_SHOT_TURNS,
+      "",
       `=== ZEIT-KONTEXT ===`,
       `Aktuelle Zeit (Deutschland, Europe/Berlin): ${berlinTimeStr} Uhr.`,
       `Tageszeit-Energy: ${dayPart}.`,
