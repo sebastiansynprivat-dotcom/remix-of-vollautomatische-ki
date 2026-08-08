@@ -18,6 +18,7 @@ import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/_admin'
 import { Route as ApiPublicSimTickRouteImport } from './routes/api/public/sim-tick'
+import { Route as ApiPublicSimTelemetryRouteImport } from './routes/api/public/sim-telemetry'
 import { Route as ApiPublicAiProxyRouteImport } from './routes/api/public/ai-proxy'
 import { Route as AuthenticatedAdminAdminRouteImport } from './routes/_authenticated/_admin/admin'
 import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
@@ -70,6 +71,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
 const ApiPublicSimTickRoute = ApiPublicSimTickRouteImport.update({
   id: '/api/public/sim-tick',
   path: '/api/public/sim-tick',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicSimTelemetryRoute = ApiPublicSimTelemetryRouteImport.update({
+  id: '/api/public/sim-telemetry',
+  path: '/api/public/sim-telemetry',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicAiProxyRoute = ApiPublicAiProxyRouteImport.update({
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin': typeof AuthenticatedAdminAdminRouteWithChildren
   '/api/public/ai-proxy': typeof ApiPublicAiProxyRoute
+  '/api/public/sim-telemetry': typeof ApiPublicSimTelemetryRoute
   '/api/public/sim-tick': typeof ApiPublicSimTickRoute
   '/admin/api-keys': typeof AuthenticatedAdminAdminApiKeysRoute
   '/admin/sets': typeof AuthenticatedAdminAdminSetsRoute
@@ -156,6 +163,7 @@ export interface FileRoutesByTo {
   '/app': typeof AuthenticatedAppRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/public/ai-proxy': typeof ApiPublicAiProxyRoute
+  '/api/public/sim-telemetry': typeof ApiPublicSimTelemetryRoute
   '/api/public/sim-tick': typeof ApiPublicSimTickRoute
   '/admin/api-keys': typeof AuthenticatedAdminAdminApiKeysRoute
   '/admin/sets': typeof AuthenticatedAdminAdminSetsRoute
@@ -178,6 +186,7 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/_authenticated/_admin/admin': typeof AuthenticatedAdminAdminRouteWithChildren
   '/api/public/ai-proxy': typeof ApiPublicAiProxyRoute
+  '/api/public/sim-telemetry': typeof ApiPublicSimTelemetryRoute
   '/api/public/sim-tick': typeof ApiPublicSimTickRoute
   '/_authenticated/_admin/admin/api-keys': typeof AuthenticatedAdminAdminApiKeysRoute
   '/_authenticated/_admin/admin/sets': typeof AuthenticatedAdminAdminSetsRoute
@@ -199,6 +208,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin'
     | '/api/public/ai-proxy'
+    | '/api/public/sim-telemetry'
     | '/api/public/sim-tick'
     | '/admin/api-keys'
     | '/admin/sets'
@@ -217,6 +227,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/admin/login'
     | '/api/public/ai-proxy'
+    | '/api/public/sim-telemetry'
     | '/api/public/sim-tick'
     | '/admin/api-keys'
     | '/admin/sets'
@@ -238,6 +249,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/_authenticated/_admin/admin'
     | '/api/public/ai-proxy'
+    | '/api/public/sim-telemetry'
     | '/api/public/sim-tick'
     | '/_authenticated/_admin/admin/api-keys'
     | '/_authenticated/_admin/admin/sets'
@@ -257,6 +269,7 @@ export interface RootRouteChildren {
   VoiceSimRoute: typeof VoiceSimRoute
   AdminLoginRoute: typeof AdminLoginRoute
   ApiPublicAiProxyRoute: typeof ApiPublicAiProxyRoute
+  ApiPublicSimTelemetryRoute: typeof ApiPublicSimTelemetryRoute
   ApiPublicSimTickRoute: typeof ApiPublicSimTickRoute
   ApiPublicCopilotFanBrainRoute: typeof ApiPublicCopilotFanBrainRoute
   ApiPublicCopilotModelRoute: typeof ApiPublicCopilotModelRoute
@@ -326,6 +339,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/sim-tick'
       fullPath: '/api/public/sim-tick'
       preLoaderRoute: typeof ApiPublicSimTickRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/sim-telemetry': {
+      id: '/api/public/sim-telemetry'
+      path: '/api/public/sim-telemetry'
+      fullPath: '/api/public/sim-telemetry'
+      preLoaderRoute: typeof ApiPublicSimTelemetryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/ai-proxy': {
@@ -457,6 +477,7 @@ const rootRouteChildren: RootRouteChildren = {
   VoiceSimRoute: VoiceSimRoute,
   AdminLoginRoute: AdminLoginRoute,
   ApiPublicAiProxyRoute: ApiPublicAiProxyRoute,
+  ApiPublicSimTelemetryRoute: ApiPublicSimTelemetryRoute,
   ApiPublicSimTickRoute: ApiPublicSimTickRoute,
   ApiPublicCopilotFanBrainRoute: ApiPublicCopilotFanBrainRoute,
   ApiPublicCopilotModelRoute: ApiPublicCopilotModelRoute,
