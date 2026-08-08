@@ -4,8 +4,9 @@ import remarkGfm from "remark-gfm";
 import fahrplanMd from "../../../docs/fahrplan.md?raw";
 import v1Md from "../../../docs/chatting-leitfaden-v1.md?raw";
 import v2Md from "../../../docs/chatting-leitfaden-v2.md?raw";
+import { TelemetriePanel } from "./TelemetriePanel";
 
-type Variant = "fahrplan" | "v2" | "v1";
+type Variant = "fahrplan" | "v2" | "v1" | "telemetrie";
 
 export function FahrplanView() {
   const [variant, setVariant] = useState<Variant>("fahrplan");
