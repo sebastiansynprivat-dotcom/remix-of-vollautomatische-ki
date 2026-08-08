@@ -632,6 +632,87 @@ export type Database = {
           },
         ]
       }
+      sim_telemetry: {
+        Row: {
+          conversation_id: string | null
+          created_at: string
+          fan_msg_count: number | null
+          fan_total_chars: number | null
+          id: number
+          model_id: string | null
+          model_msg_count: number | null
+          model_total_chars: number | null
+          offer_no: number | null
+          offer_price_cents: number | null
+          offer_purchased: boolean | null
+          offer_retry_count: number | null
+          persona: string | null
+          phase: string | null
+          repetition_dropped: number | null
+          session_turn: number | null
+          sim_day: number | null
+          sim_run_id: string | null
+          turn_count: number | null
+        }
+        Insert: {
+          conversation_id?: string | null
+          created_at?: string
+          fan_msg_count?: number | null
+          fan_total_chars?: number | null
+          id?: never
+          model_id?: string | null
+          model_msg_count?: number | null
+          model_total_chars?: number | null
+          offer_no?: number | null
+          offer_price_cents?: number | null
+          offer_purchased?: boolean | null
+          offer_retry_count?: number | null
+          persona?: string | null
+          phase?: string | null
+          repetition_dropped?: number | null
+          session_turn?: number | null
+          sim_day?: number | null
+          sim_run_id?: string | null
+          turn_count?: number | null
+        }
+        Update: {
+          conversation_id?: string | null
+          created_at?: string
+          fan_msg_count?: number | null
+          fan_total_chars?: number | null
+          id?: never
+          model_id?: string | null
+          model_msg_count?: number | null
+          model_total_chars?: number | null
+          offer_no?: number | null
+          offer_price_cents?: number | null
+          offer_purchased?: boolean | null
+          offer_retry_count?: number | null
+          persona?: string | null
+          phase?: string | null
+          repetition_dropped?: number | null
+          session_turn?: number | null
+          sim_day?: number | null
+          sim_run_id?: string | null
+          turn_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sim_telemetry_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sim_telemetry_sim_run_id_fkey"
+            columns: ["sim_run_id"]
+            isOneToOne: false
+            referencedRelation: "sim_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
