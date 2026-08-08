@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { aggregate, TELEMETRY_COLUMNS, type StageRow, type PersonaRow, type TelemetryRow } from "@/lib/simTelemetry";
+import { aggregate, TELEMETRY_COLUMNS, type StageRow, type PersonaRow, type TelemetryRow, type TelemetrySummary } from "@/lib/simTelemetry";
 
 const cell: React.CSSProperties = {
   border: "1px solid hsla(0,0%,100%,0.08)",
