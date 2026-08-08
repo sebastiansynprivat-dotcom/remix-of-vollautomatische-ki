@@ -1182,6 +1182,8 @@ Deno.serve(async (req) => {
       "",
       FEW_SHOT_TURNS,
       "",
+      OPENERS,
+      "",
       `=== ZEIT-KONTEXT ===`,
       `Aktuelle Zeit (Deutschland, Europe/Berlin): ${berlinTimeStr} Uhr.`,
       `Tageszeit-Energy: ${dayPart}.`,
