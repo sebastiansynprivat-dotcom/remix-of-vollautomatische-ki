@@ -326,11 +326,15 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
   if (openPpvRow) {
     const pre = computeFunnelState(messages, fanId, funnelOpts);
     const purchasedCount = messages.filter((m) => m.ppv?.isPurchased).length;
+    const ppvMomentScore = Number(
+      ((brainRow as any)?.signals as any)?.ppv_moment_score ?? 50,
+    );
     const buys = decidePurchase({
       persona,
       priceCents: Number(openPpvRow.ppv_price_cents ?? 0),
       discountPct: pre.discountPct,
       purchasedCount,
+      ppvMomentScore,
     });
     offerPurchased = !!buys;
     if (buys) {
