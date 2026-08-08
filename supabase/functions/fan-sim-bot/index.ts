@@ -121,10 +121,21 @@ Deno.serve(async (req) => {
           `kurz und setze "end": true.`
         : "";
 
+    // Anti-Wiederholung: die letzten eigenen Fan-Zeilen nicht erneut schicken.
+    const avoidLines: string[] = history
+      .filter(h => h.role === "fan")
+      .slice(-20)
+      .map(h => (h.text ?? "").trim())
+      .filter(Boolean);
+
+    const avoidBlock = avoidLines.length > 0
+      ? `\n\n=== NICHT WIEDERHOLEN — schon geschickt: ===\n${avoidLines.slice(0, 15).map(l => `· "${l.slice(0, 100)}"`).join("\n")}\n→ Sag etwas NEUES.\n`
+      : "";
+
     const userPrompt = `Bisheriger Verlauf (Turn ${turn}, Session-Zug ${sessionTurn}):
 ${transcript || "(noch leer — du bist der Fan und schreibst die ERSTE Nachricht)"}
 ${sessionNote}
-
+${avoidBlock}
 Antworte jetzt als FAN. Nutze send_messages.`;
 
 
