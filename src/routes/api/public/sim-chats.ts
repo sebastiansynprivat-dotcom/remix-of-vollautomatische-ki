@@ -34,8 +34,6 @@ async function handler({ request }: { request: Request }) {
     .select("id, persona, sim_day, turn_count, state, conversation_id");
   if (runIdFilter) {
     runQuery = runQuery.eq("id", runIdFilter);
-  } else {
-    runQuery = runQuery.neq("state", "completed");
   }
   const { data: runs, error: runError } = await runQuery.order("id", { ascending: true });
   if (runError) return Response.json({ ok: false, error: runError.message }, { status: 500 });
