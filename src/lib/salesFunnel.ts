@@ -68,7 +68,7 @@ export const BYPASS_FAN_TURNS = 8;
  */
 export const MAX_OFFERS_PER_SESSION = 1;
 export const MAX_OFFERS_PER_DAY = 2;
-export const DEMOTE_AFTER_RETRIES = 2;
+export const DEMOTE_AFTER_RETRIES = 1;
 
 
 /**
@@ -199,7 +199,11 @@ export function computeFunnelState(messages: readonly Message[], fanId: string, 
   // Rückstufung: kauft er zwei Mal hintereinander nicht, war die Stufe zu
   // groß. Statt weiter zu eskalieren geht es eine Stufe zurück.
   const minOfferNo = 1 + startOffset;
-  const demoteSteps = Math.floor(retryCount / DEMOTE_AFTER_RETRIES);
+  // Nach einer langen Pause fällt die Treppe zusätzlich zurück — die
+  // Kauf-Spannung ist weg. Starke Käufer (≥5 Käufe) fallen nur 1 Stufe.
+  const purchasedCount = ppvs.filter(m => !!m.ppv?.isPurchased).length;
+  const coldDemote = coldBreak && clearedCount > 2 ? (purchasedCount >= 5 ? 1 : 2) : 0;
+  const demoteSteps = Math.floor(retryCount / DEMOTE_AFTER_RETRIES) + coldDemote;
   const effectiveOfferNo = Math.max(minOfferNo, stageBase.offerNo - demoteSteps);
   const stageNow = effectiveOfferNo === stageBase.offerNo ? stageBase : stageFor(effectiveOfferNo);
 
