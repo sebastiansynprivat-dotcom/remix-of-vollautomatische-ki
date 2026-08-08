@@ -129,7 +129,7 @@ export function repetitionRules(lines: readonly string[]): string[] {
     `=== VERBRAUCHT — NICHT WIEDERHOLEN (harte Regel) ===`,
     `Diese Nachrichten hat das Model gerade schon geschickt. Nichts davon darf`,
     `inhaltlich, im Bild oder im Satzbau noch einmal kommen — auch nicht umformuliert:`,
-    ...lines.slice(0, 24).map(l => `· "${l.slice(0, 110)}"`),
+    ...lines.slice(0, 60).map(l => `· "${l.slice(0, 110)}"`),
     ...(openers.length
       ? [
           `Verbrauchte Satzanfänge (in diesem Zug gesperrt): ${openers.map(o => `"${o}"`).join(", ")}.`,

@@ -414,12 +414,44 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
 
 
   // ---- 3) Model-Zug (identische Logik wie im Browser-Autopilot) ----
-  const [{ data: brainRow }, { data: modelRow }] = await Promise.all([
+  const [{ data: brainRowInitial }, { data: modelRow }] = await Promise.all([
     admin.from("fan_brain").select("*").eq("fan_id", fanId).maybeSingle(),
     admin.from("model_profiles").select("*").eq("id", modelId).maybeSingle(),
   ]);
 
   const fanRow = (conv as Json).fans as Json;
+
+  // Fan-Brain anlegen, falls noch keiner existiert — sonst laufen die
+  // Writebacks des chat-copilot ins Leere und der Funnel-Fortschritt geht verloren.
+  let brainRow = brainRowInitial;
+  if (!brainRow) {
+    await admin.from("fan_brain").upsert(
+      {
+        fan_id: fanId,
+        model_id: modelId,
+        identity: { name: String(fanRow?.display_name ?? "Fan") },
+        emotional: {
+          current_mood: "neutral",
+          loneliness_score: 0,
+          triggers_positive: [],
+          triggers_negative: [],
+        },
+        preferences: { kinks: [], turn_offs: [] },
+        commercial: { lifetime_spend: 0, ladder_step: 1, declined_count: 0 },
+        relationship: { stage: "unknown", days_known: 0, inside_jokes: [], promises_made: [] },
+        red_flags: { broke_signals: 0, aggression: 0, refund_threats: 0, scammer_score: 0 },
+        signals: { bridge_state: "idle", funnel_step: 1, ppv_moment_score: 0 },
+        confidence: 0,
+      },
+      { onConflict: "fan_id", ignoreDuplicates: true },
+    );
+    const { data: freshBrain } = await admin
+      .from("fan_brain")
+      .select("*")
+      .eq("fan_id", fanId)
+      .maybeSingle();
+    brainRow = freshBrain;
+  }
   const lastPurchaseCents = [...messages].reverse().find((m) => m.ppv?.isPurchased)?.ppv?.price ?? 0;
   const funnel = computeFunnelState(messages, fanId, funnelOpts);
 
@@ -478,7 +510,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       salesFunnel: funnelPayload(funnel),
       sessionContext,
       forceSingleMessage: isFollowup,
-      avoidLines: [...avoidLines.slice(0, 30), ...extraAvoid],
+      avoidLines: [...avoidLines.slice(0, 60), ...extraAvoid],
     });
 
   const readParts = (b: Json) => {

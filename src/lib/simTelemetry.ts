@@ -2,10 +2,24 @@ export type TelemetryRow = {
   offer_no: number | null;
   offer_price_cents: number | null;
   offer_purchased: boolean | null;
+  model_msg_count: number | null;
+  fan_msg_count: number | null;
   model_total_chars: number | null;
   fan_total_chars: number | null;
   repetition_dropped: number | null;
   persona: string | null;
+};
+
+export type TelemetrySummary = {
+  total_turns: number;
+  total_model_msgs: number;
+  total_fan_msgs: number;
+  total_purchases: number;
+  total_offers: number;
+  overall_conversion_pct: number | null;
+  total_revenue_eur: number;
+  total_repetitions_dropped: number;
+  avg_msgs_per_turn: number;
 };
 
 export type StageRow = {
@@ -26,8 +40,12 @@ export type PersonaRow = {
   total_repetitions: number;
 };
 
-/** Aggregiert Roh-Telemetrie zu Stufen- und Persona-Auswertung. */
-export function aggregate(rows: TelemetryRow[]): { byStage: StageRow[]; byPersona: PersonaRow[] } {
+/** Aggregiert Roh-Telemetrie zu Gesamt-, Stufen- und Persona-Auswertung. */
+export function aggregate(rows: TelemetryRow[]): {
+  byStage: StageRow[];
+  byPersona: PersonaRow[];
+  summary: TelemetrySummary;
+} {
   const stages = new Map<string, TelemetryRow[]>();
   const personas = new Map<string, TelemetryRow[]>();
   for (const r of rows) {
@@ -65,8 +83,28 @@ export function aggregate(rows: TelemetryRow[]): { byStage: StageRow[]; byPerson
     }))
     .sort((a, b) => b.turns - a.turns);
 
-  return { byStage, byPersona };
+  const totalModelMsgs = rows.reduce((s, r) => s + (r.model_msg_count ?? 0), 0);
+  const totalFanMsgs = rows.reduce((s, r) => s + (r.fan_msg_count ?? 0), 0);
+  const totalPurchases = rows.filter((r) => r.offer_purchased === true).length;
+  const totalOffers = rows.filter((r) => r.offer_no != null).length;
+
+  const summary: TelemetrySummary = {
+    total_turns: rows.length,
+    total_model_msgs: totalModelMsgs,
+    total_fan_msgs: totalFanMsgs,
+    total_purchases: totalPurchases,
+    total_offers: totalOffers,
+    overall_conversion_pct: totalOffers ? round1((100 * totalPurchases) / totalOffers) : null,
+    total_revenue_eur:
+      rows
+        .filter((r) => r.offer_purchased === true)
+        .reduce((s, r) => s + (r.offer_price_cents ?? 0), 0) / 100,
+    total_repetitions_dropped: rows.reduce((s, r) => s + (r.repetition_dropped ?? 0), 0),
+    avg_msgs_per_turn: rows.length ? round1((totalModelMsgs + totalFanMsgs) / rows.length) : 0,
+  };
+
+  return { byStage, byPersona, summary };
 }
 
 export const TELEMETRY_COLUMNS =
-  "offer_no, offer_price_cents, offer_purchased, model_total_chars, fan_total_chars, repetition_dropped, persona";
+  "offer_no, offer_price_cents, offer_purchased, model_msg_count, fan_msg_count, model_total_chars, fan_total_chars, repetition_dropped, persona";
