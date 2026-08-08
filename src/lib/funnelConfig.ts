@@ -95,8 +95,6 @@ export function subscribeFunnelStages(cb: () => void): () => void {
  * langer Chat irgendwann bei absurden Preisen und so viel nötigem Aufbau,
  * dass praktisch nie wieder ein Angebot rausgeht.
  */
-const OVER_PRICE_STEP_EUR = 10;
-const OVER_PRICE_MAX_FACTOR = 2;
 const OVER_FAN_TURNS_MAX = 10;
 
 export function stageConfigFor(offerNo: number): FunnelStageConfig {
@@ -105,12 +103,11 @@ export function stageConfigFor(offerNo: number): FunnelStageConfig {
   if (i < list.length) return list[i];
   const last = list[list.length - 1];
   const over = i - list.length + 1;
-  const maxPrice = Math.max(last.priceEur, last.priceEur * OVER_PRICE_MAX_FACTOR);
   return {
     ...last,
     id: `${last.id}+${over}`,
     label: `${last.label} (Wiederholung ${over})`,
-    priceEur: Math.min(maxPrice, last.priceEur + over * OVER_PRICE_STEP_EUR),
+    priceEur: last.priceEur,
     minFanTurns: Math.min(OVER_FAN_TURNS_MAX, last.minFanTurns + over),
   };
 }

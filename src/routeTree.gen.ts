@@ -19,6 +19,7 @@ import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/ap
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/_admin'
 import { Route as ApiPublicSimTickRouteImport } from './routes/api/public/sim-tick'
 import { Route as ApiPublicSimTelemetryRouteImport } from './routes/api/public/sim-telemetry'
+import { Route as ApiPublicSimResetRouteImport } from './routes/api/public/sim-reset'
 import { Route as ApiPublicSimChatsRouteImport } from './routes/api/public/sim-chats'
 import { Route as ApiPublicAiProxyRouteImport } from './routes/api/public/ai-proxy'
 import { Route as AuthenticatedAdminAdminRouteImport } from './routes/_authenticated/_admin/admin'
@@ -77,6 +78,11 @@ const ApiPublicSimTickRoute = ApiPublicSimTickRouteImport.update({
 const ApiPublicSimTelemetryRoute = ApiPublicSimTelemetryRouteImport.update({
   id: '/api/public/sim-telemetry',
   path: '/api/public/sim-telemetry',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicSimResetRoute = ApiPublicSimResetRouteImport.update({
+  id: '/api/public/sim-reset',
+  path: '/api/public/sim-reset',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicSimChatsRoute = ApiPublicSimChatsRouteImport.update({
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminAdminRouteWithChildren
   '/api/public/ai-proxy': typeof ApiPublicAiProxyRoute
   '/api/public/sim-chats': typeof ApiPublicSimChatsRoute
+  '/api/public/sim-reset': typeof ApiPublicSimResetRoute
   '/api/public/sim-telemetry': typeof ApiPublicSimTelemetryRoute
   '/api/public/sim-tick': typeof ApiPublicSimTickRoute
   '/admin/api-keys': typeof AuthenticatedAdminAdminApiKeysRoute
@@ -171,6 +178,7 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/api/public/ai-proxy': typeof ApiPublicAiProxyRoute
   '/api/public/sim-chats': typeof ApiPublicSimChatsRoute
+  '/api/public/sim-reset': typeof ApiPublicSimResetRoute
   '/api/public/sim-telemetry': typeof ApiPublicSimTelemetryRoute
   '/api/public/sim-tick': typeof ApiPublicSimTickRoute
   '/admin/api-keys': typeof AuthenticatedAdminAdminApiKeysRoute
@@ -195,6 +203,7 @@ export interface FileRoutesById {
   '/_authenticated/_admin/admin': typeof AuthenticatedAdminAdminRouteWithChildren
   '/api/public/ai-proxy': typeof ApiPublicAiProxyRoute
   '/api/public/sim-chats': typeof ApiPublicSimChatsRoute
+  '/api/public/sim-reset': typeof ApiPublicSimResetRoute
   '/api/public/sim-telemetry': typeof ApiPublicSimTelemetryRoute
   '/api/public/sim-tick': typeof ApiPublicSimTickRoute
   '/_authenticated/_admin/admin/api-keys': typeof AuthenticatedAdminAdminApiKeysRoute
@@ -218,6 +227,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/api/public/ai-proxy'
     | '/api/public/sim-chats'
+    | '/api/public/sim-reset'
     | '/api/public/sim-telemetry'
     | '/api/public/sim-tick'
     | '/admin/api-keys'
@@ -238,6 +248,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/api/public/ai-proxy'
     | '/api/public/sim-chats'
+    | '/api/public/sim-reset'
     | '/api/public/sim-telemetry'
     | '/api/public/sim-tick'
     | '/admin/api-keys'
@@ -261,6 +272,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin/admin'
     | '/api/public/ai-proxy'
     | '/api/public/sim-chats'
+    | '/api/public/sim-reset'
     | '/api/public/sim-telemetry'
     | '/api/public/sim-tick'
     | '/_authenticated/_admin/admin/api-keys'
@@ -282,6 +294,7 @@ export interface RootRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   ApiPublicAiProxyRoute: typeof ApiPublicAiProxyRoute
   ApiPublicSimChatsRoute: typeof ApiPublicSimChatsRoute
+  ApiPublicSimResetRoute: typeof ApiPublicSimResetRoute
   ApiPublicSimTelemetryRoute: typeof ApiPublicSimTelemetryRoute
   ApiPublicSimTickRoute: typeof ApiPublicSimTickRoute
   ApiPublicCopilotFanBrainRoute: typeof ApiPublicCopilotFanBrainRoute
@@ -359,6 +372,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/sim-telemetry'
       fullPath: '/api/public/sim-telemetry'
       preLoaderRoute: typeof ApiPublicSimTelemetryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/sim-reset': {
+      id: '/api/public/sim-reset'
+      path: '/api/public/sim-reset'
+      fullPath: '/api/public/sim-reset'
+      preLoaderRoute: typeof ApiPublicSimResetRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/sim-chats': {
@@ -498,6 +518,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
   ApiPublicAiProxyRoute: ApiPublicAiProxyRoute,
   ApiPublicSimChatsRoute: ApiPublicSimChatsRoute,
+  ApiPublicSimResetRoute: ApiPublicSimResetRoute,
   ApiPublicSimTelemetryRoute: ApiPublicSimTelemetryRoute,
   ApiPublicSimTickRoute: ApiPublicSimTickRoute,
   ApiPublicCopilotFanBrainRoute: ApiPublicCopilotFanBrainRoute,
@@ -507,13 +528,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

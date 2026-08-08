@@ -203,7 +203,8 @@ export function computeFunnelState(messages: readonly Message[], fanId: string, 
   // Kauf-Spannung ist weg. Starke Käufer (≥5 Käufe) fallen nur 1 Stufe.
   const purchasedCount = ppvs.filter(m => !!m.ppv?.isPurchased).length;
   const coldDemote = coldBreak && clearedCount > 2 ? (purchasedCount >= 5 ? 1 : 2) : 0;
-  const demoteSteps = Math.floor(retryCount / DEMOTE_AFTER_RETRIES) + coldDemote;
+  const highStageDemote = stageBase.offerNo >= 7 ? 3 : stageBase.offerNo >= 5 ? 2 : 1;
+  const demoteSteps = Math.floor(retryCount / DEMOTE_AFTER_RETRIES) * highStageDemote + coldDemote;
   const effectiveOfferNo = Math.max(minOfferNo, stageBase.offerNo - demoteSteps);
   const stageNow = effectiveOfferNo === stageBase.offerNo ? stageBase : stageFor(effectiveOfferNo);
 
