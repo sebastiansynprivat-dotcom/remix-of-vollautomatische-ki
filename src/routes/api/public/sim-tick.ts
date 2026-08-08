@@ -322,6 +322,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
     : [...rows]
         .reverse()
         .find((r: Json) => r.content_type === "ppv" && Number(r.ppv_price_cents ?? 0) > 0 && !r.ppv_is_purchased);
+  let offerPurchased: boolean | null = null;
   if (openPpvRow) {
     const pre = computeFunnelState(messages, fanId, funnelOpts);
     const purchasedCount = messages.filter((m) => m.ppv?.isPurchased).length;
@@ -331,6 +332,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       discountPct: pre.discountPct,
       purchasedCount,
     });
+    offerPurchased = !!buys;
     if (buys) {
       await admin.from("messages").update({ ppv_is_purchased: true }).eq("id", openPpvRow.id);
       const idx = messages.findIndex((m) => m.id === String(openPpvRow.id));
