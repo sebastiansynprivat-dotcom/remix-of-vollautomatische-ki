@@ -37,7 +37,12 @@ function knownFactCount(b: any): number {
   if (b.identity?.name) n++;
   if (b.identity?.job_hint) n++;
   if (b.identity?.city_hint || b.identity?.country) n++;
+  if (b.identity?.age_hint) n++;
+  if (b.identity?.relationship_status) n++;
+  if (b.identity?.hobbies?.length) n++;
   if (b.preferences?.kinks?.length) n++;
+  if (b.preferences?.turn_offs?.length) n++;
+  if (b.preferences?.fav_body_part) n++;
   if (b.preferences?.favorite_bridge) n++;
   if (b.emotional?.last_vulnerable_share) n++;
   return n;
