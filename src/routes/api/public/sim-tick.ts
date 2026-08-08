@@ -510,7 +510,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       salesFunnel: funnelPayload(funnel),
       sessionContext,
       forceSingleMessage: isFollowup,
-      avoidLines: [...avoidLines.slice(0, 30), ...extraAvoid],
+      avoidLines: [...avoidLines.slice(0, 60), ...extraAvoid],
     });
 
   const readParts = (b: Json) => {
