@@ -326,8 +326,14 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
   if (openPpvRow) {
     const pre = computeFunnelState(messages, fanId, funnelOpts);
     const purchasedCount = messages.filter((m) => m.ppv?.isPurchased).length;
+    const { data: brainSignalsRow } = await admin
+      .from("fan_brain")
+      .select("signals")
+      .eq("fan_id", fanId)
+      .eq("model_id", modelId)
+      .maybeSingle();
     const ppvMomentScore = Number(
-      ((brainRow as any)?.signals as any)?.ppv_moment_score ?? 50,
+      ((brainSignalsRow as Json)?.signals as Json)?.ppv_moment_score ?? 50,
     );
     const buys = decidePurchase({
       persona,
