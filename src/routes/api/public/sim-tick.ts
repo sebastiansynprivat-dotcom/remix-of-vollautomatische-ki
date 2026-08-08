@@ -341,6 +341,23 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       }
       purchasesInSession += 1;
       log.push("kauft");
+      // After-Care-Lock: 4 Stunden kein neuer Pitch nach Kauf
+      const lockUntil = new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString();
+      const { data: brainForLock } = await admin
+        .from("fan_brain")
+        .select("signals")
+        .eq("fan_id", fanId)
+        .maybeSingle();
+      await admin
+        .from("fan_brain")
+        .update({
+          signals: {
+            ...(((brainForLock as Json)?.signals as Json) ?? {}),
+            after_care_lock_until: lockUntil,
+          },
+        })
+        .eq("fan_id", fanId);
+      log.push("after-care-lock:4h");
     } else {
       log.push("kauft-nicht");
     }
