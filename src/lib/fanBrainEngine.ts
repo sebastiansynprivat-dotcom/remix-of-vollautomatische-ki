@@ -19,11 +19,17 @@ export interface RecentMsg { from: "model" | "fan"; text: string; ts?: string }
 
 // ---------------- helpers ----------------
 function knownFactCount(b: FanBrain): number {
+  const identity = (b.identity ?? {}) as FanBrain["identity"] & { hobbies?: unknown[] };
   let n = 0;
-  if (b.identity?.name) n++;
-  if (b.identity?.job_hint) n++;
-  if (b.identity?.city_hint || b.identity?.country) n++;
+  if (identity.name) n++;
+  if (identity.job_hint) n++;
+  if (identity.city_hint || identity.country) n++;
+  if (identity.age_hint) n++;
+  if (identity.relationship_status) n++;
+  if (identity.hobbies?.length) n++;
   if (b.preferences?.kinks?.length) n++;
+  if (b.preferences?.turn_offs?.length) n++;
+  if (b.preferences?.fav_body_part) n++;
   if (b.preferences?.favorite_bridge) n++;
   if (b.emotional?.last_vulnerable_share) n++;
   return n;

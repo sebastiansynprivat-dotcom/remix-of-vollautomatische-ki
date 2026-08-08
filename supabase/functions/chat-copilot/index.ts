@@ -37,7 +37,12 @@ function knownFactCount(b: any): number {
   if (b.identity?.name) n++;
   if (b.identity?.job_hint) n++;
   if (b.identity?.city_hint || b.identity?.country) n++;
+  if (b.identity?.age_hint) n++;
+  if (b.identity?.relationship_status) n++;
+  if (b.identity?.hobbies?.length) n++;
   if (b.preferences?.kinks?.length) n++;
+  if (b.preferences?.turn_offs?.length) n++;
+  if (b.preferences?.fav_body_part) n++;
   if (b.preferences?.favorite_bridge) n++;
   if (b.emotional?.last_vulnerable_share) n++;
   return n;
@@ -164,7 +169,7 @@ function buildSpecRulesBlock(b: any, msgs: RecentMsg[]): string {
     `→ ${stageRules[step]}`,
     `Bridge-State: ${bridge}` + (bridge === "armed" ? " — Recovery-Line vorbereiten falls Fan ignoriert." : ""),
     `PPV-Moment-Score: ${score}/100 (Orientierung — wenn Moment passt, ruhig pitchen).`,
-    `Erlaubte Tones: ${tones.join(", ")}.`,
+    `Erlaubte Tones: ${tones.join(", ")} — SYSTEM_BASE Phase-Restrictions haben Vorrang: in Step 1-2 nur safe (kein Flirt, kein Pitch).`,
     `Cialdini-Trigger (mind. 1 nutzen): ${cialdini.join(", ") || "—"}`,
     `Nächste Ladder-Preis-Stufe: €${nextPrice} (NIE überspringen, NIE darunter).`,
     whale ? `WHALE-MODE AKTIV: längere Sätze, Daddy-Frame, exklusiver Wortschatz, höhere Preise. NIE 'andere Daddies'.` : `Whale-Mode: aus.`,
