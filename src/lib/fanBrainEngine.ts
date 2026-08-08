@@ -13,7 +13,7 @@ export const FUNNEL_LABELS: Record<FunnelStep, string> = {
   5: "Bridge", 6: "Pitch", 7: "Close / After-Care",
 };
 
-const PRICE_LADDER_EUR = [5, 10, 20, 30, 50, 100];
+const PRICE_LADDER_EUR = [0, 5, 10, 20, 30, 50, 100];
 
 export interface RecentMsg { from: "model" | "fan"; text: string; ts?: string }
 
@@ -54,11 +54,10 @@ export function isWhale(b: FanBrain): boolean {
 
 export function nextLadderPriceEur(b: FanBrain): number {
   const last = b.commercial?.last_purchase_amount ?? 0;
-  if (last <= 0) return 5;
   for (const step of PRICE_LADDER_EUR) {
     if (step > last) return step;
   }
-  return 100;
+  return PRICE_LADDER_EUR[PRICE_LADDER_EUR.length - 1];
 }
 
 export function computeFunnelStep(b: FanBrain, msgs: RecentMsg[]): FunnelStep {

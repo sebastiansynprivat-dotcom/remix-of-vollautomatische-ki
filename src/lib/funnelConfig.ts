@@ -28,6 +28,8 @@ export const DEFAULT_FUNNEL_STAGES: FunnelStageConfig[] = [
   { id: "s3", label: "Stufe 3 — Aufbau",               priceEur: 10, mediaType: "photo", intensity: 3, minFanTurns: 5 },
   { id: "s4", label: "Stufe 4 — Video",                priceEur: 20, mediaType: "video", intensity: 4, minFanTurns: 6 },
   { id: "s5", label: "Stufe 5 — Top-Stufe",            priceEur: 30, mediaType: "video", intensity: 5, minFanTurns: 7 },
+  { id: "s6", label: "Stufe 6 — Premium",              priceEur: 50, mediaType: "video", intensity: 5, minFanTurns: 8 },
+  { id: "s7", label: "Stufe 7 — Top-Premium",          priceEur: 100, mediaType: "video", intensity: 5, minFanTurns: 10 },
 ];
 
 const STORAGE_KEY = "fanbrain.funnelStages.v1";

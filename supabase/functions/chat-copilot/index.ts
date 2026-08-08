@@ -26,7 +26,7 @@ const FUNNEL_LABELS: Record<FunnelStep, string> = {
   1: "Hook", 2: "Qualify", 3: "Bond", 4: "Tease",
   5: "Bridge", 6: "Pitch", 7: "Close / After-Care",
 };
-const PRICE_LADDER_EUR = [5, 10, 20, 30, 50, 100];
+const PRICE_LADDER_EUR = [0, 5, 10, 20, 30, 50, 100];
 
 interface RecentMsg { from: "model" | "fan"; text: string }
 
@@ -61,9 +61,8 @@ function isWhale(b: any): boolean {
 }
 function nextLadderPriceEur(b: any): number {
   const last = j(b.commercial?.last_purchase_amount, 0);
-  if (!last || last <= 0) return 5;
   for (const s of PRICE_LADDER_EUR) if (s > last) return s;
-  return 100;
+  return PRICE_LADDER_EUR[PRICE_LADDER_EUR.length - 1];
 }
 function computeFunnelStep(b: any, msgs: RecentMsg[]): FunnelStep {
   if (isAfterCareLocked(b)) return 7;
