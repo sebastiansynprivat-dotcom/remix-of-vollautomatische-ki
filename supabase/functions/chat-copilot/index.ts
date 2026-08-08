@@ -1035,7 +1035,7 @@ Deno.serve(async (req) => {
      * Wiederholung von vornherein zu verhindern.
      */
     const avoidLines: string[] = Array.isArray(body.avoidLines)
-      ? (body.avoidLines as unknown[]).map((s) => String(s).trim()).filter(Boolean).slice(0, 40)
+      ? (body.avoidLines as unknown[]).map((s) => String(s).trim()).filter(Boolean).slice(0, 60)
       : [];
 
 
@@ -1206,7 +1206,7 @@ Deno.serve(async (req) => {
           `=== VERBRAUCHT — NICHT WIEDERHOLEN (harte Regel, gilt für alle Slots) ===`,
           `Das Model hat diese Zeilen gerade schon geschickt. Nichts davon darf inhaltlich,`,
           `im Bild oder im Satzbau wiederkommen — auch nicht umformuliert:`,
-          ...avoidLines.slice(0, 24).map((l) => `· "${l.slice(0, 110)}"`),
+          ...avoidLines.slice(0, 60).map((l) => `· "${l.slice(0, 110)}"`),
           ...(openers.length ? [`Gesperrte Satzanfänge: ${openers.join(", ")}.`] : []),
           `→ Setze einen NEUEN Beat: anderes Thema, eigene Mini-Story, konkreter Callback auf`,
           `  ein Detail, das noch nicht dran war. Keine Dauerschleifen-Muster ("wetten du…",`,
