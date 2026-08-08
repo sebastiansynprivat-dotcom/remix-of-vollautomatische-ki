@@ -1,0 +1,115 @@
+// =========================================================================
+// Funnel-Konfiguration — von dir gepflegte Stufen-Liste.
+//
+// Jede Stufe: Label, Preis, Medientyp, Intensität (1–5) und wie viel Aufbau
+// davor nötig ist. Der Auto-Pilot darf pro Angebot maximal EINE
+// Intensitäts-Stufe weitergehen, dadurch springt nichts mehr von 0 auf 100.
+// Persistenz: localStorage (überlebt Reloads, kein Reset bei Änderungen).
+// =========================================================================
+
+export type MediaType = "photo" | "video";
+
+export interface FunnelStageConfig {
+  id: string;
+  /** Neutrales Label, das du selbst pflegst (erscheint im KI-Prompt). */
+  label: string;
+  /** Preis in Euro (0 = kostenlos). */
+  priceEur: number;
+  mediaType: MediaType;
+  /** Intensität 1–5, von dir gesetzt. Steuert das Nicht-Überspringen. */
+  intensity: number;
+  /** Fan-Nachrichten Aufbau, die vor diesem Angebot nötig sind. */
+  minFanTurns: number;
+}
+
+export const DEFAULT_FUNNEL_STAGES: FunnelStageConfig[] = [
+  { id: "s1", label: "Stufe 1 — Einstieg (kostenlos)", priceEur: 0,  mediaType: "photo", intensity: 1, minFanTurns: 4 },
+  { id: "s2", label: "Stufe 2 — kleiner erster Kauf",  priceEur: 5,  mediaType: "photo", intensity: 2, minFanTurns: 4 },
+  { id: "s3", label: "Stufe 3 — Aufbau",               priceEur: 10, mediaType: "photo", intensity: 3, minFanTurns: 5 },
+  { id: "s4", label: "Stufe 4 — Video",                priceEur: 20, mediaType: "video", intensity: 4, minFanTurns: 6 },
+  { id: "s5", label: "Stufe 5 — Top-Stufe",            priceEur: 30, mediaType: "video", intensity: 5, minFanTurns: 7 },
+];
+
+const STORAGE_KEY = "fanbrain.funnelStages.v1";
+
+let stages: FunnelStageConfig[] = DEFAULT_FUNNEL_STAGES.map(s => ({ ...s }));
+let hydrated = false;
+const listeners = new Set<() => void>();
+
+function clampStage(s: Partial<FunnelStageConfig>, i: number): FunnelStageConfig {
+  return {
+    id: typeof s.id === "string" && s.id ? s.id : `s${i + 1}`,
+    label: typeof s.label === "string" && s.label.trim() ? s.label.trim() : `Stufe ${i + 1}`,
+    priceEur: Math.max(0, Math.round(Number(s.priceEur) || 0)),
+    mediaType: s.mediaType === "video" ? "video" : "photo",
+    intensity: Math.min(5, Math.max(1, Math.round(Number(s.intensity) || 1))),
+    minFanTurns: Math.min(20, Math.max(1, Math.round(Number(s.minFanTurns) || 3))),
+  };
+}
+
+function hydrate() {
+  if (hydrated || typeof window === "undefined") return;
+  hydrated = true;
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      stages = parsed.map(clampStage);
+    }
+  } catch {
+    /* kaputter Eintrag → Defaults */
+  }
+}
+
+export function getFunnelStages(): FunnelStageConfig[] {
+  hydrate();
+  return stages;
+}
+
+export function setFunnelStages(next: FunnelStageConfig[]) {
+  hydrate();
+  stages = (next.length > 0 ? next : DEFAULT_FUNNEL_STAGES).map(clampStage);
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(stages));
+  } catch {
+    /* Storage voll/blockiert — Änderung gilt trotzdem für diese Session */
+  }
+  listeners.forEach(l => l());
+}
+
+export function resetFunnelStages() {
+  setFunnelStages(DEFAULT_FUNNEL_STAGES.map(s => ({ ...s })));
+}
+
+export function subscribeFunnelStages(cb: () => void): () => void {
+  listeners.add(cb);
+  return () => listeners.delete(cb);
+}
+
+/**
+ * Stufe für Angebot Nr. n (1-basiert). Über die Liste hinaus wird die letzte
+ * Stufe wiederholt: Preis und Aufbau steigen nur begrenzt, sonst landet ein
+ * langer Chat irgendwann bei absurden Preisen und so viel nötigem Aufbau,
+ * dass praktisch nie wieder ein Angebot rausgeht.
+ */
+const OVER_PRICE_STEP_EUR = 10;
+const OVER_PRICE_MAX_FACTOR = 2;
+const OVER_FAN_TURNS_MAX = 10;
+
+export function stageConfigFor(offerNo: number): FunnelStageConfig {
+  const list = getFunnelStages();
+  const i = offerNo - 1;
+  if (i < list.length) return list[i];
+  const last = list[list.length - 1];
+  const over = i - list.length + 1;
+  const maxPrice = Math.max(last.priceEur, last.priceEur * OVER_PRICE_MAX_FACTOR);
+  return {
+    ...last,
+    id: `${last.id}+${over}`,
+    label: `${last.label} (Wiederholung ${over})`,
+    priceEur: Math.min(maxPrice, last.priceEur + over * OVER_PRICE_STEP_EUR),
+    minFanTurns: Math.min(OVER_FAN_TURNS_MAX, last.minFanTurns + over),
+  };
+}
+

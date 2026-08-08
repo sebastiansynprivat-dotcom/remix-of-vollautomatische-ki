@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body { width: 300px; margin: 0; padding: 16px; font-family: -apple-system, system-ui, sans-serif; background: #0a0a0a; color: #e8e4dd; }
+    h1 { font-size: 14px; margin: 0 0 12px; color: #D4AF37; letter-spacing: -0.3px; }
+    p { font-size: 12px; color: #a8a094; margin: 0 0 8px; line-height: 1.5; }
+    label { display:block; font-size: 11px; color:#a8a094; margin: 10px 0 4px; text-transform: uppercase; letter-spacing: .5px; }
+    input { width: 100%; box-sizing: border-box; padding: 8px; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #e8e4dd; font-size: 12px; font-family: ui-monospace, monospace; }
+    button { width: 100%; margin-top: 10px; padding: 8px; background: linear-gradient(135deg, #D4AF37, #B8860B); color: #0a0a0a; border: 0; border-radius: 6px; font-weight: 700; cursor: pointer; }
+    .row { display: flex; gap: 8px; margin-top: 8px; }
+    .row button { margin-top: 0; }
+    .secondary { background: rgba(255,255,255,0.06); color: #e8e4dd; }
+    .ok { color: #7ed09a; font-size: 11px; margin-top: 6px; min-height: 14px; }
+    .hint { font-size: 10px; color:#6b6357; margin-top: 8px; line-height: 1.4; }
+  </style>
+</head>
+<body>
+  <h1>Premium Copilot</h1>
+  <p>Verbinde die Extension mit deinem Steckbrief, damit Vorschläge im Stil deiner Creatorin geschrieben werden.</p>
+
+  <label for="modelId">Model-ID (UUID)</label>
+  <input id="modelId" type="text" placeholder="z. B. 1c2b…-…-…" />
+
+  <label for="token">User-Token (optional)</label>
+  <input id="token" type="password" placeholder="Bearer Token (optional)" />
+
+  <button id="save">Speichern</button>
+  <div class="ok" id="status"></div>
+
+  <div class="row">
+    <button class="secondary" id="show">Panel anzeigen</button>
+    <button class="secondary" id="reset">Position reset</button>
+  </div>
+
+  <p class="hint">Nach Updates der Extension: chrome://extensions → Reload klicken bzw. ZIP neu „Load unpacked".</p>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Premium Chat Copilot",
+  "version": "1.0.0",
+  "description": "KI-Vorschläge direkt im Browser — draggable Floating Panel für jeden Chat.",
+  "permissions": ["activeTab", "storage", "clipboardWrite"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["panel.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "48": "icon.png",
+    "128": "icon.png"
+  }
+}
