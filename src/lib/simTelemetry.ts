@@ -2,10 +2,24 @@ export type TelemetryRow = {
   offer_no: number | null;
   offer_price_cents: number | null;
   offer_purchased: boolean | null;
+  model_msg_count: number | null;
+  fan_msg_count: number | null;
   model_total_chars: number | null;
   fan_total_chars: number | null;
   repetition_dropped: number | null;
   persona: string | null;
+};
+
+export type TelemetrySummary = {
+  total_turns: number;
+  total_model_msgs: number;
+  total_fan_msgs: number;
+  total_purchases: number;
+  total_offers: number;
+  overall_conversion_pct: number | null;
+  total_revenue_eur: number;
+  total_repetitions_dropped: number;
+  avg_msgs_per_turn: number;
 };
 
 export type StageRow = {
