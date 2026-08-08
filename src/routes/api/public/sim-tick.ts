@@ -747,9 +747,21 @@ async function processRun(admin: SupabaseAdmin, run: Json, lockCutoff: string): 
 }
 
 async function handler({ request }: { request: Request }) {
+  // Zwei erlaubte Aufrufer:
+  //  1. pg_cron / interne Aufrufe mit dem Publishable-Key im apikey-Header
+  //  2. optionales Shared Secret (x-sim-secret), falls SIM_TICK_SECRET gesetzt ist
   const secret = process.env['SIM_TICK_SECRET'];
-  const provided = request.headers.get("x-sim-secret");
-  if (!secret || provided !== secret) {
+  const keyCandidates = [
+    process.env['SUPABASE_PUBLISHABLE_KEY'],
+    process.env['SUPABASE_PUBLISHABLE_KEYS'],
+    process.env['SUPABASE_ANON_KEY'],
+    process.env['VITE_SUPABASE_PUBLISHABLE_KEY'],
+  ].filter((v): v is string => !!v);
+  const providedSecret = request.headers.get("x-sim-secret");
+  const providedKey = request.headers.get("apikey");
+  const secretOk = !!secret && providedSecret === secret;
+  const keyOk = !!providedKey && keyCandidates.some((k) => k.split(",").includes(providedKey));
+  if (!secretOk && !keyOk) {
     return new Response("Unauthorized", { status: 401 });
   }
 
