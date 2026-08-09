@@ -483,6 +483,51 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       };
     }
     if (purchases === 0 && paidOffers >= NON_BUYER_PAUSE_OFFERS) {
+      const signals = ((brainRowInitial as Json)?.signals as Json) ?? {};
+      if (!signals.boundary_msg_sent) {
+        // Grenz-Nachricht einmalig von der KI selbst formulieren lassen.
+        const guardFan = (conv as Json).fans as Json;
+        let boundaryText =
+          "ich investiere hier so viel zeit und herz... und irgendwie fühlt sich das einseitig an 🥺";
+        try {
+          const boundaryRes = await callFunction("chat-copilot", {
+            messages: copilotHistory(messages),
+            fanMeta: {
+              displayName: String(guardFan?.display_name ?? "Fan"),
+              totalSpent_eur: 0,
+              tipVolume_eur: 0,
+              lastPurchaseAmount_eur: null,
+            },
+            modelPersona: modelPersonaPayload((modelRow as Json) ?? null),
+            fanBrain: brainRowInitial ?? null,
+            fanId,
+            autopilot: true,
+            forceSingleMessage: true,
+            systemOverride:
+              "Besondere Situation: Dieser Fan hat mehrere deiner Inhalte-Angebote bekommen, aber nie eines gekauft. Du fühlst dich wenig wertgeschätzt und das Ganze einseitig. Schreib EINE ehrliche Nachricht darüber, wie sich das für dich anfühlt — emotional, verletzlich, nicht fordernd. Erwähne KEIN Kaufen, keine Preise, keine Angebote. Nur dein Gefühl zur einseitigen Dynamik. 1–2 Sätze, kleinschreibung, 1–2 Emojis. Das ist keine Verkaufsnachricht.",
+          });
+          const t =
+            ((boundaryRes as Json)?.suggestions as Json[] | undefined)?.[0]?.text ??
+            ((boundaryRes as Json)?.slots as Json[] | undefined)?.[0]?.text;
+          if (typeof t === "string" && t.trim()) boundaryText = t.trim();
+        } catch (e) {
+          log.push("non-buyer-boundary-fallback");
+        }
+
+        await admin.from("messages").insert({
+          conversation_id: convId,
+          sender_type: "model",
+          content_type: "text",
+          status: "delivered",
+          content: boundaryText,
+          created_at: clock.next(10, 30),
+        });
+        await admin
+          .from("fan_brain")
+          .update({ signals: { ...signals, boundary_msg_sent: true } })
+          .eq("fan_id", fanId);
+        log.push("non-buyer-boundary-msg");
+      }
       log.push(`non-buyer-pause:${paidOffers}`);
       return {
         ...baseResult,
@@ -495,6 +540,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
         done: false,
       };
     }
+
   }
 
 
