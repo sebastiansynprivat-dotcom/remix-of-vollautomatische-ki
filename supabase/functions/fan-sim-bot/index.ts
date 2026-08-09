@@ -193,14 +193,32 @@ Deno.serve(async (req) => {
       ? `\n=== SCHON BESPROCHEN (nicht wieder fragen): ===\n${topicsCovered.slice(0, 12).map(t => `· ${t}`).join("\n")}\n→ Frag nach etwas NEUEM: sein Tag, seine Träume, seine Geheimnisse, seine Fantasien, sein Lieblingsessen, seine Kindheit, seine Arbeit, sein Auto, seine Musik, seine Sportmannschaft.\n`
       : "";
 
+    const modelFactsBlock = Array.isArray(body.modelFactHints) && body.modelFactHints.length > 0
+      ? `\n=== DAS WEISST DU SCHON ÜBER SIE (nicht wieder fragen): ===\n${body.modelFactHints.slice(0, 10).map((f: string) => `· ${f}`).join("\n")}\n`
+      : "";
+
+    const lastModelMsg = [...history].reverse().find(h => h.role === "model");
+    const isPpvLast = lastModelMsg?.text?.startsWith("[schickt ");
+    const ppvBlock = isPpvLast
+      ? `\n\n=== LETZTE MODEL-NACHRICHT WAR EIN INHALTS-ANGEBOT ===\nSie hat dir gerade Content geschickt. Du MUSST darauf reagieren — nicht das Thema wechseln:\n- Wenn du (laut Persona) es magst: reagier positiv ("wow", "geil", "krass süß"), sag was dich anmacht, oder frag was Konkretes zum Inhalt\n- Wenn du es nicht willst/kannst: sag den Grund (zu teuer, grad kein geld, später mal, was ist überhaupt drauf, schick's umsonst, oder ein klares nein)\n- Auf KEINEN FALL das Thema wechseln als wäre nichts passiert\n`
+      : "";
+
     const userPrompt = `Bisheriger Verlauf (Turn ${turn}, Session-Zug ${sessionTurn}):
 ${transcript || "(noch leer — du bist der Fan und schreibst die ERSTE Nachricht)"}
 ${sessionNote}
 ${developmentNote}
+${modelFactsBlock}
+${ppvBlock}
 ${topicsBlock}
 ${avoidBlock}
 Antworte jetzt als FAN. Nutze send_messages.`;
 
+    const systemPrompt = `${SYSTEM_BASE}
+
+${ANTI_PATTERNS}
+
+PERSONA: ${persona}
+${personaPrompt}`;
 
     const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -211,7 +229,8 @@ Antworte jetzt als FAN. Nutze send_messages.`;
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
         messages: [
-          { role: "system", content: `${SYSTEM_BASE}\n\nPERSONA: ${persona}\n${personaPrompt}` },
+          { role: "system", content: systemPrompt },
+
           { role: "user", content: userPrompt },
         ],
         tools: [{
