@@ -37,6 +37,11 @@ const LOCK_MINUTES = 3;
 const TICK_BUDGET_MS = 45_000;
 /** Nur das aktuelle Chat-Ende laden (die Schnittstelle liefert max. 1000 Zeilen). */
 const MESSAGE_WINDOW = 240;
+
+// Non-Buyer-Guard: nach so vielen bezahlten Angeboten ohne Kauf erst Pause, dann Stopp.
+const NON_BUYER_PAUSE_OFFERS = 6;
+const NON_BUYER_STOP_OFFERS = 9;
+const NON_BUYER_PAUSE_HOURS = 6;
 /** Mehr als so viele Model-Nachrichten am Stück ohne Fan-Input gibt es nie. */
 const MODEL_STREAK_MAX = 2;
 
@@ -458,6 +463,40 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
     admin.from("fan_brain").select("*").eq("fan_id", fanId).maybeSingle(),
     admin.from("model_profiles").select("*").eq("id", modelId).maybeSingle(),
   ]);
+
+  // ---- Non-Buyer-Guard (rein technisch: Ressourcen sparen) ----
+  // Fans, die viele kostenpflichtige Angebote bekommen und nie kaufen,
+  // erzeugen nur Kosten. Erst Pause, danach Chat beenden.
+  {
+    const paidOffers = messages.filter(
+      (m) => m.contentType === "ppv" && (m.ppv?.price ?? 0) > 0,
+    ).length;
+    const purchases = messages.filter((m) => m.ppv?.isPurchased).length;
+    if (purchases === 0 && paidOffers >= NON_BUYER_STOP_OFFERS) {
+      log.push(`non-buyer-stop:${paidOffers}`);
+      return {
+        ...baseResult,
+        note: log.join(" "),
+        simDay: rhythm.simDay,
+        phase: "done",
+        done: true,
+      };
+    }
+    if (purchases === 0 && paidOffers >= NON_BUYER_PAUSE_OFFERS) {
+      log.push(`non-buyer-pause:${paidOffers}`);
+      return {
+        ...baseResult,
+        note: log.join(" "),
+        simDay: rhythm.simDay,
+        sessionTurn: 0,
+        phase: "break",
+        gapHours: NON_BUYER_PAUSE_HOURS,
+        simLastAt: clock.lastIso,
+        done: false,
+      };
+    }
+  }
+
 
   const fanRow = (conv as Json).fans as Json;
 
