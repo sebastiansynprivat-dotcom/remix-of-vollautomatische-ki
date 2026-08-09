@@ -377,9 +377,22 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
   const fanTexts: string[] = [];
   let fanEndsSession = false;
   if (!modelOpensDay) {
+    // Themen extrahieren: Stichworte aus den letzten 60 Nachrichten
+    const recentTranscript = transcript(messages).slice(-60);
+    const topicsCovered: string[] = [];
+    const topicKeywords = ["job","arbeit","name","stadt","wohnt","hobby","musik","sport","auto","essen","kochen","film","serie","anime","spiel","gaming","urlaub","reise","familie","geschwister","eltern","ex","beziehung","single","alter","geburtstag","haustier","hund","katze","dusche","badewanne","bett","schlafen","müde","wochenende","samstag","sonntag","fitness","gym","rennen","laufen"];
+    for (const t of recentTranscript) {
+      const lower = (t.text ?? "").toLowerCase();
+      for (const kw of topicKeywords) {
+        if (lower.includes(kw) && !topicsCovered.includes(kw)) topicsCovered.push(kw);
+      }
+    }
+
     const fanRes = await callFunction("fan-sim-bot", {
       persona: persona.key,
-      history: transcript(messages),
+      history: transcript(messages).slice(-40),
+      topicsCovered,
+      simDay,
       turn: Number(run.turn_count ?? 0),
       sessionTurn,
       restartAfterHours: decision.gapHours > 0 ? Math.round(decision.gapHours) : 0,
