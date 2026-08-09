@@ -393,10 +393,30 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       }
     }
 
+    // Facts die das Model schon geteilt hat — damit der Fan nicht wieder fragt
+    const modelMessages = messages.filter((m) => m.senderId === "user-001" && m.content);
+    const modelFactHints: string[] = [];
+    const modelText = modelMessages.map((m) => m.content).join(" ").toLowerCase();
+    const factPatterns = [
+      { key: "beruf", match: ["model", "shooting", "content", "kamera", "creator"], fact: "sie ist Content Creator / macht Shootings" },
+      { key: "essen", match: ["lasagne", "pizza", "pasta", "sushi"], fact: "sie hat ihr Lieblingsessen erwähnt" },
+      { key: "wohnort", match: ["berlin", "münchen", "hamburg", "köln", "wien"], fact: "sie hat ihren Wohnort erwähnt" },
+      { key: "sport", match: ["gym", "fitness", "tanzen", "yoga"], fact: "sie macht Sport / geht ins Gym" },
+      { key: "haustier", match: ["hund", "katze", "haustier"], fact: "sie hat über Haustiere gesprochen" },
+      { key: "musik", match: ["rnb", "pop", "rock", "musik"], fact: "sie mag bestimmte Musik" },
+      { key: "nachbarn", match: ["nachbar", "bohren", "renovier", "lärm"], fact: "ihre Nachbarn machen oft Lärm/renovieren" },
+      { key: "shooting", match: ["shooting", "kamera", "fotograf"], fact: "sie hatte heute ein Shooting" },
+    ];
+    for (const p of factPatterns) {
+      if (p.match.some((m) => modelText.includes(m))) modelFactHints.push(p.fact);
+    }
+
     const fanRes = await callFunction("fan-sim-bot", {
       persona: persona.key,
       history: transcript(messages).slice(-40),
       topicsCovered,
+      modelFactHints,
+
       simDay,
       turn: Number(run.turn_count ?? 0),
       sessionTurn,
