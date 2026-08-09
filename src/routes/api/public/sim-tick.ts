@@ -37,6 +37,11 @@ const LOCK_MINUTES = 3;
 const TICK_BUDGET_MS = 45_000;
 /** Nur das aktuelle Chat-Ende laden (die Schnittstelle liefert max. 1000 Zeilen). */
 const MESSAGE_WINDOW = 240;
+
+// Non-Buyer-Guard: nach so vielen bezahlten Angeboten ohne Kauf erst Pause, dann Stopp.
+const NON_BUYER_PAUSE_OFFERS = 6;
+const NON_BUYER_STOP_OFFERS = 9;
+const NON_BUYER_PAUSE_HOURS = 6;
 /** Mehr als so viele Model-Nachrichten am Stück ohne Fan-Input gibt es nie. */
 const MODEL_STREAK_MAX = 2;
 
