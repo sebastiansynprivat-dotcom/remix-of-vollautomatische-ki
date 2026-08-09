@@ -135,6 +135,16 @@ Deno.serve(async (req) => {
           `kurz und setze "end": true.`
         : "";
 
+    // Charakter-Entwicklung über Sim-Tage.
+    const simDay = Number(body.simDay ?? 1);
+    const developmentNote = simDay <= 2
+      ? `\nENTWICKLUNG: Du kennst sie gerade erst (Tag ${simDay}). Sei höflich, zurückhaltend, frag nach Basics. Keine intimen Details, kein Vertrauen yet.`
+      : simDay <= 5
+        ? `\nENTWICKLUNG: Ihr schreibt seit ${simDay} Tagen. Du wirst vertrauter, erzählst mehr über dich, machst mal Witze, fängst an sie zu mögen.`
+        : simDay <= 10
+          ? `\nENTWICKLUNG: Ihr kennt euch seit ${simDay} Tagen. Du bist richtig vertraut, teilst persönliche Dinge, inside jokes, fühlst eine Verbindung. Du öffnest dich emotional.`
+          : `\nENTWICKLUNG: Tag ${simDay} — ihr habt eine echte Bindung aufgebaut. Du verhältst dich wie ein Stammfan, fragst nach ihrem Tag, machst Komplimente, bist loyal.`;
+
     // Anti-Wiederholung: die letzten eigenen Fan-Zeilen nicht erneut schicken.
     const avoidLines: string[] = history
       .filter(h => h.role === "fan")
@@ -146,9 +156,18 @@ Deno.serve(async (req) => {
       ? `\n\n=== NICHT WIEDERHOLEN — schon geschickt: ===\n${avoidLines.slice(0, 15).map(l => `· "${l.slice(0, 100)}"`).join("\n")}\n→ Sag etwas NEUES.\n`
       : "";
 
+    const topicsCovered: string[] = Array.isArray(body.topicsCovered)
+      ? body.topicsCovered.map((t: any) => String(t)).filter(Boolean)
+      : [];
+    const topicsBlock = topicsCovered.length > 0
+      ? `\n=== SCHON BESPROCHEN (nicht wieder fragen): ===\n${topicsCovered.slice(0, 12).map(t => `· ${t}`).join("\n")}\n→ Frag nach etwas NEUEM: sein Tag, seine Träume, seine Geheimnisse, seine Fantasien, sein Lieblingsessen, seine Kindheit, seine Arbeit, sein Auto, seine Musik, seine Sportmannschaft.\n`
+      : "";
+
     const userPrompt = `Bisheriger Verlauf (Turn ${turn}, Session-Zug ${sessionTurn}):
 ${transcript || "(noch leer — du bist der Fan und schreibst die ERSTE Nachricht)"}
 ${sessionNote}
+${developmentNote}
+${topicsBlock}
 ${avoidBlock}
 Antworte jetzt als FAN. Nutze send_messages.`;
 
