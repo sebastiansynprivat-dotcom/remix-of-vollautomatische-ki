@@ -44,7 +44,7 @@ export function AutoModeToggle({
   return (
     <div style={{ display: "inline-flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
       <span style={{
-        fontSize: 10, fontWeight: 700, letterSpacing: 0.8, textTransform: "uppercase",
+        fontSize: 11, fontWeight: 500, letterSpacing: 0,
         color: on ? "hsl(239 84% 74%)" : "hsl(43 96% 64%)",
         transition: "color 200ms cubic-bezier(0.34,1.56,0.64,1)",
         whiteSpace: "nowrap",
@@ -57,20 +57,20 @@ export function AutoModeToggle({
         onClick={toggle}
         disabled={isDisabled}
         style={{
-          width: 44, height: 24, borderRadius: 999, padding: 2,
+          width: 36, height: 20, borderRadius: 999, padding: 2,
           position: "relative", border: "none",
           cursor: isDisabled ? "not-allowed" : "pointer",
           opacity: isDisabled ? 0.5 : 1,
           background: on
             ? "linear-gradient(90deg, hsl(239 84% 62%), hsl(272 72% 60%))"
             : "#2A2A30",
-          boxShadow: on ? "0 0 0 1px hsla(239,84%,62%,0.35), 0 6px 18px hsla(239,84%,62%,0.25)" : "none",
+          boxShadow: "none",
           transition: "background 200ms cubic-bezier(0.34,1.56,0.64,1), box-shadow 200ms ease",
         }}
       >
         <span style={{
-          position: "absolute", top: 2, left: on ? 22 : 2,
-          width: 20, height: 20, borderRadius: 999, background: "#fff",
+          position: "absolute", top: 2, left: on ? 18 : 2,
+          width: 16, height: 16, borderRadius: 999, background: "#fff",
           boxShadow: "0 2px 6px hsla(0,0%,0%,0.35)",
           transition: "left 200ms cubic-bezier(0.34,1.56,0.64,1)",
         }} />

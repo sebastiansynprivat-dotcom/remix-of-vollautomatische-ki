@@ -5,29 +5,23 @@ export const MessageBubble = memo(function MessageBubble({ msg, isOwn }: { msg: 
   return (
     <div style={{
       display: "flex", justifyContent: isOwn ? "flex-end" : "flex-start",
-      padding: "0 24px",
+      padding: "0 16px",
     }}>
       <div className="bubble-in" style={{
         position: "relative",
-        maxWidth: "65%",
-        background: isOwn
-          ? "linear-gradient(160deg, hsla(38,40%,22%,0.85), hsla(38,30%,12%,0.95))"
-          : "linear-gradient(160deg, hsla(0,0%,100%,0.045), hsla(0,0%,100%,0.015))",
-        border: isOwn
-          ? "1px solid hsla(38,42%,58%,0.32)"
-          : "1px solid hsla(0,0%,100%,0.06)",
-        borderRadius: isOwn ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
-        padding: "10px 14px 8px",
+        maxWidth: "70%",
+        background: isOwn ? "var(--surface-2)" : "var(--surface-1)",
+        border: "1px solid var(--hairline)",
+        borderRadius: isOwn ? "8px 8px 2px 8px" : "8px 8px 8px 2px",
+        padding: 12,
         color: "var(--text-strong)",
-        fontSize: 14, lineHeight: 1.5,
-        boxShadow: isOwn
-          ? "0 8px 24px hsla(38,45%,30%,0.28), inset 0 1px 0 hsla(40,60%,75%,0.12)"
-          : "0 4px 14px hsla(0,0%,0%,0.28), inset 0 1px 0 hsla(0,0%,100%,0.04)",
+        fontSize: 13, lineHeight: 1.55,
+        boxShadow: "none",
       }}>
         {msg.content}
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 4,
-          marginTop: 4, fontSize: 10, color: "var(--text-subtle)",
+          marginTop: 6, fontSize: 11, color: "var(--text-subtle)",
         }}>
           <span className="tabular">
             {new Date(msg.createdAt).toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Berlin" })}

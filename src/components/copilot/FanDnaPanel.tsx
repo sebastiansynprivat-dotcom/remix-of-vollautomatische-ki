@@ -112,7 +112,7 @@ export function FanDnaPanel({
               display: "flex", justifyContent: "space-between",
             }}>
               <span>Letzter Tip</span>
-              <span className="tabular" style={{ color: "var(--gold)" }}>{formatCurrency(lastTip.amount)}</span>
+              <span className="tabular" style={{ color: "var(--money)" }}>{formatCurrency(lastTip.amount)}</span>
             </div>
           )}
         </Section>
@@ -248,13 +248,13 @@ function Stat({ label, value, accent }: { label: string; value: string; accent?:
   return (
     <div style={{
       padding: "8px 10px", borderRadius: 8,
-      background: accent ? "color-mix(in srgb, var(--gold) 8%, transparent)" : "hsla(0,0%,100%,0.025)",
-      border: `1px solid ${accent ? "color-mix(in srgb, var(--gold) 24%, transparent)" : "hsla(0,0%,100%,0.05)"}`,
+      background: "var(--surface-2)",
+      border: "1px solid var(--hairline)",
     }}>
-      <div style={{ fontSize: 9, letterSpacing: 0.6, textTransform: "uppercase", color: "var(--text-subtle)" }}>{label}</div>
+      <div style={{ fontSize: 10, letterSpacing: 0.06 + "em", textTransform: "uppercase", color: "var(--text-subtle)" }}>{label}</div>
       <div className="tabular" style={{
         marginTop: 2, fontSize: 13, fontWeight: 600,
-        color: accent ? "var(--gold)" : "var(--text-strong)",
+        color: accent ? "var(--money)" : "var(--text-strong)",
       }}>{value}</div>
     </div>
   );
@@ -288,7 +288,7 @@ function PillRow({ label, items, tone }: { label: string; items: string[]; tone:
   return (
     <div style={{ marginTop: 8 }}>
       <div style={{
-        fontSize: 9, letterSpacing: 0.6, textTransform: "uppercase",
+        fontSize: 10, letterSpacing: 0.06 + "em", textTransform: "uppercase",
         color: "var(--text-subtle)", fontWeight: 600, marginBottom: 4,
       }}>{label}</div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>

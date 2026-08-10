@@ -11,11 +11,11 @@ import {
 } from "@/lib/performanceStats";
 
 const CARD: React.CSSProperties = {
-  background: "#131316", borderRadius: 14, padding: 24, border: "1px solid #1E1E22",
+  background: "#131316", borderRadius: 8, padding: 16, border: "1px solid #1E1E22",
 };
 const LABEL: React.CSSProperties = {
-  fontSize: 10.5, textTransform: "uppercase", letterSpacing: "0.14em",
-  fontWeight: 600, color: "hsl(0 0% 45%)",
+  fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em",
+  fontWeight: 500, color: "#71717A",
 };
 
 /** Performance-Übersicht: Kennzahlen gesamt, Tabelle je Profil, Detail mit Charts. */
@@ -94,12 +94,12 @@ export function PerformanceDashboard() {
     <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 24 }}>
       <div>
         <h1 style={{ fontSize: 26, fontWeight: 600, color: "hsl(0 0% 95%)", margin: 0 }}>Performance</h1>
-        <div style={{ marginTop: 6, fontSize: 12.5, color: "hsl(0 0% 48%)" }}>
+        <div style={{ marginTop: 4, fontSize: 11, color: "#71717A" }}>
           {fromTelemetry ? "Daten aus Simulation" : "Tages-Statistik je Profil"}
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
         <SummaryCard
           label="Umsatz" subtitle="Heute" icon={<IconTrend />}
           value={<CountUp value={Math.round(totals.revenueCents / 100)} suffix="€" gold />}
@@ -163,7 +163,7 @@ export function PerformanceDashboard() {
                   border: `1px solid color-mix(in srgb, ${quoteColor(pct)} 30%, transparent)`,
                 }}>{pct.toFixed(1)}%</span>
               </span>
-              <span style={{ textAlign: "right", fontSize: 13, fontWeight: 600, fontVariantNumeric: "tabular-nums", color: "hsl(40 60% 68%)" }}>
+              <span style={{ textAlign: "right", fontSize: 13, fontWeight: 600, fontVariantNumeric: "tabular-nums", color: "#FBBF24" }}>
                 {eur(r.revenueCents)}
               </span>
               <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11, color: "hsl(0 0% 62%)" }}>
@@ -245,7 +245,7 @@ function SummaryCard({ label, subtitle, value, icon }: {
 
 function Big({ children, color }: { children: React.ReactNode; color: string }) {
   return (
-    <div style={{ fontSize: 30, fontWeight: 700, color, fontVariantNumeric: "tabular-nums", lineHeight: 1.1 }}>
+    <div style={{ fontSize: 24, fontWeight: 700, color, fontVariantNumeric: "tabular-nums", lineHeight: 1.1 }}>
       {children}
     </div>
   );
@@ -267,10 +267,9 @@ function CountUp({ value, suffix, gold }: { value: number; suffix?: string; gold
   }, [value]);
   return (
     <div style={{
-      fontSize: 30, fontWeight: 700, lineHeight: 1.1, fontVariantNumeric: "tabular-nums",
+      fontSize: 24, fontWeight: 700, lineHeight: 1.1, fontVariantNumeric: "tabular-nums",
       ...(gold ? {
-        background: "linear-gradient(100deg, hsl(44 70% 78%), hsl(36 55% 55%))",
-        WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent",
+        color: "#FBBF24",
       } : { color: "hsl(0 0% 96%)" }),
     }}>{n.toLocaleString("de-DE")}{suffix}</div>
   );
@@ -278,13 +277,13 @@ function CountUp({ value, suffix, gold }: { value: number; suffix?: string; gold
 
 function EmptyState() {
   return (
-    <div style={{ padding: "64px 24px", textAlign: "center" }}>
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="hsl(0 0% 35%)" strokeWidth="1.6"
-        style={{ margin: "0 auto 16px", display: "block" }}>
+    <div style={{ padding: "48px 24px", textAlign: "center" }}>
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#71717A" strokeWidth="1.6"
+        style={{ margin: "0 auto 12px", display: "block" }}>
         <path d="M3 3v18h18" /><rect x="7" y="10" width="3" height="7" /><rect x="13" y="6" width="3" height="11" />
       </svg>
-      <div style={{ fontSize: 15, fontWeight: 600, color: "hsl(0 0% 82%)" }}>Noch keine Daten</div>
-      <div style={{ marginTop: 6, fontSize: 12.5, color: "hsl(0 0% 48%)" }}>
+      <div style={{ fontSize: 13, fontWeight: 500, color: "#A1A1AA" }}>Noch keine Daten</div>
+      <div style={{ marginTop: 4, fontSize: 11, color: "#71717A" }}>
         Starte eine Simulation um Daten zu generieren
       </div>
     </div>
@@ -337,7 +336,7 @@ function ProfileDetail({ model, days, onBack }: {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
         {groups.map((g) => {
           const s = sumDays(g.data);
           const pct = successPct(s.offersMade, s.offersAccepted);
@@ -355,7 +354,7 @@ function ProfileDetail({ model, days, onBack }: {
         })}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <div style={CARD}>
           <div style={LABEL}>Umsatzverlauf</div>
           <div style={{ height: 220, marginTop: 16 }}>

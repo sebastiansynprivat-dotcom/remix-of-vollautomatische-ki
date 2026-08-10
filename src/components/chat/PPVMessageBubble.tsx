@@ -67,7 +67,7 @@ export function PPVMessageBubble({ convId, msg, isOwn }: { convId: string; msg: 
             <div style={{ color: "var(--text-strong)", fontSize: 13, fontWeight: 600 }}>
               {ppv.mediaCount} {ppv.mediaType === "photo" ? "Fotos" : "Video"}
             </div>
-            <div className="tabular" style={{ color: "var(--gold)", fontSize: 18, fontWeight: 700, marginTop: 2 }}>
+            <div className="tabular" style={{ color: "var(--money)", fontSize: 16, fontWeight: 600, marginTop: 2 }}>
               {ppv.price === 0 ? "Kostenlos" : formatCurrency(ppv.price, ppv.currency)}
             </div>
           </div>

@@ -92,7 +92,7 @@ export function MessageInput({ convId, fanId, asFan = false, noSuggestions = fal
   return (
     <div style={{
       position: "relative",
-      padding: "10px 16px calc(14px + var(--safe-bottom))",
+      padding: "12px calc(12px) calc(12px + var(--safe-bottom))",
     }}>
       {ppvOpen && (
         <PPVSendModal
@@ -115,7 +115,7 @@ export function MessageInput({ convId, fanId, asFan = false, noSuggestions = fal
       {isChain && (
         <div style={{
           display: "flex", alignItems: "center", gap: 8,
-          padding: "6px 12px", marginBottom: 6, borderRadius: 10,
+          padding: "4px 10px", marginBottom: 6, borderRadius: 999,
           background: "color-mix(in oklab, var(--gold) 8%, transparent)",
           border: "1px solid color-mix(in oklab, var(--gold) 28%, transparent)",
           fontSize: 11, color: "var(--gold)", fontWeight: 600, letterSpacing: 0.3,
@@ -135,9 +135,9 @@ export function MessageInput({ convId, fanId, asFan = false, noSuggestions = fal
         className="premium-card"
         style={{
           display: "flex", alignItems: "flex-end", gap: 6,
-          padding: "6px 6px 6px 8px",
-          borderRadius: 16,
-          background: "linear-gradient(180deg, hsla(0,0%,100%,0.03), hsla(0,0%,100%,0.015))",
+          padding: "4px 4px 4px 8px",
+          borderRadius: 8,
+          background: "var(--surface-1)",
           border: "1px solid hsla(0,0%,100%,0.07)",
           boxShadow: "0 8px 28px -18px rgba(0,0,0,0.55), inset 0 1px 0 hsla(0,0%,100%,0.04)",
           transition: "border-color 220ms var(--easing), box-shadow 220ms var(--easing)",
@@ -169,7 +169,7 @@ export function MessageInput({ convId, fanId, asFan = false, noSuggestions = fal
           rows={1}
           style={{
             flex: 1, resize: "none", padding: "10px 6px",
-            fontSize: 14, color: "var(--text-strong)",
+            fontSize: 13, color: "var(--text-strong)",
             lineHeight: 1.5, maxHeight: 144,
             background: "transparent", border: "none", outline: "none",
             fontFamily: "inherit",
@@ -180,7 +180,7 @@ export function MessageInput({ convId, fanId, asFan = false, noSuggestions = fal
           disabled={!hasText}
           className={`${hasText ? "gold-gradient-bg" : ""} ${pressed ? "send-press" : ""}`}
           style={{
-            width: 34, height: 34, borderRadius: 11,
+            width: 36, height: 36, borderRadius: 8,
             display: "grid", placeItems: "center",
             background: hasText ? undefined : "hsla(0,0%,100%,0.04)",
             color: hasText ? "var(--bg)" : "var(--text-subtle)",

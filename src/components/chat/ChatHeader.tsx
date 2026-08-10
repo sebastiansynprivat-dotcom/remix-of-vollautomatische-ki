@@ -25,15 +25,15 @@ export function ChatHeader({
   return (
     <header className="glass-strong" style={{
       display: "flex", alignItems: "center", gap: 10,
-      padding: "10px 20px",
-      borderBottom: "1px solid var(--hairline-gold)",
-      boxShadow: "0 1px 0 hsla(0,0%,100%,0.02), 0 6px 20px hsla(0,0%,0%,0.25)",
+      padding: "12px 16px",
+      borderBottom: "1px solid #1A1A1E",
+      boxShadow: "none",
       position: "relative",
       zIndex: 2,
     }}>
       {onBack && (
         <button onClick={onBack} aria-label="Zurück" style={{
-          width: 30, height: 30, borderRadius: 8, marginLeft: -6,
+          width: 28, height: 28, borderRadius: 6, marginLeft: -6,
           display: "grid", placeItems: "center", color: "var(--text-muted)",
           flexShrink: 0,
         }}>
@@ -47,31 +47,21 @@ export function ChatHeader({
         aria-label="Fan-Profil öffnen"
         style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "transparent", padding: 0, borderRadius: 999 }}
       >
-        <Avatar id={conv.participant.id} name={conv.participant.displayName} size={30} />
+        <Avatar id={conv.participant.id} name={conv.participant.displayName} size={28} />
       </button>
-      <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ color: "var(--text-strong)", fontSize: 14, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+      <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 8, overflow: "hidden" }}>
+        <span style={{ color: "var(--text-strong)", fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
           {conv.participant.displayName}
         </span>
         {conv.totalSpent > 0 && (
           <span className="tabular" style={{
-            fontSize: 10, fontWeight: 700, letterSpacing: 0.3,
-            color: "var(--gold)", padding: "1px 6px", borderRadius: 6,
-            background: "color-mix(in srgb, var(--gold) 12%, transparent)",
-            border: "1px solid color-mix(in srgb, var(--gold) 28%, transparent)",
+            fontSize: 11, fontWeight: 500, letterSpacing: 0, flexShrink: 0,
+            color: "var(--money)", padding: "1px 8px", borderRadius: 999,
+            background: "rgba(251,191,36,0.12)",
           }}>{formatCurrency(conv.totalSpent)}</span>
         )}
-        {conv.isAutopilot && (
-          <span title="Creator antwortet vollautomatisch" style={{
-            fontSize: 9, fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase",
-            padding: "2px 6px", borderRadius: 6,
-            color: "var(--gold)",
-            background: "hsla(40,45%,55%,0.12)",
-            border: "1px solid hsla(40,45%,55%,0.35)",
-          }}>Auto-Pilot</span>
-        )}
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
         {showTools && (
           <div style={{ marginRight: 8 }}>
             <AutoModeToggle
@@ -87,7 +77,7 @@ export function ChatHeader({
             title="Fan-Brain öffnen"
             aria-label="Fan-Brain öffnen"
             style={{
-              width: 30, height: 30, borderRadius: 8,
+              width: 28, height: 28, borderRadius: 6,
               color: brainOpen ? "var(--gold)" : "var(--text-muted)",
               background: brainOpen ? "hsla(40,45%,55%,0.10)" : "transparent",
               display: "grid", placeItems: "center",
@@ -104,7 +94,7 @@ export function ChatHeader({
             title="Copilot-Debug öffnen"
             aria-label="Copilot-Debug öffnen"
             style={{
-              width: 30, height: 30, borderRadius: 8,
+              width: 28, height: 28, borderRadius: 6,
               color: debugOpen ? "var(--gold)" : "var(--text-muted)",
               background: debugOpen ? "hsla(40,45%,55%,0.10)" : "transparent",
               display: "grid", placeItems: "center",
@@ -119,7 +109,7 @@ export function ChatHeader({
           onClick={onToggleSearch}
           title="Suchen"
           style={{
-            width: 30, height: 30, borderRadius: 8,
+            width: 28, height: 28, borderRadius: 6,
             color: searchActive ? "var(--gold)" : "var(--text-muted)",
             background: searchActive ? "hsla(40,45%,55%,0.10)" : "transparent",
             display: "grid", placeItems: "center",
@@ -130,7 +120,7 @@ export function ChatHeader({
         <button
           title="Info"
           style={{
-            width: 30, height: 30, borderRadius: 8,
+            width: 28, height: 28, borderRadius: 6,
             color: "var(--text-muted)", display: "grid", placeItems: "center",
             transition: "all 220ms var(--easing)",
           }}
@@ -146,7 +136,7 @@ export function ChatHeader({
               title="Mehr"
               aria-label="Mehr Optionen"
               style={{
-                width: 30, height: 30, borderRadius: 8,
+                width: 28, height: 28, borderRadius: 6,
                 color: menuOpen ? "var(--gold)" : "var(--text-muted)",
                 background: menuOpen ? "hsla(40,45%,55%,0.10)" : "transparent",
                 display: "grid", placeItems: "center",
@@ -181,7 +171,7 @@ export function ChatHeader({
                     style={{
                       width: "100%", textAlign: "left",
                       padding: "9px 12px", borderRadius: 7,
-                      fontSize: 12.5, fontWeight: 500,
+                      fontSize: 13, fontWeight: 500,
                       color: "hsl(0, 75%, 70%)",
                       background: "transparent",
                       display: "flex", alignItems: "center", gap: 10,

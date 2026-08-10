@@ -1,45 +1,50 @@
 /* Fonts loaded via <link> in route head() to avoid build-time URL fetch */
 
 :root {
-  --background:      hsl(240, 6%, 4%);
-  --surface-1:       hsl(240, 6%, 5%);
-  --surface-2:       hsla(0, 0%, 100%, 0.02);
-  --surface-3:       hsla(0, 0%, 100%, 0.04);
+  /* Surfaces — calm, near-black, no color cast */
+  --background:      #0A0A0B;
+  --surface-1:       #131316;
+  --surface-2:       #18181D;
+  --surface-3:       #1F1F25;
 
-  /* Champagne gold — slightly warmer & less yellow than pure gold */
-  --gold:            hsl(38, 42%, 58%);
-  --gold-light:      hsl(40, 48%, 70%);
-  --gold-dark:       hsl(36, 38%, 42%);
+  /* Accent — indigo → purple, used sparingly */
+  --gold:            #6366F1;
+  --gold-light:      #A855F7;
+  --gold-dark:       #4F46E5;
+  --accent-grad:     linear-gradient(135deg, #6366F1, #A855F7);
 
-  /* Secondary accent — deep velvet bordeaux/plum */
-  --accent-2:        hsl(345, 32%, 44%);
-  --accent-2-soft:   hsla(345, 35%, 50%, 0.14);
-  --accent-2-line:   hsla(345, 35%, 55%, 0.32);
+  /* Money only */
+  --money:           #FBBF24;
 
-  /* Glass surfaces */
-  --surface-glass:        hsla(40, 18%, 8%, 0.55);
-  --surface-glass-strong: hsla(40, 14%, 7%, 0.78);
-  --hairline:             hsla(0, 0%, 100%, 0.06);
-  --hairline-gold:        hsla(38, 45%, 60%, 0.22);
+  --accent-2:        #A855F7;
+  --accent-2-soft:   rgba(168, 85, 247, 0.14);
+  --accent-2-line:   rgba(168, 85, 247, 0.32);
 
-  /* Layered shadows for depth */
-  --shadow-soft:    0 1px 2px hsla(0,0%,0%,0.4), 0 4px 14px hsla(0,0%,0%,0.28);
-  --shadow-premium: 0 1px 0 hsla(0,0%,100%,0.05) inset, 0 8px 24px hsla(0,0%,0%,0.35), 0 24px 60px hsla(0,0%,0%,0.32);
-  --shadow-gold:    0 8px 28px hsla(38,45%,52%,0.22), 0 1px 0 hsla(40,60%,75%,0.18) inset;
+  /* Flat surfaces — borders do the work */
+  --surface-glass:        #131316;
+  --surface-glass-strong: #18181D;
+  --hairline:             #1E1E22;
+  --hairline-strong:      #2A2A30;
+  --hairline-gold:        rgba(99, 102, 241, 0.35);
 
-  --text-strong:     hsl(40, 12%, 96%);
-  --text:            hsl(40, 8%, 84%);
-  --text-muted:      hsl(40, 6%, 64%);
-  --text-subtle:     hsl(40, 6%, 46%);
+  --shadow-soft:    none;
+  --shadow-premium: none;
+  --shadow-gold:    0 8px 24px rgba(99, 102, 241, 0.20);
 
-  --status-success:  hsl(155, 60%, 50%);
-  --status-warning:  hsl(45, 85%, 55%);
-  --status-critical: hsl(0, 75%, 58%);
+  --text-strong:     #F4F4F5;
+  --text:            #A1A1AA;
+  --text-muted:      #A1A1AA;
+  --text-subtle:     #71717A;
+  --text-disabled:   #52525B;
 
-  --bronze:          hsl(25, 60%, 45%);
-  --silver:          hsl(0, 0%, 65%);
+  --status-success:  #10B981;
+  --status-warning:  #F59E0B;
+  --status-critical: #EF4444;
 
-  --radius:          0.75rem;
+  --bronze:          #B45309;
+  --silver:          #A1A1AA;
+
+  --radius:          0.5rem;
   --easing:          cubic-bezier(0.16, 1, 0.3, 1);
   --easing-ios:      cubic-bezier(0.32, 0.72, 0, 1);
   --kb:              0px;
@@ -64,10 +69,6 @@ html {
 
 body {
   background: var(--background);
-  background-image:
-    radial-gradient(ellipse 90% 50% at 50% -10%, hsla(40, 32%, 11%, 0.85) 0%, transparent 65%),
-    radial-gradient(ellipse 70% 50% at 12% 8%, hsla(38, 38%, 18%, 0.32) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 90% 100%, hsla(345, 30%, 14%, 0.28) 0%, transparent 60%);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   color: var(--text);
@@ -141,28 +142,6 @@ button, a {
   }
 }
 
-/* Ambient breathing glow — the tool "lives" */
-body::before {
-  content: "";
-  position: fixed; inset: -20%;
-  background:
-    radial-gradient(circle at 30% 20%, hsla(40, 45%, 55%, 0.06), transparent 40%),
-    radial-gradient(circle at 75% 80%, hsla(40, 35%, 45%, 0.05), transparent 45%);
-  pointer-events: none;
-  z-index: 0;
-  animation: ambientDrift 18s ease-in-out infinite alternate;
-}
-
-/* Subtle film grain — static, not animated, cheap to paint */
-body::after {
-  content: "";
-  position: fixed; inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.025;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.85  0 0 0 0 0.78  0 0 0 0 0.65  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-}
-
 #root { position: relative; z-index: 2; }
 
 .display {
@@ -177,36 +156,15 @@ ul { list-style: none; }
 a { color: inherit; text-decoration: none; }
 
 .premium-card {
-  background: linear-gradient(160deg, hsla(0,0%,100%,0.05) 0%, hsla(0,0%,0%,0.22) 100%);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  border: 1px solid hsla(0,0%,100%,0.07);
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius);
-  box-shadow:
-    inset 0 1px 0 hsla(0,0%,100%,0.08),
-    0 0 0 1px hsla(0,0%,0%,0.3),
-    0 4px 16px hsla(0,0%,0%,0.4),
-    0 16px 40px hsla(0,0%,0%,0.25);
   position: relative;
-  transition: all 320ms var(--easing);
-}
-.premium-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(180deg, hsla(0,0%,100%,0.05) 0%, transparent 40%);
-  pointer-events: none;
+  transition: border-color 150ms var(--easing), background-color 150ms var(--easing);
 }
 .premium-card.hoverable:hover {
-  transform: translateY(-2px);
-  border-color: hsla(0,0%,100%,0.12);
-  box-shadow:
-    inset 0 1px 0 hsla(0,0%,100%,0.08),
-    0 0 0 1px hsla(0,0%,0%,0.3),
-    0 4px 16px hsla(0,0%,0%,0.4),
-    0 16px 40px hsla(0,0%,0%,0.25),
-    0 0 32px hsla(40,45%,55%,0.12);
+  border-color: var(--hairline-strong);
+  background: var(--surface-2);
 }
 
 .tabular { font-variant-numeric: tabular-nums; }
@@ -279,11 +237,13 @@ a { color: inherit; text-decoration: none; }
 }
 
 .gold-text { color: var(--gold); }
+.num { font-variant-numeric: tabular-nums; }
 .gold-gradient-bg {
-  background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-light) 100%);
-  color: hsl(40, 30%, 8%);
-  font-weight: 600;
+  background: var(--accent-grad);
+  color: #F4F4F5;
+  font-weight: 500;
 }
+.money { color: var(--money); font-variant-numeric: tabular-nums; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
