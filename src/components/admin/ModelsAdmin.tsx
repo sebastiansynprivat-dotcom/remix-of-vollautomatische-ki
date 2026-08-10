@@ -3,6 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { ModelSetsManager } from "@/components/admin/ModelSetsManager";
 import { ModelCreateModal } from "@/components/admin/ModelCreateModal";
 import { PersonaEditor, PresetGrid } from "@/components/admin/PersonaEditor";
+import { StepConfigEditor } from "@/components/admin/StepConfigEditor";
+import type { FunnelStageConfig } from "@/lib/funnelConfig";
 import { DEFAULT_PERSONA, presetById, resolvePersonaConfig, type PersonaConfig } from "@/lib/personaPresets";
 import {
   type ChatBehavior, type EmojiFrequency, type MessageLength, type SalesTempo,
