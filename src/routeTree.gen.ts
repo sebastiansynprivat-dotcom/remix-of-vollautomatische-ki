@@ -21,6 +21,7 @@ import { Route as ApiPublicSimTickRouteImport } from './routes/api/public/sim-ti
 import { Route as ApiPublicSimTelemetryRouteImport } from './routes/api/public/sim-telemetry'
 import { Route as ApiPublicSimResetRouteImport } from './routes/api/public/sim-reset'
 import { Route as ApiPublicSimChatsRouteImport } from './routes/api/public/sim-chats'
+import { Route as ApiPublicExtractProfileRouteImport } from './routes/api/public/extract-profile'
 import { Route as ApiPublicAiProxyRouteImport } from './routes/api/public/ai-proxy'
 import { Route as AuthenticatedAdminAdminRouteImport } from './routes/_authenticated/_admin/admin'
 import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
@@ -90,6 +91,11 @@ const ApiPublicSimChatsRoute = ApiPublicSimChatsRouteImport.update({
   path: '/api/public/sim-chats',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicExtractProfileRoute = ApiPublicExtractProfileRouteImport.update({
+  id: '/api/public/extract-profile',
+  path: '/api/public/extract-profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAiProxyRoute = ApiPublicAiProxyRouteImport.update({
   id: '/api/public/ai-proxy',
   path: '/api/public/ai-proxy',
@@ -156,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin': typeof AuthenticatedAdminAdminRouteWithChildren
   '/api/public/ai-proxy': typeof ApiPublicAiProxyRoute
+  '/api/public/extract-profile': typeof ApiPublicExtractProfileRoute
   '/api/public/sim-chats': typeof ApiPublicSimChatsRoute
   '/api/public/sim-reset': typeof ApiPublicSimResetRoute
   '/api/public/sim-telemetry': typeof ApiPublicSimTelemetryRoute
@@ -177,6 +184,7 @@ export interface FileRoutesByTo {
   '/app': typeof AuthenticatedAppRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/public/ai-proxy': typeof ApiPublicAiProxyRoute
+  '/api/public/extract-profile': typeof ApiPublicExtractProfileRoute
   '/api/public/sim-chats': typeof ApiPublicSimChatsRoute
   '/api/public/sim-reset': typeof ApiPublicSimResetRoute
   '/api/public/sim-telemetry': typeof ApiPublicSimTelemetryRoute
@@ -202,6 +210,7 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/_authenticated/_admin/admin': typeof AuthenticatedAdminAdminRouteWithChildren
   '/api/public/ai-proxy': typeof ApiPublicAiProxyRoute
+  '/api/public/extract-profile': typeof ApiPublicExtractProfileRoute
   '/api/public/sim-chats': typeof ApiPublicSimChatsRoute
   '/api/public/sim-reset': typeof ApiPublicSimResetRoute
   '/api/public/sim-telemetry': typeof ApiPublicSimTelemetryRoute
@@ -226,6 +235,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin'
     | '/api/public/ai-proxy'
+    | '/api/public/extract-profile'
     | '/api/public/sim-chats'
     | '/api/public/sim-reset'
     | '/api/public/sim-telemetry'
@@ -247,6 +257,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/admin/login'
     | '/api/public/ai-proxy'
+    | '/api/public/extract-profile'
     | '/api/public/sim-chats'
     | '/api/public/sim-reset'
     | '/api/public/sim-telemetry'
@@ -271,6 +282,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/_authenticated/_admin/admin'
     | '/api/public/ai-proxy'
+    | '/api/public/extract-profile'
     | '/api/public/sim-chats'
     | '/api/public/sim-reset'
     | '/api/public/sim-telemetry'
@@ -293,6 +305,7 @@ export interface RootRouteChildren {
   VoiceSimRoute: typeof VoiceSimRoute
   AdminLoginRoute: typeof AdminLoginRoute
   ApiPublicAiProxyRoute: typeof ApiPublicAiProxyRoute
+  ApiPublicExtractProfileRoute: typeof ApiPublicExtractProfileRoute
   ApiPublicSimChatsRoute: typeof ApiPublicSimChatsRoute
   ApiPublicSimResetRoute: typeof ApiPublicSimResetRoute
   ApiPublicSimTelemetryRoute: typeof ApiPublicSimTelemetryRoute
@@ -386,6 +399,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/sim-chats'
       fullPath: '/api/public/sim-chats'
       preLoaderRoute: typeof ApiPublicSimChatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/extract-profile': {
+      id: '/api/public/extract-profile'
+      path: '/api/public/extract-profile'
+      fullPath: '/api/public/extract-profile'
+      preLoaderRoute: typeof ApiPublicExtractProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/ai-proxy': {
@@ -517,6 +537,7 @@ const rootRouteChildren: RootRouteChildren = {
   VoiceSimRoute: VoiceSimRoute,
   AdminLoginRoute: AdminLoginRoute,
   ApiPublicAiProxyRoute: ApiPublicAiProxyRoute,
+  ApiPublicExtractProfileRoute: ApiPublicExtractProfileRoute,
   ApiPublicSimChatsRoute: ApiPublicSimChatsRoute,
   ApiPublicSimResetRoute: ApiPublicSimResetRoute,
   ApiPublicSimTelemetryRoute: ApiPublicSimTelemetryRoute,
