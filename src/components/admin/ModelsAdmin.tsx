@@ -4,6 +4,7 @@ import { ModelSetsManager } from "@/components/admin/ModelSetsManager";
 import { ContentCloud } from "@/components/cloud/ContentCloud";
 import { ModelCreateModal } from "@/components/admin/ModelCreateModal";
 import { PlatformsTab } from "@/components/admin/PlatformsTab";
+import { SteckbriefUpload } from "@/components/admin/SteckbriefUpload";
 import { TemplateSection, syncTemplateChildren } from "@/components/admin/TemplateSection";
 import { toast } from "sonner";
 import { PersonaEditor, PresetGrid } from "@/components/admin/PersonaEditor";
@@ -346,6 +347,17 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
       <div style={{ maxWidth: 760 }} className="reveal-stagger">
         {tab === "profil" && (
           <>
+            <Panel title="Steckbrief-Upload">
+              <SteckbriefUpload
+                modelId={id}
+                onApply={(patch: Record<string, unknown>) => setM((prev: any) => {
+                  const next = { ...prev, ...patch };
+                  setInitial(next);
+                  return next;
+                })}
+              />
+            </Panel>
+
             <Panel title="Basisdaten">
               <Field label="Anzeigename" value={m.display_name} onChange={(v) => set("display_name", v)} />
               <Field label="Handle (ohne @)" value={m.handle} onChange={(v) => set("handle", v)} />
@@ -358,16 +370,53 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
                   <Field label="Alter" type="number" value={m.age ? String(m.age) : ""} onChange={(v) => set("age", v ? parseInt(v) : null)} />
                   <Field label="Geburtstag" type="date" value={m.birthday ?? ""} onChange={(v) => set("birthday", v || null)} />
                 </div>
-                <Field label="Wohnort" value={m.location ?? ""} onChange={(v) => set("location", v)} />
-                <Field label="Job" value={m.job ?? ""} onChange={(v) => set("job", v)} />
-                <Field label="Beziehungsstatus" value={m.relationship_status ?? ""} onChange={(v) => set("relationship_status", v)} />
+                <Field label="Wohnort" value={m.location ?? ""} onChange={(v) => set("location", v)} placeholder="Nicht angegeben" />
+                <Field label="Geburtsort" value={m.birthplace ?? ""} onChange={(v) => set("birthplace", v)} placeholder="Nicht angegeben" />
+                <Field label="Job" value={m.job ?? ""} onChange={(v) => set("job", v)} placeholder="Nicht angegeben" />
+                <Field label="Beziehungsstatus" value={m.relationship_status ?? ""} onChange={(v) => set("relationship_status", v)} placeholder="Nicht angegeben" />
                 <ArrayField label="Hobbys" value={m.hobbies} onChange={(v) => set("hobbies", v)} />
                 <ArrayField label="Sprachen" value={m.languages} onChange={(v) => set("languages", v)} />
                 <Field label="Fun Facts" value={m.fun_facts ?? ""} onChange={(v) => set("fun_facts", v)} multiline />
               </SubSection>
 
+              <SubSection title="Physische Merkmale">
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  <Field label="Größe (cm)" type="number" value={m.physical?.height_cm != null ? String(m.physical.height_cm) : ""}
+                    onChange={(v) => setJson(m, set, "physical", "height_cm", v ? parseInt(v) : null)} placeholder="Nicht angegeben" />
+                  <Field label="BH-Größe" value={m.physical?.bra_size ?? ""}
+                    onChange={(v) => setJson(m, set, "physical", "bra_size", v)} placeholder="Nicht angegeben" />
+                  <Field label="Schuhgröße" value={m.physical?.shoe_size ?? ""}
+                    onChange={(v) => setJson(m, set, "physical", "shoe_size", v)} placeholder="Nicht angegeben" />
+                  <Field label="Natürliche Haarfarbe" value={m.physical?.hair_color_natural ?? ""}
+                    onChange={(v) => setJson(m, set, "physical", "hair_color_natural", v)} placeholder="Nicht angegeben" />
+                </div>
+                <Field label="Gewicht" value={m.physical?.weight ?? ""}
+                  onChange={(v) => setJson(m, set, "physical", "weight", v)} placeholder="Nicht angegeben" />
+              </SubSection>
+
+              <SubSection title="Lieblings-Sachen">
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  <Field label="Lieblingsessen" value={m.favorites?.food ?? ""}
+                    onChange={(v) => setJson(m, set, "favorites", "food", v)} placeholder="Nicht angegeben" />
+                  <Field label="Lieblingsmusik" value={m.favorites?.music ?? ""}
+                    onChange={(v) => setJson(m, set, "favorites", "music", v)} placeholder="Nicht angegeben" />
+                  <Field label="Lieblingsfilm" value={m.favorites?.movie ?? ""}
+                    onChange={(v) => setJson(m, set, "favorites", "movie", v)} placeholder="Nicht angegeben" />
+                  <Field label="Lieblingsfarbe" value={m.favorites?.color ?? ""}
+                    onChange={(v) => setJson(m, set, "favorites", "color", v)} placeholder="Nicht angegeben" />
+                </div>
+              </SubSection>
+
+              <SubSection title="Content & Grenzen">
+                <Field label="Content-Infos" value={m.content_info ?? ""} onChange={(v) => set("content_info", v)} multiline placeholder="Nicht angegeben" />
+                <Field label="NO-GOS" value={m.no_gos ?? ""} onChange={(v) => set("no_gos", v)} multiline placeholder="Nicht angegeben" />
+                <Field label="Zusätzliche Infos" value={m.additional_info ?? ""} onChange={(v) => set("additional_info", v)} multiline placeholder="Nicht angegeben" />
+                <Field label="Traum" value={m.dream ?? ""} onChange={(v) => set("dream", v)} placeholder="Nicht angegeben" />
+              </SubSection>
+
               <TemplateSection profile={m} set={set} />
             </Panel>
+
 
             <Panel title="Gefahrenzone">
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
@@ -461,6 +510,16 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
       )}
     </div>
   );
+}
+
+function setJson(
+  m: any,
+  set: (k: string, v: any) => void,
+  field: "physical" | "favorites",
+  key: string,
+  value: unknown,
+) {
+  set(field, { ...(m[field] ?? {}), [key]: value === "" ? null : value });
 }
 
 function Panel({ title, children }: { title?: string; children: React.ReactNode }) {
