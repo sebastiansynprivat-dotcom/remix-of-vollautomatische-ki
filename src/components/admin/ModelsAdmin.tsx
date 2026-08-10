@@ -4,6 +4,7 @@ import { ModelSetsManager } from "@/components/admin/ModelSetsManager";
 import { ContentCloud } from "@/components/cloud/ContentCloud";
 import { ModelCreateModal } from "@/components/admin/ModelCreateModal";
 import { PlatformsTab } from "@/components/admin/PlatformsTab";
+import { SteckbriefUpload } from "@/components/admin/SteckbriefUpload";
 import { TemplateSection, syncTemplateChildren } from "@/components/admin/TemplateSection";
 import { toast } from "sonner";
 import { PersonaEditor, PresetGrid } from "@/components/admin/PersonaEditor";
@@ -349,7 +350,7 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
             <Panel title="Steckbrief-Upload">
               <SteckbriefUpload
                 modelId={id}
-                onApply={(patch) => setM((prev: any) => {
+                onApply={(patch: Record<string, unknown>) => setM((prev: any) => {
                   const next = { ...prev, ...patch };
                   setInitial(next);
                   return next;
@@ -509,6 +510,16 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
       )}
     </div>
   );
+}
+
+function setJson(
+  m: any,
+  set: (k: string, v: any) => void,
+  field: "physical" | "favorites",
+  key: string,
+  value: unknown,
+) {
+  set(field, { ...(m[field] ?? {}), [key]: value === "" ? null : value });
 }
 
 function Panel({ title, children }: { title?: string; children: React.ReactNode }) {
