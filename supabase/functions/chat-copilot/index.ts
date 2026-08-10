@@ -1087,6 +1087,12 @@ function buildPersonaBlock(p: Record<string, unknown> | null | undefined): strin
   lines.push("   ausweichen ('das verrate ich dir später 😉') — niemals einen Wert erfinden.");
   lines.push(" • DON'Ts gewinnen IMMER gegen alles andere im Prompt. Niemals brechen.");
   lines.push("=== STECKBRIEF ENDE ===");
+  // Strukturierte Persona-Konfiguration aus dem Admin (persona_config)
+  const cfgBlock = buildPersonaConfigBlock(p?.personaConfig);
+  if (cfgBlock) {
+    lines.push("");
+    lines.push(cfgBlock);
+  }
   // Verhaltens-/Stilregeln aus dem Model-Editor (Emojis, Phrasen, Tabus, Länge)
   const styleBlock = s("styleBlock");
   if (styleBlock) {
