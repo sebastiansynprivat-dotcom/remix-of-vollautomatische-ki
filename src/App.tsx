@@ -14,6 +14,8 @@ import { HotkeyLayer } from "@/components/chat/HotkeyLayer";
 import { useAssignedModels, useConversationsForModel, useMessagesLoader } from "@/lib/cloudChat";
 import { ContentCloud } from "@/components/cloud/ContentCloud";
 import { PerformanceDashboard } from "@/components/profile/PerformanceDashboard";
+import { MonitorDashboard } from "@/components/profile/MonitorDashboard";
+
 import { ModelsAdmin } from "@/components/admin/ModelsAdmin";
 
 export function App() {
@@ -76,7 +78,7 @@ function AppInner() {
   const handleSetView = (v: View) => {
     fx.haptic("tick");
     setView(v);
-    if (v.kind === "profile" || v.kind === "performance" || v.kind === "models") {
+    if (v.kind === "profile" || v.kind === "performance" || v.kind === "monitor" || v.kind === "models") {
       setShowChat(false);
       return;
     }
@@ -116,6 +118,10 @@ function AppInner() {
             {view.kind === "performance" ? (
               <div style={{ flex: 1, overflow: "auto", paddingBottom: "calc(64px + var(--safe-bottom) + 12px)" }}>
                 <PerformanceDashboard />
+              </div>
+            ) : view.kind === "monitor" ? (
+              <div style={{ flex: 1, overflow: "auto", padding: "16px 14px", paddingBottom: "calc(64px + var(--safe-bottom) + 12px)" }}>
+                <MonitorDashboard onOpenProfile={() => handleSetView({ kind: "models" })} />
               </div>
             ) : view.kind === "models" ? (
               <div style={{ flex: 1, overflow: "auto", padding: "16px 14px", paddingBottom: "calc(64px + var(--safe-bottom) + 12px)" }}>
@@ -222,7 +228,14 @@ function AppInner() {
             <PerformanceDashboard />
           </div>
         </div>
+      ) : view.kind === "monitor" ? (
+        <div style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: "28px 32px" }}>
+          <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+            <MonitorDashboard onOpenProfile={() => setView({ kind: "models" })} />
+          </div>
+        </div>
       ) : view.kind === "models" ? (
+
         <div style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: "28px 32px" }}>
           <div style={{ maxWidth: 960, margin: "0 auto" }}>
             <ModelsAdmin />

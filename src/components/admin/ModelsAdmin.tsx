@@ -3,6 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { ModelSetsManager } from "@/components/admin/ModelSetsManager";
 import { ContentCloud } from "@/components/cloud/ContentCloud";
 import { ModelCreateModal } from "@/components/admin/ModelCreateModal";
+import { PlatformsTab } from "@/components/admin/PlatformsTab";
+import { TemplateSection, syncTemplateChildren } from "@/components/admin/TemplateSection";
+import { toast } from "sonner";
 import { PersonaEditor, PresetGrid } from "@/components/admin/PersonaEditor";
 import { StepConfigEditor } from "@/components/admin/StepConfigEditor";
 import { LimitsEditor } from "@/components/admin/LimitsEditor";
@@ -225,7 +228,7 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
 
 
 
-type Tab = "profil" | "kommunikation" | "stufen" | "schutz" | "assets" | "sets";
+type Tab = "profil" | "kommunikation" | "stufen" | "schutz" | "platforms" | "assets" | "sets";
 
 function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
   const [tab, setTab] = useState<Tab>("profil");
@@ -268,6 +271,10 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
     if (error) { alert(error.message); return; }
     setInitial(m);
     setSavedAt(new Date().toLocaleTimeString("de-DE"));
+    if (m.is_template) {
+      const children = await syncTemplateChildren(id);
+      toast.success(`Template aktualisiert — ${children} Profile synchronisiert`);
+    }
   };
 
   const remove = async () => {
@@ -282,6 +289,7 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
     { id: "kommunikation", label: "Kommunikation" },
     { id: "stufen", label: "Stufen" },
     { id: "schutz", label: "Schutz" },
+    { id: "platforms", label: "Plattformen" },
     { id: "assets", label: "Assets" },
     { id: "sets", label: "Sets" },
   ];
@@ -357,6 +365,8 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
                 <ArrayField label="Sprachen" value={m.languages} onChange={(v) => set("languages", v)} />
                 <Field label="Fun Facts" value={m.fun_facts ?? ""} onChange={(v) => set("fun_facts", v)} multiline />
               </SubSection>
+
+              <TemplateSection profile={m} set={set} />
             </Panel>
 
             <Panel title="Gefahrenzone">
@@ -423,6 +433,8 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
             }}
           />
         )}
+
+        {tab === "platforms" && <PlatformsTab profileId={id} />}
 
         {tab === "assets" && (
           <div style={{ marginTop: 16 }}>
