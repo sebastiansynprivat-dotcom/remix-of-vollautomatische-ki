@@ -37,9 +37,9 @@ function goalFor(cfg: FunnelStageConfig, offerNo: number, prevIntensity: number)
   return `Nächste Stufe "${cfg.label}" (Intensität ${cfg.intensity}/5, vorher ${prevIntensity}/5). An die Reaktion auf das letzte Angebot anknüpfen, ein Schritt weiter — nicht mehr.`;
 }
 
-function stageFor(offerNo: number): FunnelStage {
-  const cfg = stageConfigFor(offerNo);
-  const prevIntensity = offerNo > 1 ? stageConfigFor(offerNo - 1).intensity : 0;
+function stageFor(offerNo: number, stepConfig?: FunnelStageConfig[] | null): FunnelStage {
+  const cfg = stageConfigFor(offerNo, stepConfig);
+  const prevIntensity = offerNo > 1 ? stageConfigFor(offerNo - 1, stepConfig).intensity : 0;
   return {
     offerNo,
     priceCents: Math.round(cfg.priceEur * 100),
