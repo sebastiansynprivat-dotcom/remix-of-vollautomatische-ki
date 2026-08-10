@@ -106,8 +106,8 @@ export function subscribeFunnelStages(cb: () => void): () => void {
  */
 const OVER_FAN_TURNS_MAX = 10;
 
-export function stageConfigFor(offerNo: number): FunnelStageConfig {
-  const list = getFunnelStages();
+export function stageConfigFor(offerNo: number, stepConfig?: FunnelStageConfig[] | null): FunnelStageConfig {
+  const list = stepConfig && stepConfig.length > 0 ? stepConfig : getFunnelStages();
   const i = offerNo - 1;
   if (i < list.length) return list[i];
   const last = list[list.length - 1];
