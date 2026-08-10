@@ -488,18 +488,23 @@ export type Database = {
       }
       model_profiles: {
         Row: {
+          additional_info: string | null
           age: number | null
           avatar_url: string | null
           bio: string | null
           birthday: string | null
+          birthplace: string | null
           chat_behavior: Json
+          content_info: string | null
           created_at: string
           created_by: string | null
           display_name: string
           donts: string[]
           dos: string[]
+          dream: string | null
           emoji_frequency: string
           emojis: string[]
+          favorites: Json | null
           fun_facts: string | null
           handle: string
           hobbies: string[]
@@ -510,10 +515,12 @@ export type Database = {
           languages: string[]
           limits: Json | null
           location: string | null
+          no_gos: string | null
           openers: string[]
           parent_template_id: string | null
           persona: string | null
           persona_config: Json | null
+          physical: Json | null
           relationship_status: string | null
           signature_phrases: string[]
           step_config: Json | null
@@ -524,18 +531,23 @@ export type Database = {
           writing_style: string | null
         }
         Insert: {
+          additional_info?: string | null
           age?: number | null
           avatar_url?: string | null
           bio?: string | null
           birthday?: string | null
+          birthplace?: string | null
           chat_behavior?: Json
+          content_info?: string | null
           created_at?: string
           created_by?: string | null
           display_name: string
           donts?: string[]
           dos?: string[]
+          dream?: string | null
           emoji_frequency?: string
           emojis?: string[]
+          favorites?: Json | null
           fun_facts?: string | null
           handle: string
           hobbies?: string[]
@@ -546,10 +558,12 @@ export type Database = {
           languages?: string[]
           limits?: Json | null
           location?: string | null
+          no_gos?: string | null
           openers?: string[]
           parent_template_id?: string | null
           persona?: string | null
           persona_config?: Json | null
+          physical?: Json | null
           relationship_status?: string | null
           signature_phrases?: string[]
           step_config?: Json | null
@@ -560,18 +574,23 @@ export type Database = {
           writing_style?: string | null
         }
         Update: {
+          additional_info?: string | null
           age?: number | null
           avatar_url?: string | null
           bio?: string | null
           birthday?: string | null
+          birthplace?: string | null
           chat_behavior?: Json
+          content_info?: string | null
           created_at?: string
           created_by?: string | null
           display_name?: string
           donts?: string[]
           dos?: string[]
+          dream?: string | null
           emoji_frequency?: string
           emojis?: string[]
+          favorites?: Json | null
           fun_facts?: string | null
           handle?: string
           hobbies?: string[]
@@ -582,10 +601,12 @@ export type Database = {
           languages?: string[]
           limits?: Json | null
           location?: string | null
+          no_gos?: string | null
           openers?: string[]
           parent_template_id?: string | null
           persona?: string | null
           persona_config?: Json | null
+          physical?: Json | null
           relationship_status?: string | null
           signature_phrases?: string[]
           step_config?: Json | null
