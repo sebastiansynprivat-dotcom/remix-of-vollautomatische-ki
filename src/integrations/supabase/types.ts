@@ -472,6 +472,7 @@ export type Database = {
           persona_config: Json | null
           relationship_status: string | null
           signature_phrases: string[]
+          step_config: Json | null
           subscribers: number
           taboo_words: string[]
           tone_of_voice: string | null
@@ -504,6 +505,7 @@ export type Database = {
           persona_config?: Json | null
           relationship_status?: string | null
           signature_phrases?: string[]
+          step_config?: Json | null
           subscribers?: number
           taboo_words?: string[]
           tone_of_voice?: string | null
@@ -536,6 +538,7 @@ export type Database = {
           persona_config?: Json | null
           relationship_status?: string | null
           signature_phrases?: string[]
+          step_config?: Json | null
           subscribers?: number
           taboo_words?: string[]
           tone_of_voice?: string | null

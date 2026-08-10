@@ -3,6 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { ModelSetsManager } from "@/components/admin/ModelSetsManager";
 import { ModelCreateModal } from "@/components/admin/ModelCreateModal";
 import { PersonaEditor, PresetGrid } from "@/components/admin/PersonaEditor";
+import { StepConfigEditor } from "@/components/admin/StepConfigEditor";
+import type { FunnelStageConfig } from "@/lib/funnelConfig";
 import { DEFAULT_PERSONA, presetById, resolvePersonaConfig, type PersonaConfig } from "@/lib/personaPresets";
 import {
   type ChatBehavior, type EmojiFrequency, type MessageLength, type SalesTempo,
@@ -163,7 +165,7 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
 
 
 
-type Tab = "basis" | "kommunikation" | "persona" | "personal" | "chat" | "sets";
+type Tab = "basis" | "kommunikation" | "persona" | "personal" | "chat" | "stufen" | "sets";
 
 function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
   const [tab, setTab] = useState<Tab>("basis");
@@ -221,6 +223,7 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
     { id: "persona", label: "Persona (Freitext)" },
     { id: "personal", label: "Persönlich" },
     { id: "chat", label: "Chat-Verhalten" },
+    { id: "stufen", label: "Stufen" },
     { id: "sets", label: "PPV Sets" },
   ];
 
@@ -329,6 +332,17 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
         )}
 
         {tab === "chat" && <ChatBehaviorTab m={m} set={set} />}
+
+        {tab === "stufen" && (
+          <StepConfigEditor
+            modelId={id}
+            value={m.step_config}
+            onSaved={(steps: FunnelStageConfig[] | null) => {
+              setM((prev: any) => ({ ...prev, step_config: steps }));
+              setInitial((prev: any) => ({ ...prev, step_config: steps }));
+            }}
+          />
+        )}
 
         {tab === "sets" && (
           <Panel title="PPV Sets">

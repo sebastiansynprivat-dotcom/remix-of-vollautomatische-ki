@@ -37,9 +37,9 @@ function goalFor(cfg: FunnelStageConfig, offerNo: number, prevIntensity: number)
   return `Nächste Stufe "${cfg.label}" (Intensität ${cfg.intensity}/5, vorher ${prevIntensity}/5). An die Reaktion auf das letzte Angebot anknüpfen, ein Schritt weiter — nicht mehr.`;
 }
 
-function stageFor(offerNo: number): FunnelStage {
-  const cfg = stageConfigFor(offerNo);
-  const prevIntensity = offerNo > 1 ? stageConfigFor(offerNo - 1).intensity : 0;
+function stageFor(offerNo: number, stepConfig?: FunnelStageConfig[] | null): FunnelStage {
+  const cfg = stageConfigFor(offerNo, stepConfig);
+  const prevIntensity = offerNo > 1 ? stageConfigFor(offerNo - 1, stepConfig).intensity : 0;
   return {
     offerNo,
     priceCents: Math.round(cfg.priceEur * 100),
@@ -154,6 +154,8 @@ export type FunnelOptions = {
    * Nachrichten geladen werden.
    */
   clearedBefore?: number;
+  /** Profil-eigene Stufen. Wenn gesetzt, ersetzen sie die globalen Standard-Stufen. */
+  stepConfig?: FunnelStageConfig[] | null;
 };
 
 
@@ -182,7 +184,7 @@ export function computeFunnelState(messages: readonly Message[], fanId: string, 
   const clearedCount = ppvs.filter(isCleared).length + Math.max(0, Math.round(opts.clearedBefore ?? 0));
   // Startstufe des Models: überspringt die ersten Stufen der Leiter.
   const startOffset = Math.max(0, Math.round(opts.startStage ?? 0));
-  const stageBase = stageFor(clearedCount + 1 + startOffset);
+  const stageBase = stageFor(clearedCount + 1 + startOffset, opts.stepConfig);
 
 
 
@@ -206,7 +208,7 @@ export function computeFunnelState(messages: readonly Message[], fanId: string, 
   const highStageDemote = stageBase.offerNo >= 7 ? 3 : stageBase.offerNo >= 5 ? 2 : 1;
   const demoteSteps = Math.floor(retryCount / DEMOTE_AFTER_RETRIES) * highStageDemote + coldDemote;
   const effectiveOfferNo = Math.max(minOfferNo, stageBase.offerNo - demoteSteps);
-  const stageNow = effectiveOfferNo === stageBase.offerNo ? stageBase : stageFor(effectiveOfferNo);
+  const stageNow = effectiveOfferNo === stageBase.offerNo ? stageBase : stageFor(effectiveOfferNo, opts.stepConfig);
 
   // Wiederholung darf ab 10 € moderat rabattiert werden — mehr Abschlüsse,
   // ohne den Wert der Stufe zu zerstören.
