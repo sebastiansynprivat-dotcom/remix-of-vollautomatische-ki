@@ -336,14 +336,41 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
       </div>
 
       <div style={{ maxWidth: 760 }} className="reveal-stagger">
-        {tab === "basis" && (
-          <Panel title="Basisdaten">
-            <Field label="Anzeigename" value={m.display_name} onChange={(v) => set("display_name", v)} />
-            <Field label="Handle (ohne @)" value={m.handle} onChange={(v) => set("handle", v)} />
-            <Field label="Avatar URL" value={m.avatar_url ?? ""} onChange={(v) => set("avatar_url", v)} />
-            <Field label="Bio" value={m.bio ?? ""} onChange={(v) => set("bio", v)} multiline />
-            <Field label="Subscriber" type="number" value={String(m.subscribers)} onChange={(v) => set("subscribers", parseInt(v) || 0)} />
-          </Panel>
+        {tab === "profil" && (
+          <>
+            <Panel title="Basisdaten">
+              <Field label="Anzeigename" value={m.display_name} onChange={(v) => set("display_name", v)} />
+              <Field label="Handle (ohne @)" value={m.handle} onChange={(v) => set("handle", v)} />
+              <Field label="Avatar URL" value={m.avatar_url ?? ""} onChange={(v) => set("avatar_url", v)} />
+              <Field label="Bio" value={m.bio ?? ""} onChange={(v) => set("bio", v)} multiline />
+              <Field label="Subscriber" type="number" value={String(m.subscribers)} onChange={(v) => set("subscribers", parseInt(v) || 0)} />
+
+              <SubSection title="Persönliche Daten">
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  <Field label="Alter" type="number" value={m.age ? String(m.age) : ""} onChange={(v) => set("age", v ? parseInt(v) : null)} />
+                  <Field label="Geburtstag" type="date" value={m.birthday ?? ""} onChange={(v) => set("birthday", v || null)} />
+                </div>
+                <Field label="Wohnort" value={m.location ?? ""} onChange={(v) => set("location", v)} />
+                <Field label="Job" value={m.job ?? ""} onChange={(v) => set("job", v)} />
+                <Field label="Beziehungsstatus" value={m.relationship_status ?? ""} onChange={(v) => set("relationship_status", v)} />
+                <ArrayField label="Hobbys" value={m.hobbies} onChange={(v) => set("hobbies", v)} />
+                <ArrayField label="Sprachen" value={m.languages} onChange={(v) => set("languages", v)} />
+                <Field label="Fun Facts" value={m.fun_facts ?? ""} onChange={(v) => set("fun_facts", v)} multiline />
+              </SubSection>
+            </Panel>
+
+            <Panel title="Gefahrenzone">
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: "var(--text-strong)", marginBottom: 6 }}>Model löschen</div>
+                  <div className="module-desc" style={{ margin: 0 }}>
+                    Entfernt das Profil dauerhaft. Zuweisungen werden mit gelöscht.
+                  </div>
+                </div>
+                <button onClick={remove} className="shex-btn shex-btn-danger">Endgültig löschen</button>
+              </div>
+            </Panel>
+          </>
         )}
 
         {tab === "kommunikation" && (
@@ -355,42 +382,25 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
                 if (preset) set("persona_config", { ...preset.persona });
               }}
             />
-            <div style={{ marginTop: 18 }}>
-              <PersonaEditor
-                persona={resolvePersonaConfig(m.persona_config) ?? DEFAULT_PERSONA}
-                modelName={m.display_name}
-                onChange={(p: PersonaConfig) => set("persona_config", p)}
-              />
-            </div>
+            <PersonaEditor
+              persona={resolvePersonaConfig(m.persona_config) ?? DEFAULT_PERSONA}
+              modelName={m.display_name}
+              onChange={(p: PersonaConfig) => set("persona_config", p)}
+            />
+
+            <SubSection title="Persona & Stil (Freitext)">
+              <Field label="Persona" value={m.persona ?? ""} onChange={(v) => set("persona", v)} multiline placeholder="z. B. flirty, mysteriös, fürsorglich…" />
+              <Field label="Tone of Voice" value={m.tone_of_voice ?? ""} onChange={(v) => set("tone_of_voice", v)} multiline />
+              <Field label="Schreibstil" value={m.writing_style ?? ""} onChange={(v) => set("writing_style", v)} multiline />
+              <ArrayField label="Do's" value={m.dos} onChange={(v) => set("dos", v)} />
+              <ArrayField label="Don'ts" value={m.donts} onChange={(v) => set("donts", v)} />
+            </SubSection>
+
+            <SubSection title="Chat-Verhalten">
+              <ChatBehaviorTab m={m} set={set} />
+            </SubSection>
           </Panel>
         )}
-
-        {tab === "persona" && (
-          <Panel title="Persona & Stil">
-            <Field label="Persona" value={m.persona ?? ""} onChange={(v) => set("persona", v)} multiline placeholder="z. B. flirty, mysteriös, fürsorglich…" />
-            <Field label="Tone of Voice" value={m.tone_of_voice ?? ""} onChange={(v) => set("tone_of_voice", v)} multiline />
-            <Field label="Schreibstil" value={m.writing_style ?? ""} onChange={(v) => set("writing_style", v)} multiline />
-            <ArrayField label="Do's" value={m.dos} onChange={(v) => set("dos", v)} />
-            <ArrayField label="Don'ts" value={m.donts} onChange={(v) => set("donts", v)} />
-          </Panel>
-        )}
-
-        {tab === "personal" && (
-          <Panel title="Persönliche Daten">
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-              <Field label="Alter" type="number" value={m.age ? String(m.age) : ""} onChange={(v) => set("age", v ? parseInt(v) : null)} />
-              <Field label="Geburtstag" type="date" value={m.birthday ?? ""} onChange={(v) => set("birthday", v || null)} />
-            </div>
-            <Field label="Wohnort" value={m.location ?? ""} onChange={(v) => set("location", v)} />
-            <Field label="Job" value={m.job ?? ""} onChange={(v) => set("job", v)} />
-            <Field label="Beziehungsstatus" value={m.relationship_status ?? ""} onChange={(v) => set("relationship_status", v)} />
-            <ArrayField label="Hobbys" value={m.hobbies} onChange={(v) => set("hobbies", v)} />
-            <ArrayField label="Sprachen" value={m.languages} onChange={(v) => set("languages", v)} />
-            <Field label="Fun Facts" value={m.fun_facts ?? ""} onChange={(v) => set("fun_facts", v)} multiline />
-          </Panel>
-        )}
-
-        {tab === "chat" && <ChatBehaviorTab m={m} set={set} />}
 
         {tab === "stufen" && (
           <StepConfigEditor
@@ -414,9 +424,9 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
           />
         )}
 
-        {tab === "cloud" && (
-          <div style={{ marginTop: 22 }}>
-            <ContentCloud model={m} returnConvId={null} onBackToChat={() => setTab("basis")} />
+        {tab === "assets" && (
+          <div style={{ marginTop: 16 }}>
+            <ContentCloud model={m} returnConvId={null} onBackToChat={() => setTab("profil")} />
           </div>
         )}
 
@@ -425,20 +435,6 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
             <ModelSetsManager modelId={id} />
           </Panel>
         )}
-
-        {tab === "basis" && (
-          <div style={{ marginTop: 22 }}>
-            <Panel title="Gefahrenzone">
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: "hsl(0 0% 88%)", marginBottom: 6 }}>Model löschen</div>
-                  <div className="module-desc" style={{ margin: 0 }}>
-                    Entfernt das Profil dauerhaft. Zuweisungen werden mit gelöscht.
-                  </div>
-                </div>
-                <button onClick={remove} className="shex-btn shex-btn-danger">Endgültig löschen</button>
-              </div>
-            </Panel>
           </div>
         )}
       </div>
