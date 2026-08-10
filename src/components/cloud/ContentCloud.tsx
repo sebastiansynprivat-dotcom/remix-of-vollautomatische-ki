@@ -160,6 +160,7 @@ export function ContentCloud({ model, returnConvId, onBackToChat }: Props) {
       </div>
 
       {/* Toolbar */}
+      {tab !== "assets" && (
       <div style={{
         padding: "12px 24px", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
       }}>
