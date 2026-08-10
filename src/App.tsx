@@ -14,6 +14,8 @@ import { HotkeyLayer } from "@/components/chat/HotkeyLayer";
 import { useAssignedModels, useConversationsForModel, useMessagesLoader } from "@/lib/cloudChat";
 import { ContentCloud } from "@/components/cloud/ContentCloud";
 import { PerformanceDashboard } from "@/components/profile/PerformanceDashboard";
+import { MonitorDashboard } from "@/components/profile/MonitorDashboard";
+
 import { ModelsAdmin } from "@/components/admin/ModelsAdmin";
 
 export function App() {
