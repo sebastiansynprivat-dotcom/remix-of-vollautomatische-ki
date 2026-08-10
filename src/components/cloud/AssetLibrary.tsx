@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   useModelAssets, useResolvedUrl, tierMeta, TIERS, CATEGORIES, CATEGORY_LABEL,
-  successRate, euro, deleteAsset, type ModelAsset,
+  successRate, euro, deleteAsset, placeholderAssets, type ModelAsset,
 } from "@/lib/modelAssets";
 import { AssetUploadModal } from "./AssetUploadModal";
 
@@ -12,8 +12,18 @@ type SortKey = "new" | "used" | "revenue" | "rate";
 
 const CARD_BG = "#131316";
 
-export function AssetLibrary({ modelId }: { modelId: string }) {
+/** Solange true, zeigt die Galerie zusätzlich Test-Assets unterhalb der echten Daten. */
+export const USE_PLACEHOLDERS = true;
+
+export function AssetLibrary({ modelId, profile }: {
+  modelId: string;
+  profile?: { displayName: string; avatarUrl?: string | null } | null;
+}) {
   const { items, loading, reload } = useModelAssets(modelId);
+  const placeholders = useMemo(
+    () => (USE_PLACEHOLDERS ? placeholderAssets(modelId) : []),
+    [modelId],
+  );
   const [view, setView] = useState<ViewMode>("gallery");
   const [search, setSearch] = useState("");
   const [tier, setTier] = useState<number | null>(null);
@@ -23,8 +33,8 @@ export function AssetLibrary({ modelId }: { modelId: string }) {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [detail, setDetail] = useState<ModelAsset | null>(null);
 
-  const filtered = useMemo(() => {
-    let r = items;
+  const applyFilters = useCallback((list: ModelAsset[]) => {
+    let r = list;
     const q = search.trim().toLowerCase();
     if (q) r = r.filter(a =>
       (a.description ?? "").toLowerCase().includes(q) ||
@@ -41,15 +51,41 @@ export function AssetLibrary({ modelId }: { modelId: string }) {
         return c > 5000;
       });
     }
-    const s = [...r];
-    if (sort === "used") s.sort((a, b) => b.use_count - a.use_count);
-    else if (sort === "revenue") s.sort((a, b) => b.revenue_total_cents - a.revenue_total_cents);
-    else if (sort === "rate") s.sort((a, b) => (successRate(b) ?? -1) - (successRate(a) ?? -1));
-    return s;
-  }, [items, search, tier, category, valueFilter, sort]);
+    const sorted = [...r];
+    if (sort === "used") sorted.sort((a, b) => b.use_count - a.use_count);
+    else if (sort === "revenue") sorted.sort((a, b) => b.revenue_total_cents - a.revenue_total_cents);
+    else if (sort === "rate") sorted.sort((a, b) => (successRate(b) ?? -1) - (successRate(a) ?? -1));
+    else sorted.sort((a, b) => b.created_at.localeCompare(a.created_at));
+    return sorted;
+  }, [search, tier, category, valueFilter, sort]);
+
+  const filtered = useMemo(() => applyFilters(items), [applyFilters, items]);
+  const filteredPh = useMemo(() => applyFilters(placeholders), [applyFilters, placeholders]);
+  const nothingToShow = filtered.length === 0 && filteredPh.length === 0;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: 0, flex: 1 }}>
+      {profile && (
+        <div style={{
+          display: "flex", alignItems: "center", gap: 10, padding: "4px 4px 10px",
+          borderBottom: "1px solid #1E1E22",
+        }}>
+          {profile.avatarUrl ? (
+            <img src={profile.avatarUrl} alt={profile.displayName} width={32} height={32}
+              style={{ width: 32, height: 32, borderRadius: "50%", objectFit: "cover", boxShadow: "0 0 0 1px #1E1E22" }} />
+          ) : (
+            <span style={{
+              width: 32, height: 32, borderRadius: "50%", background: CARD_BG,
+              display: "grid", placeItems: "center", fontSize: 12, color: "var(--text-subtle)",
+            }}>{profile.displayName.slice(0, 1).toUpperCase()}</span>
+          )}
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontSize: 13.5, fontWeight: 600, color: "var(--text-strong)" }}>{profile.displayName}</div>
+            <div style={{ fontSize: 11.5, color: "var(--text-subtle)" }}>Assets</div>
+          </div>
+        </div>
+      )}
+
       {/* Top bar */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 4px", flexWrap: "wrap" }}>
         <div style={{ display: "flex", background: CARD_BG, border: "1px solid #1E1E22", borderRadius: 10, padding: 3 }}>
@@ -114,19 +150,30 @@ export function AssetLibrary({ modelId }: { modelId: string }) {
       <div style={{ flex: 1, overflowY: "auto", padding: "14px 4px 24px" }}>
         {loading ? (
           <Centered text="Lade Assets…" />
-        ) : filtered.length === 0 ? (
+        ) : nothingToShow ? (
           <EmptyState hasAny={items.length > 0} onAdd={() => setUploadOpen(true)} />
-        ) : view === "gallery" ? (
-          <div style={{
-            display: "grid", gap: 16,
-            gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
-          }}>
-            {filtered.map(a => <AssetCard key={a.id} a={a} onOpen={() => setDetail(a)} />)}
-          </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {filtered.map(a => <AssetRow key={a.id} a={a} onOpen={() => setDetail(a)} />)}
-          </div>
+          <>
+            {filtered.length > 0 && (
+              view === "gallery"
+                ? <Grid>{filtered.map(a => <AssetCard key={a.id} a={a} onOpen={() => setDetail(a)} />)}</Grid>
+                : <Rows>{filtered.map(a => <AssetRow key={a.id} a={a} onOpen={() => setDetail(a)} />)}</Rows>
+            )}
+
+            {filteredPh.length > 0 && (
+              <>
+                <div style={{
+                  borderTop: "1px solid #1E1E22", marginTop: filtered.length > 0 ? 22 : 0,
+                  paddingTop: 10, marginBottom: 12,
+                  fontSize: 10.5, textTransform: "uppercase", letterSpacing: 1,
+                  color: "var(--text-subtle)",
+                }}>Test-Daten</div>
+                {view === "gallery"
+                  ? <Grid>{filteredPh.map(a => <AssetCard key={a.id} a={a} onOpen={() => setDetail(a)} />)}</Grid>
+                  : <Rows>{filteredPh.map(a => <AssetRow key={a.id} a={a} onOpen={() => setDetail(a)} />)}</Rows>}
+              </>
+            )}
+          </>
         )}
       </div>
 
@@ -174,6 +221,14 @@ function AssetCard({ a, onOpen }: { a: ModelAsset; onOpen: () => void }) {
           background: tm.gradient, color: "#fff", fontSize: 11, fontWeight: 700,
           display: "grid", placeItems: "center",
         }}>{a.tier}</span>
+
+        {a.is_placeholder && (
+          <span style={{
+            position: "absolute", top: 36, right: 8, fontSize: 10, fontWeight: 700,
+            padding: "2px 8px", borderRadius: 999, letterSpacing: 0.6,
+            background: "rgba(245,158,11,0.20)", color: "#fcd34d",
+          }}>TEST</span>
+        )}
 
         <span style={{
           position: "absolute", top: 8, right: 8, fontSize: 11, fontWeight: 700,
@@ -234,6 +289,12 @@ function AssetRow({ a, onOpen }: { a: ModelAsset; onOpen: () => void }) {
           {CATEGORY_LABEL[a.category] ?? a.category} · {a.use_count} Nutzungen · {a.response_count} Reaktionen
         </div>
       </div>
+      {a.is_placeholder && (
+        <span style={{
+          fontSize: 10, fontWeight: 700, letterSpacing: 0.6, padding: "2px 8px", borderRadius: 999,
+          background: "rgba(245,158,11,0.20)", color: "#fcd34d",
+        }}>TEST</span>
+      )}
       <span style={{ background: tm.gradient, color: "#fff", fontSize: 10.5, fontWeight: 600, padding: "3px 9px", borderRadius: 999 }}>{tm.label}</span>
       <span style={{ fontSize: 12, color: "var(--gold, #d4af6a)", fontVariantNumeric: "tabular-nums" }}>
         {a.value_cents > 0 ? euro(a.value_cents) : "Gratis"}
@@ -257,6 +318,7 @@ function AssetLightbox({ a, onClose, onDeleted }: { a: ModelAsset; onClose: () =
   }, [onClose]);
 
   const remove = async () => {
+    if (a.is_placeholder) { toast.info("Test-Asset – wird nicht in der Datenbank gespeichert."); return; }
     const { error } = await deleteAsset(a);
     if (error) toast.error("Löschen fehlgeschlagen: " + error.message);
     else { toast.success("Asset gelöscht"); onDeleted(); }
@@ -332,6 +394,18 @@ function AssetLightbox({ a, onClose, onDeleted }: { a: ModelAsset; onClose: () =
       </div>
     </div>
   );
+}
+
+function Grid({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))" }}>
+      {children}
+    </div>
+  );
+}
+
+function Rows({ children }: { children: React.ReactNode }) {
+  return <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>{children}</div>;
 }
 
 function Stat({ label, value, color }: { label: string; value: string; color?: string }) {
