@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ModelSetsManager } from "@/components/admin/ModelSetsManager";
+import { ModelCreateModal } from "@/components/admin/ModelCreateModal";
+import { PersonaEditor, PresetGrid } from "@/components/admin/PersonaEditor";
+import { DEFAULT_PERSONA, presetById, resolvePersonaConfig, type PersonaConfig } from "@/lib/personaPresets";
 import {
   type ChatBehavior, type EmojiFrequency, type MessageLength, type SalesTempo,
   DEFAULT_CHAT_BEHAVIOR, resolveChatBehavior, resolveEmojiFrequency,
@@ -148,83 +151,19 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
       </section>
 
       {showCreate && (
-        <CreateModal
+        <ModelCreateModal
           onClose={() => setShowCreate(false)}
-          onCreated={(id) => { setShowCreate(false); onEdit(id); }}
+          onCreated={(id: string) => { setShowCreate(false); onEdit(id); }}
         />
       )}
     </div>
   );
 }
 
-function CreateModal({ onClose, onCreated }: { onClose: () => void; onCreated: (id: string) => void }) {
-  const [displayName, setDisplayName] = useState("");
-  const [handle, setHandle] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState("");
-  const [subscribers, setSubscribers] = useState("0");
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!displayName.trim() || !handle.trim()) {
-      setErr("Anzeigename und Handle sind Pflicht.");
-      return;
-    }
-    setBusy(true); setErr(null);
-    const { data, error } = await supabase
-      .from("model_profiles")
-      .insert({
-        display_name: displayName.trim(),
-        handle: handle.trim().replace(/^@/, ""),
-        avatar_url: avatarUrl.trim() || null,
-        subscribers: parseInt(subscribers) || 0,
-      })
-      .select("id").single();
-    setBusy(false);
-    if (error) { setErr(error.message); return; }
-    onCreated(data.id);
-  };
 
-  return (
-    <div role="dialog" aria-modal="true" onClick={onClose} className="shex-modal-backdrop">
-      <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="shex-modal">
-        <div style={{ marginBottom: 18 }}>
-          <div className="shex-eyebrow" style={{ marginBottom: 14 }}>
-            <span className="shex-bar" />
-            ANLEGEN
-          </div>
-          <h2 className="shex-h1" style={{ fontSize: 36, margin: 0 }}>Neues Model.</h2>
-        </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <Field label="Anzeigename *" value={displayName} onChange={setDisplayName} placeholder="z. B. Mia" />
-          <Field label="Handle * (ohne @)" value={handle} onChange={setHandle} placeholder="mia_official" />
-          <Field label="Avatar URL" value={avatarUrl} onChange={setAvatarUrl} placeholder="https://…" />
-          <Field label="Subscriber" type="number" value={subscribers} onChange={setSubscribers} />
-        </div>
-
-        {err && (
-          <div style={{
-            marginTop: 14, padding: "10px 12px", borderRadius: 8, fontSize: 12,
-            background: "hsl(0 75% 58% / 0.08)",
-            border: "1px solid hsl(0 75% 58% / 0.3)",
-            color: "hsl(0 75% 75%)",
-          }}>{err}</div>
-        )}
-
-        <div style={{ display: "flex", gap: 10, marginTop: 22 }}>
-          <button type="button" onClick={onClose} className="shex-btn shex-btn-ghost" style={{ flex: 1 }}>Abbrechen</button>
-          <button type="submit" disabled={busy} className="shex-btn shex-btn-primary" style={{ flex: 1 }}>
-            {busy ? "Lege an…" : "Anlegen"}
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-}
-
-type Tab = "basis" | "persona" | "personal" | "chat" | "sets";
+type Tab = "basis" | "kommunikation" | "persona" | "personal" | "chat" | "sets";
 
 function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
   const [tab, setTab] = useState<Tab>("basis");
@@ -278,7 +217,8 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
 
   const tabs: { id: Tab; label: string }[] = [
     { id: "basis", label: "Basis" },
-    { id: "persona", label: "Persona" },
+    { id: "kommunikation", label: "Kommunikation" },
+    { id: "persona", label: "Persona (Freitext)" },
     { id: "personal", label: "Persönlich" },
     { id: "chat", label: "Chat-Verhalten" },
     { id: "sets", label: "PPV Sets" },
@@ -341,6 +281,25 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
             <Field label="Avatar URL" value={m.avatar_url ?? ""} onChange={(v) => set("avatar_url", v)} />
             <Field label="Bio" value={m.bio ?? ""} onChange={(v) => set("bio", v)} multiline />
             <Field label="Subscriber" type="number" value={String(m.subscribers)} onChange={(v) => set("subscribers", parseInt(v) || 0)} />
+          </Panel>
+        )}
+
+        {tab === "kommunikation" && (
+          <Panel title="Kommunikationsstil">
+            <PresetGrid
+              selected={resolvePersonaConfig(m.persona_config)?.preset_id}
+              onSelect={(pid: string) => {
+                const preset = presetById(pid);
+                if (preset) set("persona_config", { ...preset.persona });
+              }}
+            />
+            <div style={{ marginTop: 18 }}>
+              <PersonaEditor
+                persona={resolvePersonaConfig(m.persona_config) ?? DEFAULT_PERSONA}
+                modelName={m.display_name}
+                onChange={(p: PersonaConfig) => set("persona_config", p)}
+              />
+            </div>
           </Panel>
         )}
 
