@@ -1,0 +1,1 @@
+ALTER TABLE public.conversations ADD COLUMN IF NOT EXISTS autopilot_enabled boolean NOT NULL DEFAULT true;
