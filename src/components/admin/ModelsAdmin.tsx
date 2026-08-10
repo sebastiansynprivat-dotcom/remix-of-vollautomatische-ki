@@ -331,6 +331,17 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
 
         {tab === "chat" && <ChatBehaviorTab m={m} set={set} />}
 
+        {tab === "stufen" && (
+          <StepConfigEditor
+            modelId={id}
+            value={m.step_config}
+            onSaved={(steps) => {
+              setM((prev: any) => ({ ...prev, step_config: steps }));
+              setInitial((prev: any) => ({ ...prev, step_config: steps }));
+            }}
+          />
+        )}
+
         {tab === "sets" && (
           <Panel title="PPV Sets">
             <ModelSetsManager modelId={id} />
