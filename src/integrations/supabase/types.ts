@@ -310,6 +310,7 @@ export type Database = {
       }
       messages: {
         Row: {
+          asset_id: string | null
           content: string | null
           content_type: string
           conversation_id: string
@@ -326,6 +327,7 @@ export type Database = {
           tip_message: string | null
         }
         Insert: {
+          asset_id?: string | null
           content?: string | null
           content_type: string
           conversation_id: string
@@ -342,6 +344,7 @@ export type Database = {
           tip_message?: string | null
         }
         Update: {
+          asset_id?: string | null
           content?: string | null
           content_type?: string
           conversation_id?: string
@@ -359,10 +362,85 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "messages_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "model_assets"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "messages_conversation_id_fkey"
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      model_assets: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          media_type: string
+          model_id: string | null
+          note: string | null
+          response_count: number
+          revenue_total_cents: number
+          tags: string[]
+          thumbnail_url: string | null
+          tier: number
+          updated_at: string
+          url: string
+          use_count: number
+          value_cents: number
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          media_type?: string
+          model_id?: string | null
+          note?: string | null
+          response_count?: number
+          revenue_total_cents?: number
+          tags?: string[]
+          thumbnail_url?: string | null
+          tier?: number
+          updated_at?: string
+          url: string
+          use_count?: number
+          value_cents?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          media_type?: string
+          model_id?: string | null
+          note?: string | null
+          response_count?: number
+          revenue_total_cents?: number
+          tags?: string[]
+          thumbnail_url?: string | null
+          tier?: number
+          updated_at?: string
+          url?: string
+          use_count?: number
+          value_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "model_assets_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "model_profiles"
             referencedColumns: ["id"]
           },
         ]
