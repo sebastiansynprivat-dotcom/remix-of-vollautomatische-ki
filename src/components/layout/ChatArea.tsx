@@ -6,6 +6,7 @@ import { useSimRun, setSimState, type SimRun } from "@/lib/simRuns";
 import { useReadMarker } from "@/lib/readState";
 import { useChatUI } from "@/lib/chatUI";
 import { ChatHeader } from "@/components/chat/ChatHeader";
+import { ManualModeBanner } from "@/components/chat/AutoModeToggle";
 import { MessageBubble } from "@/components/chat/MessageBubble";
 import { PPVMessageBubble } from "@/components/chat/PPVMessageBubble";
 import { TipMessageBubble } from "@/components/chat/TipMessageBubble";
@@ -50,7 +51,12 @@ export function ChatArea({
   const isTyping = useTyping(convId);
   
 
-  const autopilot = !!conv?.isAutopilot;
+  const [autoModeOverride, setAutoModeOverride] = useState<boolean | null>(null);
+  useEffect(() => { setAutoModeOverride(null); }, [convId]);
+  const autoMode = autoModeOverride ?? (conv?.autopilotEnabled !== false);
+  const manualMode = !autoMode;
+
+  const autopilot = !!conv?.isAutopilot && autoMode;
   const autopilotPaused = useAutopilotPaused(convId);
 
   // Serverseitig laufende Simulation (läuft weiter, auch wenn die Seite zu ist)
@@ -203,7 +209,10 @@ export function ChatArea({
         onToggleSearch={() => setSearchOpen(s => !s)}
         searchActive={searchOpen}
         onAvatarTap={isMobile && conv.id !== AI_CONV_ID ? () => ui.toggleDna() : undefined}
+        autoMode={autoMode}
+        onAutoModeChange={(next) => setAutoModeOverride(next)}
       />
+      <ManualModeBanner visible={manualMode && conv.id !== AI_CONV_ID} />
       {conv.id === AI_CONV_ID && <TimeTravelPanel convId={conv.id} />}
       {conv.id !== AI_CONV_ID && <SalesIntelBar convId={conv.id} fanId={conv.participant.id} />}
       {searchOpen && (
@@ -281,7 +290,7 @@ export function ChatArea({
                 );
                 return <div key={msg.id}>{divider}{body}</div>;
               })}
-              {isTyping && <TypingIndicator name={conv.participant.displayName} />}
+              {isTyping && !manualMode && <TypingIndicator name={conv.participant.displayName} />}
             </div>
             {showJump && (
               <button
@@ -403,7 +412,7 @@ export function ChatArea({
               </button>
             </div>
           )}
-      <MessageInput convId={conv.id} fanId={conv.participant.id} asFan={autopilot} />
+      <MessageInput convId={conv.id} fanId={conv.participant.id} asFan={autopilot} noSuggestions={manualMode} />
       </main>
       {showDna && <FanDnaPanel conv={conv} onClose={() => ui.toggleDna()} />}
       {isMobile && (

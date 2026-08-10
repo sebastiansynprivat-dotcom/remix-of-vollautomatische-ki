@@ -4,15 +4,18 @@ import { formatCurrency, AI_CONV_ID, type Conversation } from "@/data/mockData";
 import { useChat } from "@/lib/chatStore";
 import { FanBrainDrawer } from "@/components/copilot/FanBrainDrawer";
 import { CopilotDebugPanel } from "@/components/copilot/CopilotDebugPanel";
+import { AutoModeToggle } from "@/components/chat/AutoModeToggle";
 
 export function ChatHeader({
-  conv, onBack, onToggleSearch, searchActive, onAvatarTap,
+  conv, onBack, onToggleSearch, searchActive, onAvatarTap, autoMode, onAutoModeChange,
 }: {
   conv: Conversation;
   onBack?: () => void;
   onToggleSearch?: () => void;
   searchActive?: boolean;
   onAvatarTap?: () => void;
+  autoMode?: boolean;
+  onAutoModeChange?: (next: boolean) => void;
 }) {
   const chat = useChat();
   const showTools = conv.id !== AI_CONV_ID;
@@ -69,6 +72,15 @@ export function ChatHeader({
         )}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+        {showTools && (
+          <div style={{ marginRight: 8 }}>
+            <AutoModeToggle
+              convId={conv.id}
+              enabled={autoMode !== false}
+              onChange={onAutoModeChange}
+            />
+          </div>
+        )}
         {showTools && (
           <button
             onClick={() => setBrainOpen(true)}
