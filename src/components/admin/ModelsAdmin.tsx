@@ -163,7 +163,7 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
 
 
 
-type Tab = "basis" | "kommunikation" | "persona" | "personal" | "chat" | "sets";
+type Tab = "basis" | "kommunikation" | "persona" | "personal" | "chat" | "stufen" | "sets";
 
 function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
   const [tab, setTab] = useState<Tab>("basis");
