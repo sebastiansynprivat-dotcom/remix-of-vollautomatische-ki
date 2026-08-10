@@ -324,9 +324,9 @@ export function ChatArea({
             <div style={{
               display: "flex", alignItems: "center", gap: 10,
               margin: "6px 16px 0", padding: "7px 12px", borderRadius: 10,
-              background: "color-mix(in oklab, var(--accent) 8%, transparent)",
-              border: "1px solid color-mix(in oklab, var(--accent) 26%, transparent)",
-              fontSize: 11, fontWeight: 600, letterSpacing: 0.3, color: "var(--accent)",
+              background: "var(--surface-1)",
+              border: "1px solid var(--hairline)",
+              fontSize: 11, fontWeight: 500, letterSpacing: 0, color: "var(--text)",
             }}>
               <span
                 style={{
@@ -369,9 +369,9 @@ export function ChatArea({
             <div style={{
               display: "flex", alignItems: "center", gap: 8,
               margin: "6px 16px 0", padding: "7px 12px", borderRadius: 10,
-              background: "color-mix(in oklab, var(--accent) 8%, transparent)",
-              border: "1px solid color-mix(in oklab, var(--accent) 26%, transparent)",
-              fontSize: 11, fontWeight: 600, letterSpacing: 0.3, color: "var(--accent)",
+              background: "var(--surface-1)",
+              border: "1px solid var(--hairline)",
+              fontSize: 11, fontWeight: 500, letterSpacing: 0, color: "var(--text)",
             }}>
               <span style={{ width: 8, height: 8, borderRadius: 999, background: "var(--status-success)" }} />
               Auto-Pilot aktiv — du schreibst als Fan, der Creator antwortet automatisch

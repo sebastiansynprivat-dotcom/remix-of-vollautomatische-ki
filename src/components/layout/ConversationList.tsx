@@ -23,8 +23,8 @@ function SimControlBar() {
       <div style={{
         display: "flex", alignItems: "center", gap: 8,
         padding: "8px 12px", borderRadius: 10,
-        background: "color-mix(in oklab, var(--accent) 7%, transparent)",
-        border: "1px solid color-mix(in oklab, var(--accent) 24%, transparent)",
+        background: "var(--surface-1)",
+        border: "1px solid var(--hairline)",
       }}>
         <span
           style={{
@@ -32,7 +32,7 @@ function SimControlBar() {
             background: anyRunning ? "var(--status-success)" : "var(--text-disabled)",
           }}
         />
-        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.3, color: "var(--accent)" }}>
+        <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: 0, color: "var(--text)" }}>
           Live-Simulation · {running}/{all.length} aktiv
         </span>
         <button
