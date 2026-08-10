@@ -406,7 +406,7 @@ function VoiceSimPage() {
       <header style={{ marginBottom: 18 }}>
         <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0, letterSpacing: -0.4 }}>Voice-Sim — Coaching-Voice Phasen-Test</h1>
         <p style={{ margin: "6px 0 0", opacity: 0.7, fontSize: 13 }}>
-          <b>Auto-Play:</b> Fan-Bot (Persona) chattet automatisch gegen <code style={{ color: "var(--gold, #d4af37)" }}>chat-copilot</code>. <b>Manual:</b> Step durch W → G → F → S → C → R mit fixen Mock-Verläufen.
+          <b>Auto-Play:</b> Fan-Bot (Persona) chattet automatisch gegen <code style={{ color: "var(--accent, #d4af37)" }}>chat-copilot</code>. <b>Manual:</b> Step durch W → G → F → S → C → R mit fixen Mock-Verläufen.
         </p>
       </header>
 
@@ -416,7 +416,7 @@ function VoiceSimPage() {
           <button key={m} onClick={() => setMode(m)} style={{
             padding: "8px 14px", fontSize: 12, fontWeight: 700, borderRadius: 8,
             border: "1px solid hsla(0,0%,100%,0.1)",
-            background: mode === m ? "var(--gold, #d4af37)" : "hsla(0,0%,100%,0.04)",
+            background: mode === m ? "var(--accent, #d4af37)" : "hsla(0,0%,100%,0.04)",
             color: mode === m ? "#1a1408" : "var(--text-strong, #eee)",
             cursor: "pointer", textTransform: "uppercase", letterSpacing: 0.6,
           }}>{m === "auto" ? "▶ Auto-Play" : "Manual W/G/F/S/C/R"}</button>
@@ -596,7 +596,7 @@ function cardStyle(): React.CSSProperties {
   };
 }
 function h2Style(): React.CSSProperties {
-  return { fontSize: 13, fontWeight: 700, margin: "0 0 10px", color: "var(--gold, #d4af37)", textTransform: "uppercase", letterSpacing: 0.6 };
+  return { fontSize: 13, fontWeight: 700, margin: "0 0 10px", color: "var(--accent, #d4af37)", textTransform: "uppercase", letterSpacing: 0.6 };
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -627,7 +627,7 @@ function ManualSection(props: {
               style={{
                 padding: "8px 12px", fontSize: 12, fontWeight: 600, borderRadius: 8,
                 border: "1px solid hsla(0,0%,100%,0.08)",
-                background: active ? "var(--gold, #d4af37)" : "hsla(0,0%,100%,0.03)",
+                background: active ? "var(--accent, #d4af37)" : "hsla(0,0%,100%,0.03)",
                 color: active ? "#1a1408" : "var(--text-strong, #eee)",
                 cursor: "pointer", display: "flex", gap: 6, alignItems: "center",
               }}
@@ -779,7 +779,7 @@ function card(): React.CSSProperties {
   };
 }
 function h2(): React.CSSProperties {
-  return { fontSize: 13, fontWeight: 700, margin: "0 0 8px", color: "var(--gold, #d4af37)", textTransform: "uppercase", letterSpacing: 0.6 };
+  return { fontSize: 13, fontWeight: 700, margin: "0 0 8px", color: "var(--accent, #d4af37)", textTransform: "uppercase", letterSpacing: 0.6 };
 }
 function h3(): React.CSSProperties {
   return { fontSize: 12, fontWeight: 700, margin: "14px 0 8px", opacity: 0.8, textTransform: "uppercase", letterSpacing: 0.5 };
@@ -795,7 +795,7 @@ function KV({ k, v }: { k: string; v: string }) {
 function btnPrimary(disabled: boolean): React.CSSProperties {
   return {
     padding: "8px 14px", fontSize: 12, fontWeight: 700, borderRadius: 8, border: "none",
-    background: "var(--gold, #d4af37)", color: "#1a1408",
+    background: "var(--accent, #d4af37)", color: "#1a1408",
     cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.5 : 1,
   };
 }

@@ -13,7 +13,7 @@ export function Avatar({ id, name, size = 40, ring = false }: Props) {
         color: "var(--text-strong)", fontWeight: 600, fontSize: size * 0.38,
         flexShrink: 0,
         boxShadow: ring
-          ? "0 0 0 2px var(--gold), 0 0 0 4px var(--background), 0 0 24px hsla(40,45%,55%,0.3)"
+          ? "0 0 0 2px var(--accent), 0 0 0 4px var(--background), 0 0 24px hsla(40,45%,55%,0.3)"
           : "inset 0 0 0 1px hsla(0,0%,100%,0.08)",
       }}
       aria-label={name}

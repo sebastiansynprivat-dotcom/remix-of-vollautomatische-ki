@@ -34,7 +34,7 @@ export function PPVMessageBubble({ convId, msg, isOwn }: { convId: string; msg: 
               display: "grid", placeItems: "center",
               backdropFilter: "blur(8px)",
             }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2">
                 <rect x="3" y="11" width="18" height="11" rx="2"/>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
               </svg>
@@ -84,7 +84,7 @@ export function PPVMessageBubble({ convId, msg, isOwn }: { convId: string; msg: 
               )}
               <button
                 onClick={() => chat.purchasePPV(convId, msg.id)}
-                className="gold-gradient-bg"
+                className="accent-gradient-bg"
                 style={{
                   padding: "10px 18px", borderRadius: 10, fontSize: 13, fontWeight: 700,
                   transition: "transform 160ms var(--easing)",

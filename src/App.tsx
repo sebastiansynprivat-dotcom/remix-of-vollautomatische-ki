@@ -288,7 +288,7 @@ function ProfileTab({
           }}
         />
         {unread > 0 && (
-          <span className="gold-gradient-bg tabular" style={{
+          <span className="accent-gradient-bg tabular" style={{
             position: "absolute", top: -3, right: -6,
             minWidth: 16, height: 16, padding: "0 4px", borderRadius: 8,
             fontSize: 9, fontWeight: 700,
@@ -299,7 +299,7 @@ function ProfileTab({
       </div>
       <span style={{
         fontSize: 10, fontWeight: 600,
-        color: active ? "var(--gold)" : "var(--text-subtle)",
+        color: active ? "var(--accent)" : "var(--text-subtle)",
         maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
       }}>{label}</span>
     </button>
@@ -314,7 +314,7 @@ function IconTab({
       flex: 1, minWidth: 0,
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3,
       padding: "8px 4px",
-      color: active ? "var(--gold)" : "var(--text-subtle)",
+      color: active ? "var(--accent)" : "var(--text-subtle)",
       transition: "all 220ms var(--easing)",
       position: "relative",
     }}>
@@ -325,7 +325,7 @@ function IconTab({
             position: "absolute", top: -4, right: -10,
             minWidth: 16, height: 16, padding: "0 4px", borderRadius: 8,
             fontSize: 9, fontWeight: 700,
-            color: "var(--gold)", background: "hsla(40,45%,55%,0.18)",
+            color: "var(--accent)", background: "hsla(40,45%,55%,0.18)",
             border: "1px solid hsla(40,45%,55%,0.4)",
             display: "grid", placeItems: "center",
           }}>{unread}</span>

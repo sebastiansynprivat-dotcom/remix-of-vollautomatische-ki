@@ -17,7 +17,7 @@ export function TipMessageBubble({ msg, senderName }: { msg: Message; senderName
           position: "absolute", inset: 0,
           background: "linear-gradient(110deg, transparent 30%, hsla(345,55%,70%,0.18) 50%, transparent 70%)",
           backgroundSize: "200% 100%",
-          animation: "goldShimmer 3s ease-in-out infinite",
+          animation: "accentShimmer 3s ease-in-out infinite",
           pointerEvents: "none",
         }} />
         <div style={{ position: "relative" }}>

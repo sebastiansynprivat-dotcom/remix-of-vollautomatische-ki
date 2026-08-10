@@ -12,7 +12,7 @@ const cell: React.CSSProperties = {
 const head: React.CSSProperties = {
   ...cell,
   background: "hsla(40,30%,18%,0.3)",
-  color: "var(--gold)",
+  color: "var(--accent)",
   fontWeight: 700,
 };
 
@@ -31,7 +31,7 @@ function Metric({ label, value }: { label: string; value: string | number }) {
       padding: "12px 14px",
     }}>
       <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 4 }}>{label}</div>
-      <div style={{ fontSize: 20, fontWeight: 700, color: "var(--gold)", letterSpacing: -0.4 }}>{value}</div>
+      <div style={{ fontSize: 20, fontWeight: 700, color: "var(--accent)", letterSpacing: -0.4 }}>{value}</div>
     </div>
   );
 }
@@ -67,7 +67,7 @@ export function TelemetriePanel() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <h2 style={{ fontSize: 17, fontWeight: 700, color: "var(--gold)", margin: 0 }}>Sim-Telemetrie</h2>
+        <h2 style={{ fontSize: 17, fontWeight: 700, color: "var(--accent)", margin: 0 }}>Sim-Telemetrie</h2>
         <button
           onClick={() => void load()}
           style={{

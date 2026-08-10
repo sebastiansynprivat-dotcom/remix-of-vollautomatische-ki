@@ -35,7 +35,7 @@ export function Sidebar({ view, setView, models }: Props) {
     }}>
       {/* Workspace logo */}
       <div style={{ padding: "6px 8px 14px", display: "flex", alignItems: "center", gap: 8 }}>
-        <div className="gold-gradient-bg" style={{
+        <div className="accent-gradient-bg" style={{
           width: 20, height: 20, borderRadius: 6,
           display: "grid", placeItems: "center",
           fontWeight: 600, fontSize: 10, letterSpacing: -0.2,
@@ -102,7 +102,7 @@ export function Sidebar({ view, setView, models }: Props) {
         background: "var(--surface-1)",
         display: "flex", alignItems: "center", gap: 8,
       }}>
-        <div className="gold-gradient-bg" style={{
+        <div className="accent-gradient-bg" style={{
           width: 24, height: 24, borderRadius: "50%", flexShrink: 0,
           display: "grid", placeItems: "center", fontSize: 10, fontWeight: 600,
         }}>{initials}</div>
@@ -189,7 +189,7 @@ function ProfileNavItem({
         }}>{handle}</div>
       </div>
       {unread > 0 && (
-        <span className="gold-gradient-bg tabular-nums" style={{
+        <span className="accent-gradient-bg tabular-nums" style={{
           minWidth: 18, height: 18, padding: "0 6px", borderRadius: 999,
           fontSize: 11, fontWeight: 500,
           display: "grid", placeItems: "center",

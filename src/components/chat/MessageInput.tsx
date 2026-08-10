@@ -116,9 +116,9 @@ export function MessageInput({ convId, fanId, asFan = false, noSuggestions = fal
         <div style={{
           display: "flex", alignItems: "center", gap: 8,
           padding: "4px 10px", marginBottom: 6, borderRadius: 999,
-          background: "color-mix(in oklab, var(--gold) 8%, transparent)",
-          border: "1px solid color-mix(in oklab, var(--gold) 28%, transparent)",
-          fontSize: 11, color: "var(--gold)", fontWeight: 600, letterSpacing: 0.3,
+          background: "color-mix(in oklab, var(--accent) 8%, transparent)",
+          border: "1px solid color-mix(in oklab, var(--accent) 28%, transparent)",
+          fontSize: 11, color: "var(--accent)", fontWeight: 600, letterSpacing: 0.3,
         }}>
           <span style={{ fontSize: 13 }}>📨</span>
           <span>Wird als 2 Nachrichten nacheinander gesendet</span>
@@ -152,7 +152,7 @@ export function MessageInput({ convId, fanId, asFan = false, noSuggestions = fal
                 <path d="m21 15-5-5L5 21"/>
               </svg>
             </button>
-            <button onClick={() => setPpvOpen(true)} title="PPV mit Preis senden" style={{ ...iconBtn, color: "var(--gold)" }}>
+            <button onClick={() => setPpvOpen(true)} title="PPV mit Preis senden" style={{ ...iconBtn, color: "var(--accent)" }}>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 8v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3h2.5l1.5-2h4l1.5 2H18a3 3 0 0 1 3 3z"/>
                 <path d="M12 11.5v4M10 13.5h4"/>
@@ -178,7 +178,7 @@ export function MessageInput({ convId, fanId, asFan = false, noSuggestions = fal
         <button
           onClick={send}
           disabled={!hasText}
-          className={`${hasText ? "gold-gradient-bg" : ""} ${pressed ? "send-press" : ""}`}
+          className={`${hasText ? "accent-gradient-bg" : ""} ${pressed ? "send-press" : ""}`}
           style={{
             width: 36, height: 36, borderRadius: 8,
             display: "grid", placeItems: "center",
@@ -213,10 +213,10 @@ function ChainStatusBanner({ convId }: { convId: string }) {
       display: "flex", alignItems: "center", gap: 10,
       padding: "8px 12px 10px", marginBottom: 6, borderRadius: 10,
       background: isFirst
-        ? "color-mix(in oklab, var(--gold) 10%, transparent)"
+        ? "color-mix(in oklab, var(--accent) 10%, transparent)"
         : "color-mix(in oklab, #4ade80 12%, transparent)",
-      border: `1px solid ${isFirst ? "color-mix(in oklab, var(--gold) 32%, transparent)" : "color-mix(in oklab, #4ade80 35%, transparent)"}`,
-      fontSize: 11.5, color: isFirst ? "var(--gold)" : "#86efac",
+      border: `1px solid ${isFirst ? "color-mix(in oklab, var(--accent) 32%, transparent)" : "color-mix(in oklab, #4ade80 35%, transparent)"}`,
+      fontSize: 11.5, color: isFirst ? "var(--accent)" : "#86efac",
       fontWeight: 600, letterSpacing: 0.3,
       overflow: "hidden",
       transition: "all 200ms var(--easing)",

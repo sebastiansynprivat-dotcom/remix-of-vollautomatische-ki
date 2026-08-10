@@ -61,7 +61,7 @@ export function SalesIntelBar({ convId }: { convId: string; fanId?: string }) {
           <span className="tabular">{brief ? `${brief.buyIntent.score}%` : ""}</span>
         </div>
         <div style={{ height: 3, borderRadius: 999, background: "hsla(0,0%,100%,0.06)", overflow: "hidden" }}>
-          <div className="gold-gradient-bg" style={{
+          <div className="accent-gradient-bg" style={{
             height: "100%", width: `${brief?.buyIntent.score ?? 0}%`,
             transition: "width 600ms var(--easing)",
             boxShadow: brief && brief.buyIntent.score > 70 ? "0 0 10px hsla(40,55%,55%,0.6)" : undefined,
@@ -73,8 +73,8 @@ export function SalesIntelBar({ convId }: { convId: string; fanId?: string }) {
       {brief && (
         <div title={brief.nextPriceStep.reason} style={{
           ...chipBase, gap: 6,
-          border: "1px solid var(--gold-dark)",
-          color: "var(--gold)",
+          border: "1px solid var(--accent-dark)",
+          color: "var(--accent)",
           background: "hsla(40,55%,55%,0.06)",
           fontWeight: 600,
         }}>

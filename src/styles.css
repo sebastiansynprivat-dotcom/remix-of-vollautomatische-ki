@@ -32,7 +32,7 @@
 .shex-divider { width: 1px; height: 12px; background: var(--hairline-strong); }
 .shex-time { font-size: 12px; letter-spacing: 0.02em; color: var(--text-strong); font-weight: 500; font-variant-numeric: tabular-nums; }
 .shex-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
-.shex-dot-live { background: var(--gold); }
+.shex-dot-live { background: var(--accent); }
 .shex-dot-stable { background: var(--status-success); }
 .shex-dot-muted { background: var(--text-disabled); }
 
@@ -162,7 +162,7 @@
   transition: border-color 150ms var(--easing);
 }
 .shex-input::placeholder, .shex-textarea::placeholder { color: var(--text-disabled); }
-.shex-input:focus, .shex-textarea:focus, .shex-select:focus { border-color: var(--gold); }
+.shex-input:focus, .shex-textarea:focus, .shex-select:focus { border-color: var(--accent); }
 .shex-textarea { resize: vertical; min-height: 84px; height: auto; padding: 8px 12px; line-height: 1.55; }
 
 /* Buttons — compact */
@@ -196,7 +196,7 @@
   border-color: var(--hairline-strong);
   color: var(--text);
 }
-.shex-btn-outline:hover:not(:disabled) { color: var(--text-strong); border-color: var(--gold); }
+.shex-btn-outline:hover:not(:disabled) { color: var(--text-strong); border-color: var(--accent); }
 .shex-btn-danger {
   background: transparent;
   border-color: var(--hairline);

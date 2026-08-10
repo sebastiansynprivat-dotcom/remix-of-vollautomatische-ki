@@ -75,7 +75,7 @@ function AdminLayout() {
           height: "calc(100dvh - 32px)",
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "4px 8px 20px" }}>
-            <div className="gold-gradient-bg" style={{
+            <div className="accent-gradient-bg" style={{
               width: 42, height: 42, borderRadius: 14,
               display: "grid", placeItems: "center", fontWeight: 800, color: "#1a1208",
               boxShadow: "0 10px 28px rgba(212,175,80,0.4), inset 0 1px 0 rgba(255,255,255,0.55)",

@@ -8,9 +8,9 @@
   --surface-3:       #1F1F25;
 
   /* Accent — indigo → purple, used sparingly */
-  --gold:            #6366F1;
-  --gold-light:      #A855F7;
-  --gold-dark:       #4F46E5;
+  --accent:            #6366F1;
+  --accent-light:      #A855F7;
+  --accent-dark:       #4F46E5;
   --accent-grad:     linear-gradient(135deg, #6366F1, #A855F7);
 
   /* Money only */
@@ -25,11 +25,11 @@
   --surface-glass-strong: #18181D;
   --hairline:             #1E1E22;
   --hairline-strong:      #2A2A30;
-  --hairline-gold:        rgba(99, 102, 241, 0.35);
+  --hairline-accent:        rgba(99, 102, 241, 0.35);
 
   --shadow-soft:    none;
   --shadow-premium: none;
-  --shadow-gold:    0 8px 24px rgba(99, 102, 241, 0.20);
+  --shadow-accent:    0 8px 24px rgba(99, 102, 241, 0.20);
 
   --text-strong:     #F4F4F5;
   --text:            #A1A1AA;
@@ -104,7 +104,7 @@ body {
 
 /* Consistent focus rings */
 button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-visible {
-  outline: 2px solid var(--gold);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 6px;
 }
@@ -180,7 +180,7 @@ a { color: inherit; text-decoration: none; }
   50%      { opacity: 0.7; box-shadow: 0 0 0 4px transparent; }
 }
 
-@keyframes goldShimmer {
+@keyframes accentShimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
@@ -196,8 +196,8 @@ a { color: inherit; text-decoration: none; }
 }
 
 @keyframes haloBreathe {
-  0%, 100% { box-shadow: 0 0 0 2px var(--gold), 0 0 0 3.5px var(--surface-1), 0 0 12px hsla(40,45%,55%,0.45); }
-  50%      { box-shadow: 0 0 0 2px var(--gold), 0 0 0 3.5px var(--surface-1), 0 0 22px hsla(40,55%,60%,0.7); }
+  0%, 100% { box-shadow: 0 0 0 2px var(--accent), 0 0 0 3.5px var(--surface-1), 0 0 12px hsla(40,45%,55%,0.45); }
+  50%      { box-shadow: 0 0 0 2px var(--accent), 0 0 0 3.5px var(--surface-1), 0 0 22px hsla(40,55%,60%,0.7); }
 }
 .halo-breathe { animation: haloBreathe 3.2s ease-in-out infinite; }
 
@@ -236,9 +236,9 @@ a { color: inherit; text-decoration: none; }
   to   { transform: translateX(0); }
 }
 
-.gold-text { color: var(--gold); }
+.accent-text { color: var(--accent); }
 .num { font-variant-numeric: tabular-nums; }
-.gold-gradient-bg {
+.accent-gradient-bg {
   background: var(--accent-grad);
   color: #F4F4F5;
   font-weight: 500;

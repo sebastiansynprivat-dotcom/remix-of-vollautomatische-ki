@@ -76,9 +76,9 @@ export function PPVSendModal({ onClose, onSend, initialPriceCents, initialCaptio
             <span style={{
               fontSize: 9, letterSpacing: 1.4, textTransform: "uppercase", fontWeight: 700,
               padding: "3px 8px", borderRadius: 4,
-              color: "var(--gold)",
-              background: "color-mix(in oklab, var(--gold) 12%, transparent)",
-              border: "1px solid color-mix(in oklab, var(--gold) 30%, transparent)",
+              color: "var(--accent)",
+              background: "color-mix(in oklab, var(--accent) 12%, transparent)",
+              border: "1px solid color-mix(in oklab, var(--accent) 30%, transparent)",
             }}>PPV</span>
             <h3 style={{ color: "var(--text-strong)", fontSize: 15, fontWeight: 500, letterSpacing: 0.2 }}>
               Bezahltes Medium senden
@@ -96,10 +96,10 @@ export function PPVSendModal({ onClose, onSend, initialPriceCents, initialCaptio
           <div style={{
             marginBottom: 14, padding: "8px 12px", borderRadius: 10,
             fontSize: 11, lineHeight: 1.45, color: "var(--text-muted)",
-            background: "color-mix(in oklab, var(--gold) 8%, transparent)",
-            border: "1px solid color-mix(in oklab, var(--gold) 28%, transparent)",
+            background: "color-mix(in oklab, var(--accent) 8%, transparent)",
+            border: "1px solid color-mix(in oklab, var(--accent) 28%, transparent)",
           }}>
-            <span style={{ color: "var(--gold)", fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase", fontSize: 9 }}>AI-Vorschlag · </span>
+            <span style={{ color: "var(--accent)", fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase", fontSize: 9 }}>AI-Vorschlag · </span>
             {hint}
           </div>
         )}
@@ -115,20 +115,20 @@ export function PPVSendModal({ onClose, onSend, initialPriceCents, initialCaptio
             onDragLeave={() => setDrag(false)}
             onDrop={e => { e.preventDefault(); setDrag(false); addFiles(e.dataTransfer.files); }}
             style={{
-              border: `1.5px dashed ${drag ? "var(--gold)" : "hsla(40,40%,55%,0.28)"}`,
+              border: `1.5px dashed ${drag ? "var(--accent)" : "hsla(40,40%,55%,0.28)"}`,
               borderRadius: 14, padding: "36px 16px",
               textAlign: "center", marginBottom: 16, cursor: "pointer",
               background: drag
-                ? "color-mix(in oklab, var(--gold) 8%, transparent)"
+                ? "color-mix(in oklab, var(--accent) 8%, transparent)"
                 : "hsla(0,0%,100%,0.018)",
               transition: "all 220ms var(--easing)",
             }}>
             <div style={{
               width: 38, height: 38, margin: "0 auto 10px",
               borderRadius: 12, display: "grid", placeItems: "center",
-              color: "var(--gold)",
-              background: "color-mix(in oklab, var(--gold) 10%, transparent)",
-              border: "1px solid color-mix(in oklab, var(--gold) 25%, transparent)",
+              color: "var(--accent)",
+              background: "color-mix(in oklab, var(--accent) 10%, transparent)",
+              border: "1px solid color-mix(in oklab, var(--accent) 25%, transparent)",
             }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 5v14M5 12h14"/>
@@ -197,8 +197,8 @@ export function PPVSendModal({ onClose, onSend, initialPriceCents, initialCaptio
         <div style={{
           display: "flex", alignItems: "center", gap: 10,
           padding: "10px 14px", borderRadius: 12,
-          background: "color-mix(in oklab, var(--gold) 5%, hsla(0,0%,100%,0.018))",
-          border: "1px solid color-mix(in oklab, var(--gold) 22%, transparent)",
+          background: "color-mix(in oklab, var(--accent) 5%, hsla(0,0%,100%,0.018))",
+          border: "1px solid color-mix(in oklab, var(--accent) 22%, transparent)",
           marginBottom: 18,
         }}>
           <span style={{
@@ -211,17 +211,17 @@ export function PPVSendModal({ onClose, onSend, initialPriceCents, initialCaptio
             className="tabular"
             style={{
               flex: 1, fontSize: 20, fontWeight: 600,
-              color: "var(--gold)", textAlign: "right",
+              color: "var(--accent)", textAlign: "right",
               background: "transparent", border: "none", outline: "none",
             }}
           />
-          <span style={{ color: "var(--gold)", fontSize: 18, fontWeight: 500 }}>€</span>
+          <span style={{ color: "var(--accent)", fontSize: 18, fontWeight: 500 }}>€</span>
         </div>
 
         <button
           onClick={handleSend}
           disabled={files.length === 0 && !initialCaption}
-          className="gold-gradient-bg"
+          className="accent-gradient-bg"
           style={{
             width: "100%", padding: "13px", borderRadius: 12,
             fontSize: 13.5, fontWeight: 700, color: "var(--bg)",

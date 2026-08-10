@@ -19,7 +19,7 @@ export function CopilotDebugPanel({
       <aside style={{
         position: "fixed", top: 0, right: 0, bottom: 0,
         width: "min(720px, 96vw)", background: "var(--surface-1)",
-        borderLeft: "1px solid var(--hairline-gold)",
+        borderLeft: "1px solid var(--hairline-accent)",
         boxShadow: "-24px 0 60px hsla(0,0%,0%,0.5)", zIndex: 61,
         display: "flex", flexDirection: "column",
         animation: "slideIn 220ms cubic-bezier(.2,.8,.2,1)",
@@ -29,7 +29,7 @@ export function CopilotDebugPanel({
           display: "flex", justifyContent: "space-between", alignItems: "center",
         }}>
           <div>
-            <div style={{ fontSize: 9.5, letterSpacing: 0.9, fontWeight: 700, color: "var(--gold)" }}>COPILOT DEBUG</div>
+            <div style={{ fontSize: 9.5, letterSpacing: 0.9, fontWeight: 700, color: "var(--accent)" }}>COPILOT DEBUG</div>
             <h2 className="display" style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>
               fanFacts → fan_brain Merge-Log
             </h2>
@@ -38,7 +38,7 @@ export function CopilotDebugPanel({
             </div>
           </div>
           <button onClick={onClose} style={{
-            padding: "6px 12px", borderRadius: 8, border: "1px solid var(--hairline-gold)",
+            padding: "6px 12px", borderRadius: 8, border: "1px solid var(--hairline-accent)",
             background: "hsla(0,0%,100%,0.03)", color: "var(--text-subtle)", fontSize: 12, fontWeight: 600,
           }}>Schließen</button>
         </div>
@@ -119,7 +119,7 @@ function Entry({ entry }: { entry: CopilotDebugEntry }) {
             <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 4 }}>
               {ffKeys.map(k => (
                 <li key={k} style={{ fontSize: 12, ...mono }}>
-                  <span style={{ color: "var(--gold)" }}>{k}:</span>{" "}
+                  <span style={{ color: "var(--accent)" }}>{k}:</span>{" "}
                   <span style={{ color: "var(--text)" }}>{fmt((ff as Record<string, unknown>)[k])}</span>
                 </li>
               ))}
@@ -180,7 +180,7 @@ function Entry({ entry }: { entry: CopilotDebugEntry }) {
 function Kicker({ children }: { children: React.ReactNode }) {
   return <div style={{
     fontSize: 9.5, fontWeight: 700, letterSpacing: 0.9,
-    color: "var(--gold)", textTransform: "uppercase", marginBottom: 8,
+    color: "var(--accent)", textTransform: "uppercase", marginBottom: 8,
   }}>{children}</div>;
 }
 
@@ -189,7 +189,7 @@ function DiffRow({ label, before, after, changed }: { label: string; before: str
     <div style={{ display: "grid", gridTemplateColumns: "100px 1fr 12px 1fr", gap: 6, alignItems: "center", fontSize: 11, ...mono }}>
       <span style={{ color: "var(--text-subtle)" }}>{label}</span>
       <span style={{ color: "var(--text-subtle)", textDecoration: changed ? "line-through" : "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{before}</span>
-      <span style={{ color: changed ? "var(--gold)" : "var(--text-subtle)" }}>→</span>
+      <span style={{ color: changed ? "var(--accent)" : "var(--text-subtle)" }}>→</span>
       <span style={{ color: changed ? "var(--text-strong)" : "var(--text-subtle)", fontWeight: changed ? 600 : 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{after}</span>
     </div>
   );

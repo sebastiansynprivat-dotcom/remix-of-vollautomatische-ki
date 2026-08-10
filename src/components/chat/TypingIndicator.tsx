@@ -8,7 +8,7 @@ export function TypingIndicator({ name }: { name: string }) {
         {[0, 1, 2].map(i => (
           <span key={i} style={{
             width: 6, height: 6, borderRadius: "50%",
-            background: "linear-gradient(135deg, var(--gold-light), var(--gold-dark))",
+            background: "linear-gradient(135deg, var(--accent-light), var(--accent-dark))",
             boxShadow: "0 0 6px hsla(40,55%,60%,0.5)",
             animation: "typingPulse 1.3s ease-in-out infinite",
             animationDelay: `${i * 180}ms`,
