@@ -357,6 +357,27 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       }
       purchasesInSession += 1;
       log.push("kauft");
+      // Asset-Statistik: positive Reaktion + Umsatz zählen
+      const usedAssetId = (openPpvRow as Json).asset_id as string | null | undefined;
+      if (usedAssetId) {
+        const { data: prevAsset } = await admin
+          .from("model_assets")
+          .select("response_count, revenue_total_cents")
+          .eq("id", usedAssetId)
+          .maybeSingle();
+        if (prevAsset) {
+          await admin
+            .from("model_assets")
+            .update({
+              response_count: Number((prevAsset as Json).response_count ?? 0) + 1,
+              revenue_total_cents:
+                Number((prevAsset as Json).revenue_total_cents ?? 0) +
+                Number(openPpvRow.ppv_price_cents ?? 0),
+            })
+            .eq("id", usedAssetId);
+        }
+      }
+
       // After-Care-Lock: 4 Stunden kein neuer Pitch nach Kauf
       const lockUntil = new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString();
       const { data: brainForLock } = await admin
@@ -738,10 +759,28 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
   if (!isFollowup && funnelNow.canOffer) {
     const hint = brief.ppvHint as Json | undefined;
     const hinted = typeof hint?.caption === "string" ? hint.caption.trim() : "";
+
+    // Passendes Asset aus der Bibliothek wählen (am wenigsten genutzt zuerst).
+    const stageTier = funnelNow.stage.config.intensity;
+    const stageValueCents = funnelNow.stage.priceCents;
+    const { data: matchingAssets } = await admin
+      .from("model_assets")
+      .select("id, description, note, url, thumbnail_url, use_count")
+      .eq("model_id", modelId)
+      .eq("is_active", true)
+      .lte("tier", stageTier)
+      .eq("value_cents", stageValueCents)
+      .order("use_count", { ascending: true })
+      .limit(5);
+    const selectedAsset = (matchingAssets?.[0] as Json | undefined) ?? null;
+
     // Auch die Caption darf keine Wiederholung sein.
-    const caption = hinted && filterFresh([hinted], avoidLines).fresh.length > 0
-      ? hinted
-      : `${funnelNow.stage.config.label.toLowerCase()} — nur für dich 🙈`;
+    const assetNote = typeof selectedAsset?.note === "string" ? selectedAsset.note.trim() : "";
+    const caption = assetNote
+      ? assetNote
+      : hinted && filterFresh([hinted], avoidLines).fresh.length > 0
+        ? hinted
+        : `${funnelNow.stage.config.label.toLowerCase()} — nur für dich 🙈`;
 
     const { error: ppvError } = await admin.from("messages").insert({
       conversation_id: convId,
@@ -749,7 +788,8 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       content_type: "ppv",
       status: "delivered",
       content: caption,
-      ppv_price_cents: funnelNow.stage.priceCents,
+      asset_id: (selectedAsset?.id as string | undefined) ?? null,
+      ppv_price_cents: stageValueCents,
       ppv_media_type: funnelNow.stage.config.mediaType,
       ppv_media_count: 1,
       ppv_is_purchased: false,
@@ -760,8 +800,16 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       log.push(`ppv-FEHLER:${ppvError.message}`);
     } else {
       lastPreview = caption;
-      log.push(`ppv:${(funnelNow.stage.priceCents / 100).toFixed(0)}€`);
+      log.push(`ppv:${(stageValueCents / 100).toFixed(0)}€`);
+      if (selectedAsset?.id) {
+        await admin
+          .from("model_assets")
+          .update({ use_count: Number(selectedAsset.use_count ?? 0) + 1 })
+          .eq("id", selectedAsset.id as string);
+        log.push("asset:genutzt");
+      }
     }
+
   } else if (!isFollowup) {
     log.push(`kein-ppv:${funnelNow.reason.slice(0, 60)}`);
   }

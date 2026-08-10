@@ -9,8 +9,9 @@ import { useChat } from "@/lib/chatStore";
 import { fx } from "@/lib/feedback";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { AssetLibrary } from "./AssetLibrary";
 
-type Tab = "media" | "templates";
+type Tab = "media" | "templates" | "assets";
 type StatusFilter = "all" | "fresh" | "used";
 type Sort = "new" | "sent" | "revenue";
 
@@ -144,6 +145,7 @@ export function ContentCloud({ model, returnConvId, onBackToChat }: Props) {
       }}>
         <TabBtn active={tab === "media"} onClick={() => setTab("media")} label="Medien" count={media.length} />
         <TabBtn active={tab === "templates"} onClick={() => setTab("templates")} label="PPV-Vorlagen" count={templates.length} />
+        <TabBtn active={tab === "assets"} onClick={() => setTab("assets")} label="Assets" count={0} />
         <div style={{ flex: 1 }} />
         {isAdmin && tab === "media" && (
           <UploadButton modelId={model.id} />
@@ -158,6 +160,7 @@ export function ContentCloud({ model, returnConvId, onBackToChat }: Props) {
       </div>
 
       {/* Toolbar */}
+      {tab !== "assets" && (
       <div style={{
         padding: "12px 24px", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
       }}>
@@ -198,8 +201,14 @@ export function ContentCloud({ model, returnConvId, onBackToChat }: Props) {
           </div>
         )}
       </div>
+      )}
 
       {/* Grid */}
+      {tab === "assets" ? (
+        <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", padding: "0 24px 12px" }}>
+          <AssetLibrary modelId={model.id} />
+        </div>
+      ) : (
       <div style={{ flex: 1, overflowY: "auto", padding: "8px 24px 24px" }}>
         {tab === "media" ? (
           loadingMedia ? <Empty text="Lade Medien…" /> :
@@ -225,6 +234,8 @@ export function ContentCloud({ model, returnConvId, onBackToChat }: Props) {
           )
         )}
       </div>
+      )}
+
 
       {lightbox && <Lightbox a={lightbox} onClose={() => setLightbox(null)} />}
     </main>
