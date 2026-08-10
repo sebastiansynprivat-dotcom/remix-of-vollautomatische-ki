@@ -278,15 +278,12 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
   };
 
   const tabs: { id: Tab; label: string }[] = [
-    { id: "basis", label: "Basis" },
+    { id: "profil", label: "Profil" },
     { id: "kommunikation", label: "Kommunikation" },
-    { id: "persona", label: "Persona (Freitext)" },
-    { id: "personal", label: "Persönlich" },
-    { id: "chat", label: "Chat-Verhalten" },
     { id: "stufen", label: "Stufen" },
     { id: "schutz", label: "Schutz" },
-    { id: "sets", label: "PPV Sets" },
-    { id: "cloud", label: "Content Cloud" },
+    { id: "assets", label: "Assets" },
+    { id: "sets", label: "Sets" },
   ];
 
   return (
