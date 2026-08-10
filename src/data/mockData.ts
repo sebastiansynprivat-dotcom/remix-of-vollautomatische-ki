@@ -60,6 +60,8 @@ export interface Conversation {
   totalSpent: number;
   /** Auto-Pilot: der Creator antwortet in diesem Chat vollautomatisch. */
   isAutopilot?: boolean;
+  /** Manuelle Übersteuerung: false = Mensch schreibt, KI pausiert. */
+  autopilotEnabled?: boolean;
 }
 
 export const AI_CONV_ID = "conv-ai-mia";

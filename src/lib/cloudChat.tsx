@@ -65,7 +65,7 @@ export function useConversationsForModel(modelId: string | null): Conversation[]
         .from("conversations")
         .select(`
           id, model_id, fan_id, last_message_preview, last_message_at,
-          last_message_from_model, unread_count, is_autopilot,
+          last_message_from_model, unread_count, is_autopilot, autopilot_enabled,
           fans!inner(id, display_name, status, total_spent_cents, tip_volume_cents)
         `)
         .eq("model_id", modelId)
@@ -89,6 +89,7 @@ export function useConversationsForModel(modelId: string | null): Conversation[]
         tipVolume: c.fans.tip_volume_cents ?? 0,
         totalSpent: c.fans.total_spent_cents ?? 0,
         isAutopilot: !!c.is_autopilot,
+        autopilotEnabled: c.autopilot_enabled !== false,
       }));
       setConvs(mapped);
       registerCloudConversations(mapped);
