@@ -391,6 +391,7 @@ export type Database = {
           location: string | null
           openers: string[]
           persona: string | null
+          persona_config: Json | null
           relationship_status: string | null
           signature_phrases: string[]
           subscribers: number
@@ -422,6 +423,7 @@ export type Database = {
           location?: string | null
           openers?: string[]
           persona?: string | null
+          persona_config?: Json | null
           relationship_status?: string | null
           signature_phrases?: string[]
           subscribers?: number
@@ -453,6 +455,7 @@ export type Database = {
           location?: string | null
           openers?: string[]
           persona?: string | null
+          persona_config?: Json | null
           relationship_status?: string | null
           signature_phrases?: string[]
           subscribers?: number

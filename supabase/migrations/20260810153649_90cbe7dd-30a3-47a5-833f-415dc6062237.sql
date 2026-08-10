@@ -1,0 +1,1 @@
+ALTER TABLE public.model_profiles ADD COLUMN IF NOT EXISTS persona_config jsonb;
