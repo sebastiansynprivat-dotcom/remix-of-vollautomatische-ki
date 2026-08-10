@@ -195,7 +195,7 @@ export function ChatArea({
     );
   }
 
-  const ui = useChatUI();
+  
   const isMobile = !!onBack;
   const showDna = !isMobile && conv.id !== AI_CONV_ID && ui.dnaOpen;
   const mobileDnaOpen = isMobile && conv.id !== AI_CONV_ID && ui.dnaOpen;
