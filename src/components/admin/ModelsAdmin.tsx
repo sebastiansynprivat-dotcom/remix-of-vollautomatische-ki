@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ModelSetsManager } from "@/components/admin/ModelSetsManager";
+import { ContentCloud } from "@/components/cloud/ContentCloud";
 import { ModelCreateModal } from "@/components/admin/ModelCreateModal";
 import { PersonaEditor, PresetGrid } from "@/components/admin/PersonaEditor";
 import { StepConfigEditor } from "@/components/admin/StepConfigEditor";
@@ -224,7 +225,7 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
 
 
 
-type Tab = "basis" | "kommunikation" | "persona" | "personal" | "chat" | "stufen" | "schutz" | "sets";
+type Tab = "basis" | "kommunikation" | "persona" | "personal" | "chat" | "stufen" | "schutz" | "sets" | "cloud";
 
 function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
   const [tab, setTab] = useState<Tab>("basis");
@@ -285,6 +286,7 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
     { id: "stufen", label: "Stufen" },
     { id: "schutz", label: "Schutz" },
     { id: "sets", label: "PPV Sets" },
+    { id: "cloud", label: "Content Cloud" },
   ];
 
   return (
@@ -413,6 +415,12 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
               setInitial((prev: any) => ({ ...prev, limits }));
             }}
           />
+        )}
+
+        {tab === "cloud" && (
+          <div style={{ marginTop: 22 }}>
+            <ContentCloud model={m} returnConvId={null} onBackToChat={() => setTab("basis")} />
+          </div>
         )}
 
         {tab === "sets" && (
