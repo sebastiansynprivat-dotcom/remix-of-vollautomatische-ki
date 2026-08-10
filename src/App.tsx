@@ -14,6 +14,7 @@ import { HotkeyLayer } from "@/components/chat/HotkeyLayer";
 import { useAssignedModels, useConversationsForModel, useMessagesLoader } from "@/lib/cloudChat";
 import { ContentCloud } from "@/components/cloud/ContentCloud";
 import { FahrplanView } from "@/components/profile/FahrplanView";
+import { PerformanceDashboard } from "@/components/profile/PerformanceDashboard";
 import { ModelsAdmin } from "@/components/admin/ModelsAdmin";
 
 export function App() {
@@ -61,7 +62,7 @@ function AppInner() {
     : null;
 
   const ensureActive = (id: string) => setActiveId(id);
-  if (view.kind !== "profile" && view.kind !== "cloud" && view.kind !== "fahrplan" && view.kind !== "models" && conversations.length && !conversations.find(c => c.id === activeId)) {
+  if (view.kind !== "profile" && view.kind !== "cloud" && view.kind !== "fahrplan" && view.kind !== "performance" && view.kind !== "models" && conversations.length && !conversations.find(c => c.id === activeId)) {
     queueMicrotask(() => ensureActive(conversations[0].id));
   }
 
@@ -76,7 +77,7 @@ function AppInner() {
   const handleSetView = (v: View) => {
     fx.haptic("tick");
     setView(v);
-    if (v.kind === "profile" || v.kind === "fahrplan" || v.kind === "models") {
+    if (v.kind === "profile" || v.kind === "fahrplan" || v.kind === "performance" || v.kind === "models") {
       setShowChat(false);
       return;
     }
@@ -116,6 +117,10 @@ function AppInner() {
             {view.kind === "fahrplan" ? (
               <div style={{ flex: 1, overflow: "auto", padding: "16px 14px", paddingBottom: "calc(64px + var(--safe-bottom) + 12px)" }}>
                 <FahrplanView />
+              </div>
+            ) : view.kind === "performance" ? (
+              <div style={{ flex: 1, overflow: "auto", paddingBottom: "calc(64px + var(--safe-bottom) + 12px)" }}>
+                <PerformanceDashboard />
               </div>
             ) : view.kind === "models" ? (
               <div style={{ flex: 1, overflow: "auto", padding: "16px 14px", paddingBottom: "calc(64px + var(--safe-bottom) + 12px)" }}>
@@ -228,6 +233,12 @@ function AppInner() {
         <div style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: "28px 32px" }}>
           <div style={{ maxWidth: 960, margin: "0 auto" }}>
             <FahrplanView />
+          </div>
+        </div>
+      ) : view.kind === "performance" ? (
+        <div style={{ flex: 1, minWidth: 0, overflowY: "auto" }}>
+          <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+            <PerformanceDashboard />
           </div>
         </div>
       ) : view.kind === "models" ? (

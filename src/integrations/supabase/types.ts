@@ -553,6 +553,59 @@ export type Database = {
         }
         Relationships: []
       }
+      model_stats_daily: {
+        Row: {
+          active_conversations: number
+          created_at: string
+          id: number
+          inactive_stops: number
+          messages_received: number
+          messages_sent: number
+          model_id: string | null
+          offers_accepted: number
+          offers_made: number
+          revenue_cents: number
+          stat_date: string
+          updated_at: string
+        }
+        Insert: {
+          active_conversations?: number
+          created_at?: string
+          id?: never
+          inactive_stops?: number
+          messages_received?: number
+          messages_sent?: number
+          model_id?: string | null
+          offers_accepted?: number
+          offers_made?: number
+          revenue_cents?: number
+          stat_date: string
+          updated_at?: string
+        }
+        Update: {
+          active_conversations?: number
+          created_at?: string
+          id?: never
+          inactive_stops?: number
+          messages_received?: number
+          messages_sent?: number
+          model_id?: string | null
+          offers_accepted?: number
+          offers_made?: number
+          revenue_cents?: number
+          stat_date?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "model_stats_daily_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "model_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ppv_templates: {
         Row: {
           asset_ids: string[]
