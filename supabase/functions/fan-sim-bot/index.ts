@@ -243,7 +243,10 @@ ${personaPrompt}`;
               properties: {
                 messages: {
                   type: "array",
-                  items: { type: "string" },
+                  items: {
+                    type: "string",
+                    description: "1-3 Fan-Nachrichten. VERBOTEN als erstes Wort: 'achso', 'ach so', 'achsoo', 'verstehe'. Beginne jede Nachricht mit einem echten Inhaltswort, einer Meinung, einer Frage oder einer Reaktion wie 'cool', 'krass', 'haha', 'boah', 'nice'.",
+                  },
                   minItems: 1,
                   maxItems: 3,
                   description: "1-3 kurze Fan-Nachrichten (deutsch, kleinschreibung)",
