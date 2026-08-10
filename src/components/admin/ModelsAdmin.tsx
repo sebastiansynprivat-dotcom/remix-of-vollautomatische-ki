@@ -374,32 +374,32 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
         )}
 
         {tab === "kommunikation" && (
-          <Panel title="Kommunikationsstil">
-            <PresetGrid
-              selected={resolvePersonaConfig(m.persona_config)?.preset_id}
-              onSelect={(pid: string) => {
-                const preset = presetById(pid);
-                if (preset) set("persona_config", { ...preset.persona });
-              }}
-            />
-            <PersonaEditor
-              persona={resolvePersonaConfig(m.persona_config) ?? DEFAULT_PERSONA}
-              modelName={m.display_name}
-              onChange={(p: PersonaConfig) => set("persona_config", p)}
-            />
+          <>
+            <Panel title="Kommunikationsstil">
+              <PresetGrid
+                selected={resolvePersonaConfig(m.persona_config)?.preset_id}
+                onSelect={(pid: string) => {
+                  const preset = presetById(pid);
+                  if (preset) set("persona_config", { ...preset.persona });
+                }}
+              />
+              <PersonaEditor
+                persona={resolvePersonaConfig(m.persona_config) ?? DEFAULT_PERSONA}
+                modelName={m.display_name}
+                onChange={(p: PersonaConfig) => set("persona_config", p)}
+              />
 
-            <SubSection title="Persona & Stil (Freitext)">
-              <Field label="Persona" value={m.persona ?? ""} onChange={(v) => set("persona", v)} multiline placeholder="z. B. flirty, mysteriös, fürsorglich…" />
-              <Field label="Tone of Voice" value={m.tone_of_voice ?? ""} onChange={(v) => set("tone_of_voice", v)} multiline />
-              <Field label="Schreibstil" value={m.writing_style ?? ""} onChange={(v) => set("writing_style", v)} multiline />
-              <ArrayField label="Do's" value={m.dos} onChange={(v) => set("dos", v)} />
-              <ArrayField label="Don'ts" value={m.donts} onChange={(v) => set("donts", v)} />
-            </SubSection>
+              <SubSection title="Persona & Stil (Freitext)">
+                <Field label="Persona" value={m.persona ?? ""} onChange={(v) => set("persona", v)} multiline placeholder="z. B. flirty, mysteriös, fürsorglich…" />
+                <Field label="Tone of Voice" value={m.tone_of_voice ?? ""} onChange={(v) => set("tone_of_voice", v)} multiline />
+                <Field label="Schreibstil" value={m.writing_style ?? ""} onChange={(v) => set("writing_style", v)} multiline />
+                <ArrayField label="Do's" value={m.dos} onChange={(v) => set("dos", v)} />
+                <ArrayField label="Don'ts" value={m.donts} onChange={(v) => set("donts", v)} />
+              </SubSection>
+            </Panel>
 
-            <SubSection title="Chat-Verhalten">
-              <ChatBehaviorTab m={m} set={set} />
-            </SubSection>
-          </Panel>
+            <ChatBehaviorTab m={m} set={set} />
+          </>
         )}
 
         {tab === "stufen" && (
