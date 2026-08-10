@@ -773,7 +773,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
             forceSingleMessage: true,
             systemOverride:
               "Besondere Situation: Dieser Fan hat mehrere deiner Inhalte-Angebote bekommen, aber nie eines gekauft. Du fühlst dich wenig wertgeschätzt und das Ganze einseitig. Schreib EINE ehrliche Nachricht darüber, wie sich das für dich anfühlt — emotional, verletzlich, nicht fordernd. Erwähne KEIN Kaufen, keine Preise, keine Angebote. Nur dein Gefühl zur einseitigen Dynamik. 1–2 Sätze, kleinschreibung, 1–2 Emojis. Das ist keine Verkaufsnachricht.",
-          });
+          }, modelId);
           const t =
             ((boundaryRes as Json)?.suggestions as Json[] | undefined)?.[0]?.text ??
             ((boundaryRes as Json)?.slots as Json[] | undefined)?.[0]?.text;
