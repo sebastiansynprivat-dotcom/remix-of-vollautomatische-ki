@@ -274,12 +274,12 @@ export function ChatArea({
                     display: "flex", alignItems: "center", gap: 10,
                     padding: "10px 16px 2px",
                   }}>
-                    <span style={{ flex: 1, height: 1, background: "color-mix(in oklab, var(--accent) 30%, transparent)" }} />
+                    <span style={{ flex: 1, height: 1, background: "var(--hairline)" }} />
                     <span style={{
                       fontSize: 10, fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase",
                       color: "var(--accent)",
                     }}>Neu ab hier</span>
-                    <span style={{ flex: 1, height: 1, background: "color-mix(in oklab, var(--accent) 30%, transparent)" }} />
+                    <span style={{ flex: 1, height: 1, background: "var(--hairline)" }} />
                   </div>
                 ) : null;
                 const body = !autopilot ? bubble : (
