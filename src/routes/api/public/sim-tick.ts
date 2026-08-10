@@ -224,10 +224,27 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
 
   const { data: conv } = await admin
     .from("conversations")
-    .select("id, model_id, fan_id, fans!inner(id, display_name, total_spent_cents, tip_volume_cents)")
+    .select("id, model_id, fan_id, autopilot_enabled, fans!inner(id, display_name, total_spent_cents, tip_volume_cents)")
     .eq("id", convId)
     .maybeSingle();
   if (!conv) throw new Error("conversation missing");
+
+  // Manuelle Übersteuerung: Auto-Modus aus → dieser Chat wird nicht bearbeitet.
+  if ((conv as Json).autopilot_enabled === false) {
+    const rh = rhythmFromRow(run);
+    return {
+      note: "manual-override-skip",
+      simDay: rh.simDay,
+      sessionTurn: rh.sessionTurn,
+      phase: rh.phase,
+      purchasesInSession: rh.purchasesInSession,
+      gapHours: 0,
+      simLastAt: (run.sim_last_at as string | undefined) ?? new Date().toISOString(),
+      lastFollowupDay: rh.lastFollowupDay,
+      done: false,
+    };
+  }
+
 
   const fanId = String((conv as Json).fan_id);
   const modelId = String((conv as Json).model_id);

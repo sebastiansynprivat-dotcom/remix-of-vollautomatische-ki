@@ -564,7 +564,8 @@ function findConv(convId: string) {
     ?? mockConversations.find(c => c.id === convId);
 }
 export function isAutopilotConv(convId: string): boolean {
-  return !!findConv(convId)?.isAutopilot;
+  const c = findConv(convId);
+  return !!c?.isAutopilot && c?.autopilotEnabled !== false;
 }
 
 function buildCopilotHistory(convId: string): string[] {

@@ -3,7 +3,7 @@ import { PPVSendModal } from "@/components/monetization/PPVSendModal";
 import { fx } from "@/lib/feedback";
 import { useChat, useDraft, usePpvDraft, useChainStatus } from "@/lib/chatStore";
 
-export function MessageInput({ convId, fanId, asFan = false }: { convId: string; fanId: string; asFan?: boolean }) {
+export function MessageInput({ convId, fanId, asFan = false, noSuggestions = false }: { convId: string; fanId: string; asFan?: boolean; noSuggestions?: boolean }) {
   const [text, setText] = useState("");
   const [ppvOpen, setPpvOpen] = useState(false);
   const [ppvInit, setPpvInit] = useState<{ priceCents?: number; caption?: string; type?: "photo" | "video" | "gallery"; hint?: string }>({});
@@ -24,7 +24,7 @@ export function MessageInput({ convId, fanId, asFan = false }: { convId: string;
 
   // Pull suggestion text into the input whenever the draft store updates (nur Model-Input)
   const draftFromStore = useDraft(convId);
-  const draft = asFan ? undefined : draftFromStore;
+  const draft = asFan || noSuggestions ? undefined : draftFromStore;
   useEffect(() => {
     if (draft != null) {
       setText(draft);
@@ -35,7 +35,7 @@ export function MessageInput({ convId, fanId, asFan = false }: { convId: string;
 
   // PPV-Draft (von AI-Vorschlag) → öffnet Modal vorausgefüllt
   const ppvDraftFromStore = usePpvDraft(convId);
-  const ppvDraft = asFan ? undefined : ppvDraftFromStore;
+  const ppvDraft = asFan || noSuggestions ? undefined : ppvDraftFromStore;
   useEffect(() => {
     if (ppvDraft) {
       setPpvInit({

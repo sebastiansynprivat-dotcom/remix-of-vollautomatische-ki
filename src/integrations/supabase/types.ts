@@ -51,6 +51,7 @@ export type Database = {
       }
       conversations: {
         Row: {
+          autopilot_enabled: boolean
           created_at: string
           fan_id: string
           id: string
@@ -63,6 +64,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          autopilot_enabled?: boolean
           created_at?: string
           fan_id: string
           id?: string
@@ -75,6 +77,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          autopilot_enabled?: boolean
           created_at?: string
           fan_id?: string
           id?: string
