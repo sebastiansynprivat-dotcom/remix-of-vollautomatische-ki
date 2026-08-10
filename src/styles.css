@@ -32,7 +32,7 @@
 .shex-divider { width: 1px; height: 12px; background: var(--hairline-strong); }
 .shex-time { font-size: 12px; letter-spacing: 0.02em; color: var(--text-strong); font-weight: 500; font-variant-numeric: tabular-nums; }
 .shex-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
-.shex-dot-live { background: var(--gold); }
+.shex-dot-live { background: var(--status-success); }
 .shex-dot-stable { background: var(--status-success); }
 .shex-dot-muted { background: var(--text-disabled); }
 
@@ -162,7 +162,7 @@
   transition: border-color 150ms var(--easing);
 }
 .shex-input::placeholder, .shex-textarea::placeholder { color: var(--text-disabled); }
-.shex-input:focus, .shex-textarea:focus, .shex-select:focus { border-color: var(--gold); }
+.shex-input:focus, .shex-textarea:focus, .shex-select:focus { border-color: var(--accent); }
 .shex-textarea { resize: vertical; min-height: 84px; height: auto; padding: 8px 12px; line-height: 1.55; }
 
 /* Buttons — compact */
@@ -180,7 +180,7 @@
 }
 .shex-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .shex-btn-primary {
-  background: var(--accent-grad);
+  background: var(--accent);
   color: #F4F4F5;
   box-shadow: 0 8px 20px rgba(99,102,241,0.20);
 }
@@ -196,7 +196,7 @@
   border-color: var(--hairline-strong);
   color: var(--text);
 }
-.shex-btn-outline:hover:not(:disabled) { color: var(--text-strong); border-color: var(--gold); }
+.shex-btn-outline:hover:not(:disabled) { color: var(--text-strong); border-color: var(--accent); }
 .shex-btn-danger {
   background: transparent;
   border-color: var(--hairline);
@@ -238,7 +238,7 @@
 .shex-tab::after {
   content: ""; position: absolute;
   left: 12px; right: 12px; bottom: -1px; height: 2px;
-  background: var(--accent-grad);
+  background: var(--accent);
   border-radius: 999px;
   transform: scaleX(0); transform-origin: center;
   transition: transform 150ms var(--easing);
@@ -397,8 +397,8 @@
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--ui-accent);
+  --color-accent-foreground: var(--ui-accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
@@ -434,8 +434,8 @@
   --secondary-foreground: oklch(0.208 0.042 265.755);
   --muted: oklch(0.968 0.007 247.896);
   --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
+  --ui-accent: oklch(0.968 0.007 247.896);
+  --ui-accent-foreground: oklch(0.208 0.042 265.755);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 247.858);
   --border: oklch(0.929 0.013 255.508);
@@ -469,8 +469,8 @@
   --secondary-foreground: oklch(0.984 0.003 247.858);
   --muted: oklch(0.279 0.041 260.031);
   --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
+  --ui-accent: oklch(0.279 0.041 260.031);
+  --ui-accent-foreground: oklch(0.984 0.003 247.858);
   --destructive: oklch(0.704 0.191 22.216);
   --destructive-foreground: oklch(0.984 0.003 247.858);
   --border: oklch(1 0 0 / 10%);

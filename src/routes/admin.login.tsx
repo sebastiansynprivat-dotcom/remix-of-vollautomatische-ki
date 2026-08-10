@@ -57,11 +57,11 @@ function AdminLoginPage() {
       }}>
         <Link to="/" style={{ fontSize: 12, color: "var(--text-subtle)" }}>← Zurück</Link>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 16 }}>
-          <div className="gold-gradient-bg" style={{
+          <div className="accent-gradient-bg" style={{
             width: 28, height: 28, borderRadius: 6,
             display: "grid", placeItems: "center", fontWeight: 800, color: "#1a1a1a", fontSize: 13,
           }}>A</div>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: "var(--gold)", textTransform: "uppercase" }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: "var(--accent)", textTransform: "uppercase" }}>
             Admin-Bereich
           </div>
         </div>
@@ -76,7 +76,7 @@ function AdminLoginPage() {
           <Field label="Email" type="email" value={email} onChange={setEmail} />
           <Field label="Passwort" type="password" value={password} onChange={setPassword} />
           {err && <div style={{ fontSize: 13, color: "#ef4444" }}>{err}</div>}
-          <button type="submit" disabled={busy} className="gold-gradient-bg" style={{
+          <button type="submit" disabled={busy} className="accent-gradient-bg" style={{
             marginTop: 8, padding: "12px 16px", borderRadius: 10,
             color: "#1a1a1a", fontWeight: 700, fontSize: 14,
             border: "none", cursor: busy ? "wait" : "pointer", opacity: busy ? 0.6 : 1,

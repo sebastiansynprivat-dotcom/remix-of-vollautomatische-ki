@@ -33,7 +33,7 @@ export function CreatorProfile() {
               </h1>
               <span title="Verifizierter Creator" style={{
                 width: 22, height: 22, borderRadius: "50%",
-                background: "var(--gold)", color: "hsl(40,30%,8%)",
+                background: "var(--accent)", color: "hsl(40,30%,8%)",
                 display: "grid", placeItems: "center",
               }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12l5 5L20 7"/></svg>
@@ -61,10 +61,10 @@ export function CreatorProfile() {
                 {label}
                 <span style={{
                   position: "absolute", left: 0, right: 0, bottom: -1, height: 2,
-                  background: "var(--gold)", borderRadius: 2,
+                  background: "var(--accent)", borderRadius: 2,
                   transform: `scaleX(${active ? 1 : 0.4})`, opacity: active ? 1 : 0,
                   transformOrigin: "left", transition: "all 320ms var(--easing)",
-                  boxShadow: active ? "0 0 12px var(--gold)" : undefined,
+                  boxShadow: active ? "0 0 12px var(--accent)" : undefined,
                 }} />
               </button>
             );
@@ -111,9 +111,9 @@ function PostFeed() {
 function SubsView() {
   return (
     <div className="premium-card" style={{ padding: 24, textAlign: "center" }}>
-      <div className="tabular" style={{ color: "var(--gold)", fontSize: 28, fontWeight: 700 }}>{formatCurrency(999)}</div>
+      <div className="tabular" style={{ color: "var(--accent)", fontSize: 28, fontWeight: 700 }}>{formatCurrency(999)}</div>
       <div style={{ color: "var(--text-muted)", fontSize: 12, marginBottom: 14 }}>pro Monat</div>
-      <button className="gold-gradient-bg" style={{ padding: "10px 22px", borderRadius: 10, fontSize: 13, fontWeight: 700 }}>Abonnieren ✦</button>
+      <button className="accent-gradient-bg" style={{ padding: "10px 22px", borderRadius: 10, fontSize: 13, fontWeight: 700 }}>Abonnieren ✦</button>
     </div>
   );
 }

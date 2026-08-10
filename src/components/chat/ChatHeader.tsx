@@ -23,7 +23,7 @@ export function ChatHeader({
   const [debugOpen, setDebugOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   return (
-    <header className="glass-strong" style={{
+    <header className="solid-2" style={{
       display: "flex", alignItems: "center", gap: 10,
       padding: "12px 16px",
       borderBottom: "1px solid #1A1A1E",
@@ -78,13 +78,13 @@ export function ChatHeader({
             aria-label="Fan-Brain öffnen"
             style={{
               width: 28, height: 28, borderRadius: 6,
-              color: brainOpen ? "var(--gold)" : "var(--text-muted)",
+              color: brainOpen ? "var(--accent)" : "var(--text-muted)",
               background: brainOpen ? "hsla(40,45%,55%,0.10)" : "transparent",
               display: "grid", placeItems: "center",
               transition: "all 220ms var(--easing)",
               fontSize: 15,
             }}
-            onMouseEnter={e => { e.currentTarget.style.color = "var(--gold)"; e.currentTarget.style.background = "hsla(40,45%,55%,0.08)"; }}
+            onMouseEnter={e => { e.currentTarget.style.color = "var(--accent)"; e.currentTarget.style.background = "hsla(40,45%,55%,0.08)"; }}
             onMouseLeave={e => { if (!brainOpen) { e.currentTarget.style.color = "var(--text-muted)"; e.currentTarget.style.background = "transparent"; } }}
           >🧠</button>
         )}
@@ -95,13 +95,13 @@ export function ChatHeader({
             aria-label="Copilot-Debug öffnen"
             style={{
               width: 28, height: 28, borderRadius: 6,
-              color: debugOpen ? "var(--gold)" : "var(--text-muted)",
+              color: debugOpen ? "var(--accent)" : "var(--text-muted)",
               background: debugOpen ? "hsla(40,45%,55%,0.10)" : "transparent",
               display: "grid", placeItems: "center",
               transition: "all 220ms var(--easing)",
               fontSize: 14,
             }}
-            onMouseEnter={e => { e.currentTarget.style.color = "var(--gold)"; e.currentTarget.style.background = "hsla(40,45%,55%,0.08)"; }}
+            onMouseEnter={e => { e.currentTarget.style.color = "var(--accent)"; e.currentTarget.style.background = "hsla(40,45%,55%,0.08)"; }}
             onMouseLeave={e => { if (!debugOpen) { e.currentTarget.style.color = "var(--text-muted)"; e.currentTarget.style.background = "transparent"; } }}
           >🐛</button>
         )}
@@ -110,7 +110,7 @@ export function ChatHeader({
           title="Suchen"
           style={{
             width: 28, height: 28, borderRadius: 6,
-            color: searchActive ? "var(--gold)" : "var(--text-muted)",
+            color: searchActive ? "var(--accent)" : "var(--text-muted)",
             background: searchActive ? "hsla(40,45%,55%,0.10)" : "transparent",
             display: "grid", placeItems: "center",
             transition: "all 220ms var(--easing)",
@@ -124,7 +124,7 @@ export function ChatHeader({
             color: "var(--text-muted)", display: "grid", placeItems: "center",
             transition: "all 220ms var(--easing)",
           }}
-          onMouseEnter={e => { e.currentTarget.style.color = "var(--gold)"; e.currentTarget.style.background = "hsla(40,45%,55%,0.08)"; }}
+          onMouseEnter={e => { e.currentTarget.style.color = "var(--accent)"; e.currentTarget.style.background = "hsla(40,45%,55%,0.08)"; }}
           onMouseLeave={e => { e.currentTarget.style.color = "var(--text-muted)"; e.currentTarget.style.background = "transparent"; }}
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
@@ -137,12 +137,12 @@ export function ChatHeader({
               aria-label="Mehr Optionen"
               style={{
                 width: 28, height: 28, borderRadius: 6,
-                color: menuOpen ? "var(--gold)" : "var(--text-muted)",
+                color: menuOpen ? "var(--accent)" : "var(--text-muted)",
                 background: menuOpen ? "hsla(40,45%,55%,0.10)" : "transparent",
                 display: "grid", placeItems: "center",
                 transition: "all 220ms var(--easing)",
               }}
-              onMouseEnter={e => { e.currentTarget.style.color = "var(--gold)"; e.currentTarget.style.background = "hsla(40,45%,55%,0.08)"; }}
+              onMouseEnter={e => { e.currentTarget.style.color = "var(--accent)"; e.currentTarget.style.background = "hsla(40,45%,55%,0.08)"; }}
               onMouseLeave={e => { if (!menuOpen) { e.currentTarget.style.color = "var(--text-muted)"; e.currentTarget.style.background = "transparent"; } }}
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
@@ -154,7 +154,7 @@ export function ChatHeader({
                   position: "absolute", top: "calc(100% + 6px)", right: 0,
                   minWidth: 220, padding: 6, borderRadius: 10,
                   background: "var(--surface-1)",
-                  border: "1px solid var(--hairline-gold)",
+                  border: "1px solid var(--hairline-accent)",
                   boxShadow: "0 12px 40px hsla(0,0%,0%,0.5)",
                   zIndex: 41,
                 }}>

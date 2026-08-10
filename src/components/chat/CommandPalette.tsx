@@ -98,7 +98,7 @@ export function CommandPalette() {
                     {c.id === AI_CONV_ID && (
                       <span style={{
                         fontSize: 8.5, fontWeight: 700, padding: "1px 5px", borderRadius: 4,
-                        color: "var(--gold)", background: "hsla(40,45%,55%,0.12)",
+                        color: "var(--accent)", background: "hsla(40,45%,55%,0.12)",
                         border: "1px solid hsla(40,45%,55%,0.35)",
                       }}>AI</span>
                     )}
@@ -151,7 +151,7 @@ function PaletteItem({
     <Command.Item onSelect={onSelect} keywords={keywords}>
       <span style={{ display: "flex", alignItems: "center", gap: 8, flex: 1, minWidth: 0 }}>{children}</span>
       <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        {right && <span className="tabular" style={{ fontSize: 11, color: "var(--gold)" }}>{right}</span>}
+        {right && <span className="tabular" style={{ fontSize: 11, color: "var(--accent)" }}>{right}</span>}
         {shortcut && (
           <span style={{
             fontSize: 9.5, padding: "2px 6px", borderRadius: 5,

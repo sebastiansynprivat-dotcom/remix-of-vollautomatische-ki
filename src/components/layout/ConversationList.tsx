@@ -23,17 +23,16 @@ function SimControlBar() {
       <div style={{
         display: "flex", alignItems: "center", gap: 8,
         padding: "8px 12px", borderRadius: 10,
-        background: "color-mix(in oklab, var(--gold) 7%, transparent)",
-        border: "1px solid color-mix(in oklab, var(--gold) 24%, transparent)",
+        background: "var(--surface-1)",
+        border: "1px solid var(--hairline)",
       }}>
         <span
-          className={anyRunning ? "gold-gradient-bg" : undefined}
           style={{
             width: 8, height: 8, borderRadius: 999, flexShrink: 0,
-            background: anyRunning ? undefined : "var(--text-subtle)",
+            background: anyRunning ? "var(--status-success)" : "var(--text-disabled)",
           }}
         />
-        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.3, color: "var(--gold)" }}>
+        <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: 0, color: "var(--text)" }}>
           Live-Simulation · {running}/{all.length} aktiv
         </span>
         <button
@@ -41,9 +40,9 @@ function SimControlBar() {
           onClick={() => { fx.haptic("tick"); void setAllSimStates(anyRunning ? "paused" : "running"); }}
           style={{
             marginLeft: "auto", padding: "4px 10px", borderRadius: 999, cursor: "pointer",
-            background: anyRunning ? "transparent" : "var(--gold)",
-            color: anyRunning ? "var(--gold)" : "var(--bg)",
-            border: "1px solid color-mix(in oklab, var(--gold) 34%, transparent)",
+            background: anyRunning ? "transparent" : "var(--accent)",
+            color: anyRunning ? "var(--accent)" : "var(--bg)",
+            border: "1px solid color-mix(in oklab, var(--accent) 34%, transparent)",
             fontSize: 10.5, fontWeight: 700,
           }}
         >
@@ -148,7 +147,7 @@ export function ConversationList({
         width: onMenu ? "100%" : 340,
         maxWidth: "100%",
         height: "100dvh", flexShrink: 0,
-        borderRight: onMenu ? "none" : "1px solid var(--hairline-gold)",
+        borderRight: onMenu ? "none" : "1px solid var(--hairline-accent)",
         display: "flex", flexDirection: "column",
         background: "linear-gradient(180deg, hsla(40,18%,8%,0.35), hsla(0,0%,4%,0.45))",
         backdropFilter: "blur(14px)",
@@ -199,7 +198,7 @@ export function ConversationList({
               display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0,
               padding: "6px 12px", borderRadius: 999,
               fontSize: 12, fontWeight: 600,
-              color: active ? "var(--gold)" : "var(--text-muted)",
+              color: active ? "var(--accent)" : "var(--text-muted)",
               border: `1px solid ${active ? "hsla(40,45%,55%,0.45)" : "hsla(0,0%,100%,0.06)"}`,
               background: active ? "hsla(40,45%,55%,0.10)" : "hsla(0,0%,100%,0.02)",
               boxShadow: active ? "0 0 16px hsla(40,45%,55%,0.18)" : undefined,
@@ -209,7 +208,7 @@ export function ConversationList({
               {badge != null && badge > 0 && (
                 <span className="tabular" style={{
                   fontSize: 10, fontWeight: 700, padding: "1px 6px", borderRadius: 8,
-                  color: active ? "var(--gold)" : "var(--text-muted)",
+                  color: active ? "var(--accent)" : "var(--text-muted)",
                   background: active ? "hsla(40,45%,55%,0.15)" : "hsla(0,0%,100%,0.05)",
                 }}>{badge}</span>
               )}
@@ -279,7 +278,7 @@ function ListHeader({ headerContext, onMenu }: { headerContext: HeaderContext; o
             width: 36, height: 36, borderRadius: 10,
             display: "grid", placeItems: "center",
             background: "linear-gradient(135deg, hsla(40,45%,55%,0.18), hsla(40,45%,55%,0.04))",
-            color: "var(--gold)",
+            color: "var(--accent)",
             border: "1px solid hsla(40,45%,55%,0.3)",
           }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -307,7 +306,7 @@ function ListHeader({ headerContext, onMenu }: { headerContext: HeaderContext; o
           loading="lazy"
           style={{
             width: 42, height: 42, borderRadius: "50%", objectFit: "cover",
-            boxShadow: "0 0 0 2px var(--gold), 0 0 0 4px var(--surface-1), 0 0 20px hsla(40,45%,55%,0.2)",
+            boxShadow: "0 0 0 2px var(--accent), 0 0 0 4px var(--surface-1), 0 0 20px hsla(40,45%,55%,0.2)",
             flexShrink: 0,
           }}
         />
@@ -422,7 +421,7 @@ function ConversationRow({
   const willMarkRead = offset >= 0;
   const willMarkUnread = offset < 0;
   const reached = Math.abs(offset) >= SWIPE_THRESHOLD;
-  const actionColor = willMarkRead ? "var(--status-success)" : "var(--gold)";
+  const actionColor = willMarkRead ? "var(--status-success)" : "var(--accent)";
   const actionLabel = willMarkRead ? "Gelesen" : willMarkUnread ? "Ungelesen" : "";
 
   return (
@@ -476,8 +475,8 @@ function ConversationRow({
           position: "absolute", left: 0, top: "50%",
           width: 2, height: active ? "60%" : "0%",
           transform: "translate(-50%, -50%)",
-          background: "var(--gold)", borderRadius: 2,
-          boxShadow: active ? "0 0 12px var(--gold)" : undefined,
+          background: "var(--accent)", borderRadius: 2,
+          boxShadow: active ? "0 0 12px var(--accent)" : undefined,
           transition: "height 240ms var(--easing)",
         }} />
         <div style={{ position: "relative" }}>

@@ -296,7 +296,7 @@ function AssetRow({ a, onOpen }: { a: ModelAsset; onOpen: () => void }) {
         }}>TEST</span>
       )}
       <span style={{ background: tm.gradient, color: "#fff", fontSize: 10.5, fontWeight: 600, padding: "3px 9px", borderRadius: 999 }}>{tm.label}</span>
-      <span style={{ fontSize: 12, color: "var(--gold, #d4af6a)", fontVariantNumeric: "tabular-nums" }}>
+      <span style={{ fontSize: 12, color: "var(--accent, #d4af6a)", fontVariantNumeric: "tabular-nums" }}>
         {a.value_cents > 0 ? euro(a.value_cents) : "Gratis"}
       </span>
       <span style={{ fontSize: 12, color: rateColor(rate), fontWeight: 600, width: 44, textAlign: "right" }}>
@@ -358,7 +358,7 @@ function AssetLightbox({ a, onClose, onDeleted }: { a: ModelAsset; onClose: () =
               {CATEGORY_LABEL[a.category] ?? a.category}
             </span>
           </div>
-          <div style={{ fontSize: 26, fontWeight: 600, color: "var(--gold, #d4af6a)", fontVariantNumeric: "tabular-nums" }}>
+          <div style={{ fontSize: 26, fontWeight: 600, color: "var(--accent, #d4af6a)", fontVariantNumeric: "tabular-nums" }}>
             {a.value_cents > 0 ? euro(a.value_cents) : "Gratis"}
           </div>
           {a.tags.length > 0 && (

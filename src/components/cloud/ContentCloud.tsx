@@ -110,15 +110,15 @@ export function ContentCloud({ model, returnConvId, onBackToChat }: Props) {
       background: "linear-gradient(180deg, hsla(40,18%,8%,0.25), hsla(0,0%,4%,0.5))",
     }}>
       {/* Header */}
-      <header className="glass-strong" style={{
+      <header className="solid-2" style={{
         padding: "16px 24px",
-        borderBottom: "1px solid var(--hairline-gold)",
+        borderBottom: "1px solid var(--hairline-accent)",
         display: "flex", alignItems: "center", gap: 14,
       }}>
         <img src={model.avatarUrl} alt={model.displayName} width={42} height={42}
           style={{
             width: 42, height: 42, borderRadius: "50%", objectFit: "cover",
-            boxShadow: "0 0 0 2px var(--gold), 0 0 0 4px var(--surface-1), 0 0 18px hsla(38,55%,55%,0.25)",
+            boxShadow: "0 0 0 2px var(--accent), 0 0 0 4px var(--surface-1), 0 0 18px hsla(38,55%,55%,0.25)",
           }} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div className="display" style={{
@@ -252,8 +252,8 @@ function TabBtn({ active, onClick, label, count }: { active: boolean; onClick: (
   return (
     <button onClick={onClick} style={{
       padding: "10px 16px",
-      borderBottom: active ? "2px solid var(--gold)" : "2px solid transparent",
-      color: active ? "var(--gold)" : "var(--text-muted)",
+      borderBottom: active ? "2px solid var(--accent)" : "2px solid transparent",
+      color: active ? "var(--accent)" : "var(--text-muted)",
       fontSize: 13, fontWeight: 600, letterSpacing: -0.1,
       transition: "all 200ms var(--easing)",
       display: "inline-flex", alignItems: "center", gap: 8,
@@ -262,7 +262,7 @@ function TabBtn({ active, onClick, label, count }: { active: boolean; onClick: (
       <span className="tabular-nums" style={{
         fontSize: 10, padding: "1px 6px", borderRadius: 6,
         background: active ? "hsla(40,45%,55%,0.15)" : "hsla(0,0%,100%,0.04)",
-        color: active ? "var(--gold)" : "var(--text-subtle)",
+        color: active ? "var(--accent)" : "var(--text-subtle)",
       }}>{count}</span>
     </button>
   );
@@ -273,7 +273,7 @@ function TagChip({ active, label, onClick }: { active: boolean; label: string; o
     <button onClick={onClick} style={{
       padding: "5px 10px", borderRadius: 999,
       fontSize: 11, fontWeight: 600, flexShrink: 0,
-      color: active ? "var(--gold)" : "var(--text-muted)",
+      color: active ? "var(--accent)" : "var(--text-muted)",
       background: active ? "hsla(40,45%,55%,0.10)" : "hsla(0,0%,100%,0.025)",
       border: `1px solid ${active ? "hsla(40,45%,55%,0.4)" : "hsla(0,0%,100%,0.06)"}`,
     }}>{label}</button>
@@ -362,7 +362,7 @@ function MediaCard({ a, onSend, onPreview, canSend }: { a: MediaAsset; onSend: (
           padding: "7px 10px", borderRadius: 8,
           fontSize: 11, fontWeight: 700, letterSpacing: 0.2,
           background: canSend ? "linear-gradient(180deg, hsla(38,42%,58%,0.22), hsla(38,42%,40%,0.12))" : "hsla(0,0%,100%,0.04)",
-          color: canSend ? "var(--gold)" : "var(--text-subtle)",
+          color: canSend ? "var(--accent)" : "var(--text-subtle)",
           border: `1px solid ${canSend ? "hsla(38,42%,58%,0.4)" : "hsla(0,0%,100%,0.06)"}`,
           cursor: canSend ? "pointer" : "not-allowed",
         }}>An Chat senden</button>
@@ -507,7 +507,7 @@ function UploadButton({ modelId }: { modelId: string }) {
       <button onClick={() => ref.current?.click()} disabled={busy} style={{
         ...pillBtn,
         marginBottom: 8,
-        color: "var(--gold)",
+        color: "var(--accent)",
         background: "hsla(40,45%,55%,0.10)",
         borderColor: "hsla(40,45%,55%,0.4)",
       }}>

@@ -35,8 +35,9 @@ export function Sidebar({ view, setView, models }: Props) {
     }}>
       {/* Workspace logo */}
       <div style={{ padding: "6px 8px 14px", display: "flex", alignItems: "center", gap: 8 }}>
-        <div className="gold-gradient-bg" style={{
+        <div style={{
           width: 20, height: 20, borderRadius: 6,
+          background: "var(--surface-3)", color: "var(--text-strong)",
           display: "grid", placeItems: "center",
           fontWeight: 600, fontSize: 10, letterSpacing: -0.2,
         }}>SX</div>
@@ -102,8 +103,9 @@ export function Sidebar({ view, setView, models }: Props) {
         background: "var(--surface-1)",
         display: "flex", alignItems: "center", gap: 8,
       }}>
-        <div className="gold-gradient-bg" style={{
+        <div style={{
           width: 24, height: 24, borderRadius: "50%", flexShrink: 0,
+          background: "var(--surface-3)", color: "var(--text-strong)",
           display: "grid", placeItems: "center", fontSize: 10, fontWeight: 600,
         }}>{initials}</div>
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -163,7 +165,7 @@ function ProfileNavItem({
       <span style={{
         position: "absolute", left: 0, top: "50%", width: 3,
         height: active ? 20 : 0, transform: "translateY(-50%)",
-        background: "var(--accent-grad)",
+        background: "var(--accent)",
         borderRadius: 999, transition: "height 200ms var(--easing)",
       }} />
       <span style={{ position: "relative", flexShrink: 0 }}>
@@ -189,8 +191,9 @@ function ProfileNavItem({
         }}>{handle}</div>
       </div>
       {unread > 0 && (
-        <span className="gold-gradient-bg tabular-nums" style={{
+        <span className="tabular-nums" style={{
           minWidth: 18, height: 18, padding: "0 6px", borderRadius: 999,
+          background: "var(--surface-3)", color: "var(--text-strong)",
           fontSize: 11, fontWeight: 500,
           display: "grid", placeItems: "center",
         }}>{unread}</span>
@@ -219,7 +222,7 @@ function NavCardItem({
       <span style={{
         position: "absolute", left: 0, top: "50%", width: 3,
         height: active ? 20 : 0, transform: "translateY(-50%)",
-        background: "var(--accent-grad)",
+        background: "var(--accent)",
         borderRadius: 999, transition: "height 200ms var(--easing)",
       }} />
       <span style={{

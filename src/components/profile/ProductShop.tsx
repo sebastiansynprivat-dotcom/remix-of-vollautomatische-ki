@@ -25,7 +25,7 @@ export function ProductShop({ products }: { products: Product[] }) {
           <div style={{ padding: 14 }}>
             <div style={{ color: "var(--text-strong)", fontSize: 14, fontWeight: 600, marginBottom: 6 }}>{p.title}</div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-              <span className="tabular" style={{ color: "var(--gold)", fontSize: 16, fontWeight: 700 }}>
+              <span className="tabular" style={{ color: "var(--accent)", fontSize: 16, fontWeight: 700 }}>
                 {formatCurrency(p.price, p.currency)}
               </span>
               <span className="tabular" style={{ color: "var(--text-subtle)", fontSize: 11 }}>
@@ -33,7 +33,7 @@ export function ProductShop({ products }: { products: Product[] }) {
               </span>
             </div>
             <button onClick={() => handleBuy(p.id)} disabled={!p.isAvailable}
-              className={p.isAvailable ? "gold-gradient-bg" : ""}
+              className={p.isAvailable ? "accent-gradient-bg" : ""}
               style={{
                 width: "100%", padding: "9px", borderRadius: 8,
                 fontSize: 12, fontWeight: 700,

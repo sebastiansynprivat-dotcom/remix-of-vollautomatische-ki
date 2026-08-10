@@ -14,7 +14,7 @@ export const MessageBubble = memo(function MessageBubble({ msg, isOwn }: { msg: 
         border: "1px solid var(--hairline)",
         borderRadius: isOwn ? "8px 8px 2px 8px" : "8px 8px 8px 2px",
         padding: 12,
-        color: "var(--text-strong)",
+        color: isOwn ? "var(--text-strong)" : "var(--text)",
         fontSize: 13, lineHeight: 1.55,
         boxShadow: "none",
       }}>
@@ -37,7 +37,7 @@ function ReadStatus({ status }: { status: Message["status"] }) {
   if (status === "sent") {
     return <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-subtle)" strokeWidth="2.5"><path d="M5 12l5 5L20 7"/></svg>;
   }
-  const color = status === "read" ? "var(--gold)" : "var(--text-strong)";
+  const color = status === "read" ? "var(--accent)" : "var(--text-subtle)";
   return (
     <svg width="14" height="12" viewBox="0 0 24 18" fill="none" stroke={color} strokeWidth="2.5">
       <path d="M1 10l4 4L13 6"/>

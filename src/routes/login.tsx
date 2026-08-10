@@ -78,7 +78,7 @@ function LoginPage() {
           <Field label="Email" type="email" value={email} onChange={setEmail} />
           <Field label="Passwort" type="password" value={password} onChange={setPassword} />
           {err && <div style={{ fontSize: 13, color: "#ef4444" }}>{err}</div>}
-          <button type="submit" disabled={busy} className="gold-gradient-bg" style={{
+          <button type="submit" disabled={busy} className="accent-gradient-bg" style={{
             marginTop: 8, padding: "12px 16px", borderRadius: 10,
             color: "#1a1a1a", fontWeight: 700, fontSize: 14,
             border: "none", cursor: busy ? "wait" : "pointer", opacity: busy ? 0.6 : 1,

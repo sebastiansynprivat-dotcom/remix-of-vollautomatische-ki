@@ -43,7 +43,7 @@ function CreatorCard({ creator, crown = false }: { creator: typeof mockTopCreato
       boxShadow: crown ? "0 0 32px hsla(40,45%,55%,0.18), inset 0 1px 0 hsla(0,0%,100%,0.08)" : undefined,
     }}>
       {crown && (
-        <div style={{ color: "var(--gold)", fontSize: 18, marginBottom: 8 }}>👑</div>
+        <div style={{ color: "var(--accent)", fontSize: 18, marginBottom: 8 }}>👑</div>
       )}
       <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}>
         <Avatar id={creator.id} name={creator.displayName} size={64} ring={creator.verified} />
@@ -53,7 +53,7 @@ function CreatorCard({ creator, crown = false }: { creator: typeof mockTopCreato
         {creator.verified && (
           <span style={{
             width: 14, height: 14, borderRadius: "50%",
-            background: "var(--gold)", color: "hsl(40,30%,8%)",
+            background: "var(--accent)", color: "hsl(40,30%,8%)",
             display: "grid", placeItems: "center",
           }}>
             <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><path d="M5 12l5 5L20 7"/></svg>
@@ -64,10 +64,10 @@ function CreatorCard({ creator, crown = false }: { creator: typeof mockTopCreato
       <div className="tabular" style={{ color: "var(--text-subtle)", fontSize: 11, marginBottom: 12 }}>
         {creator.subscriberCount.toLocaleString("de-DE")} Abonnenten
       </div>
-      <div className="tabular" style={{ color: "var(--gold)", fontSize: 13, fontWeight: 600, marginBottom: 12 }}>
+      <div className="tabular" style={{ color: "var(--accent)", fontSize: 13, fontWeight: 600, marginBottom: 12 }}>
         Ab {formatCurrency(creator.price)} / Monat
       </div>
-      <button className="gold-gradient-bg" style={{
+      <button className="accent-gradient-bg" style={{
         width: "100%", padding: "9px", borderRadius: 8, fontSize: 12, fontWeight: 700,
       }}>Abonnieren ✦</button>
     </div>

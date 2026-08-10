@@ -179,7 +179,7 @@ export function AssetUploadModal({ modelId, onClose, onSaved }: Props) {
               <span style={lbl}>Wert (€)</span>
               <input value={valueEur} onChange={e => setValueEur(e.target.value)} inputMode="decimal"
                 placeholder="0 für gratis, oder Wert in Euro"
-                style={{ ...field, color: "var(--gold, #d4af6a)" }} />
+                style={{ ...field, color: "var(--accent, #d4af6a)" }} />
             </label>
           </div>
 

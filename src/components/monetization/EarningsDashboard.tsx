@@ -5,8 +5,8 @@ const typeLabel: Record<string, string> = {
 };
 
 const typeColor: Record<string, string> = {
-  subscription: "var(--gold)", tip: "var(--gold)",
-  ppv: "var(--gold-dark)", product: "var(--text-muted)",
+  subscription: "var(--accent)", tip: "var(--accent)",
+  ppv: "var(--accent-dark)", product: "var(--text-muted)",
 };
 
 export function EarningsDashboard() {
@@ -16,7 +16,7 @@ export function EarningsDashboard() {
     <div style={{ flex: 1, height: "100dvh", overflowY: "auto", padding: "32px 40px" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
         <h1 style={{ color: "var(--text-strong)", fontSize: 28, fontWeight: 700, letterSpacing: -0.5 }}>Einnahmen</h1>
-        <button className="gold-gradient-bg" disabled={e.balance <= 0} style={{
+        <button className="accent-gradient-bg" disabled={e.balance <= 0} style={{
           padding: "11px 22px", borderRadius: 10, fontSize: 13, fontWeight: 700,
           opacity: e.balance > 0 ? 1 : 0.5,
         }}>Auszahlen ✦</button>
@@ -68,7 +68,7 @@ function KpiTile({ label, value, highlight = false }: { label: string; value: st
         color: "var(--text-subtle)", fontWeight: 600, marginBottom: 8,
       }}>{label}</div>
       <div className="tabular" style={{
-        color: highlight ? "var(--gold)" : "var(--text-strong)",
+        color: highlight ? "var(--accent)" : "var(--text-strong)",
         fontSize: "clamp(1.75rem, 2vw + 1rem, 2.5rem)",
         fontWeight: 700, letterSpacing: -1, lineHeight: 1,
       }}>{value}</div>

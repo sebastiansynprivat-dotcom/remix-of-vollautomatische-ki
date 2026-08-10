@@ -54,7 +54,7 @@ export function FanBrainDrawer({
         position: "fixed", top: 0, right: 0, bottom: 0,
         width: "min(720px, 96vw)",
         background: "var(--surface-1)",
-        borderLeft: "1px solid var(--hairline-gold)",
+        borderLeft: "1px solid var(--hairline-accent)",
         boxShadow: "-24px 0 60px hsla(0,0%,0%,0.5)",
         zIndex: 61,
         display: "flex", flexDirection: "column",
@@ -95,14 +95,14 @@ function Header({ fan, onClose, isMock }: { fan: FanBrain; onClose: () => void; 
         width: 44, height: 44, borderRadius: 12,
         display: "grid", placeItems: "center",
         background: "linear-gradient(160deg, hsla(40,40%,28%,0.6), hsla(40,40%,16%,0.4))",
-        border: "1px solid var(--hairline-gold)",
-        color: "var(--gold)", fontWeight: 700, fontSize: 16,
+        border: "1px solid var(--hairline-accent)",
+        color: "var(--accent)", fontWeight: 700, fontSize: 16,
       }}>{fan.display_name.split(" ").map(s => s[0]).join("")}</div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 2 }}>
           <span style={{
             padding: "2px 8px", borderRadius: 999, fontSize: 9, fontWeight: 700,
-            background: "hsla(40,45%,55%,0.18)", color: "var(--gold)",
+            background: "hsla(40,45%,55%,0.18)", color: "var(--accent)",
             border: "1px solid hsla(40,45%,55%,0.4)", letterSpacing: 0.6,
           }}>FAN-BRAIN · {isMock ? "MOCK" : "LIVE"}</span>
           <span style={{ ...mono, fontSize: 11, color: "var(--text-subtle)" }}>{fan.fan_id}</span>
@@ -118,7 +118,7 @@ function Header({ fan, onClose, isMock }: { fan: FanBrain; onClose: () => void; 
       </div>
       <button onClick={onClose} style={{
         padding: "6px 12px", borderRadius: 8,
-        border: "1px solid var(--hairline-gold)",
+        border: "1px solid var(--hairline-accent)",
         background: "hsla(0,0%,100%,0.03)",
         color: "var(--text-subtle)", fontSize: 12, fontWeight: 600,
       }}>Schließen</button>
@@ -139,7 +139,7 @@ function Tabs({ tab, setTab }: { tab: TabId; setTab: (t: TabId) => void }) {
           <button key={t.id} onClick={() => setTab(t.id)} style={{
             padding: "7px 12px", borderRadius: 8, border: "none",
             background: active ? "hsla(40,45%,55%,0.16)" : "transparent",
-            color: active ? "var(--gold)" : "var(--text-subtle)",
+            color: active ? "var(--accent)" : "var(--text-subtle)",
             fontSize: 12, fontWeight: 600, whiteSpace: "nowrap", cursor: "pointer",
           }}>{t.label}</button>
         );
@@ -157,7 +157,7 @@ function Card({ children, accent }: { children: React.ReactNode; accent?: boolea
       background: accent
         ? "linear-gradient(160deg, hsla(40,40%,18%,0.45), hsla(0,0%,0%,0.2))"
         : "hsla(0,0%,100%,0.025)",
-      border: `1px solid ${accent ? "var(--hairline-gold)" : "var(--hairline)"}`,
+      border: `1px solid ${accent ? "var(--hairline-accent)" : "var(--hairline)"}`,
       color: "var(--text)", fontSize: 13, lineHeight: 1.55,
     }}>{children}</div>
   );
@@ -166,13 +166,13 @@ function Card({ children, accent }: { children: React.ReactNode; accent?: boolea
 function Kicker({ children }: { children: React.ReactNode }) {
   return <div style={{
     fontSize: 9.5, fontWeight: 700, letterSpacing: 0.9,
-    color: "var(--gold)", textTransform: "uppercase", marginBottom: 8,
+    color: "var(--accent)", textTransform: "uppercase", marginBottom: 8,
   }}>{children}</div>;
 }
 
 function Bar({ value, max = 100, tone = "gold" }: { value: number; max?: number; tone?: "gold" | "warn" | "danger" }) {
   const pct = Math.max(0, Math.min(100, (value / max) * 100));
-  const color = tone === "danger" ? "hsl(0,72%,55%)" : tone === "warn" ? "hsl(32,80%,55%)" : "var(--gold)";
+  const color = tone === "danger" ? "hsl(0,72%,55%)" : tone === "warn" ? "hsl(32,80%,55%)" : "var(--accent)";
   return (
     <div style={{ height: 6, borderRadius: 999, background: "hsla(0,0%,100%,0.06)", overflow: "hidden" }}>
       <div style={{ width: `${pct}%`, height: "100%", background: color, transition: "width 220ms ease" }} />
@@ -198,7 +198,7 @@ function Overview({ fan }: { fan: FanBrain }) {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
           <div>
             <div style={{ fontSize: 11, color: "var(--text-subtle)", marginBottom: 4 }}>PPV-Moment-Score</div>
-            <div style={{ fontSize: 24, fontWeight: 700, color: "var(--gold)" }}>{fan.signals.ppv_moment_score}</div>
+            <div style={{ fontSize: 24, fontWeight: 700, color: "var(--accent)" }}>{fan.signals.ppv_moment_score}</div>
             <Bar value={fan.signals.ppv_moment_score} />
           </div>
           <div>
@@ -299,7 +299,7 @@ function Commercial({ fan }: { fan: FanBrain }) {
           {Array.from({ length: 10 }).map((_, i) => (
             <div key={i} style={{
               flex: 1, height: 26, borderRadius: 6,
-              background: i < c.ladder_step ? "var(--gold)" : "hsla(0,0%,100%,0.05)",
+              background: i < c.ladder_step ? "var(--accent)" : "hsla(0,0%,100%,0.05)",
               border: "1px solid var(--hairline)",
               display: "grid", placeItems: "center",
               fontSize: 10, fontWeight: 700,
@@ -336,7 +336,7 @@ function Relationship({ fan }: { fan: FanBrain }) {
         {r.promises_made.map((p, i) => (
           <div key={i} style={{
             padding: "8px 10px", borderRadius: 8, marginTop: i ? 6 : 0,
-            background: "hsla(40,45%,55%,0.08)", border: "1px solid var(--hairline-gold)",
+            background: "hsla(40,45%,55%,0.08)", border: "1px solid var(--hairline-accent)",
             fontSize: 12.5, color: "var(--text-strong)",
           }}>
             „{p.text}" {p.due && <span style={{ color: "var(--text-subtle)", fontSize: 11 }}>· bis {new Date(p.due).toLocaleDateString()}</span>}
@@ -387,7 +387,7 @@ function Signals({ fan }: { fan: FanBrain }) {
           {(["idle","armed","fan_ack","pitched","bought","declined","recovered"] as const).map(st => (
             <span key={st} style={{
               padding: "6px 10px", borderRadius: 999, fontSize: 11, fontWeight: 600,
-              background: s.bridge_state === st ? "var(--gold)" : "hsla(0,0%,100%,0.04)",
+              background: s.bridge_state === st ? "var(--accent)" : "hsla(0,0%,100%,0.04)",
               color: s.bridge_state === st ? "var(--bg)" : "var(--text-subtle)",
               border: "1px solid var(--hairline)",
             }}>{st}</span>
@@ -430,7 +430,7 @@ function KV({ obj }: { obj: Record<string, unknown> }) {
       <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", rowGap: 8, columnGap: 14, fontSize: 12.5 }}>
         {Object.entries(obj).map(([k, v]) => (
           <Fragment key={k}>
-            <div style={{ ...mono, color: "var(--gold)", fontSize: 11 }}>{k}</div>
+            <div style={{ ...mono, color: "var(--accent)", fontSize: 11 }}>{k}</div>
             <div style={{ color: "var(--text-strong)" }}>
               {Array.isArray(v) ? v.join(", ") : String(v ?? "—")}
             </div>
@@ -448,7 +448,7 @@ function Pill({ children, tone = "neutral" }: { children: React.ReactNode; tone?
       padding: "4px 9px", borderRadius: 999,
       fontSize: 11, fontWeight: 600,
       background: tone === "danger" ? "hsla(0,60%,45%,0.15)" : "hsla(40,45%,55%,0.12)",
-      color: tone === "danger" ? "hsl(0,80%,72%)" : "var(--gold)",
+      color: tone === "danger" ? "hsl(0,80%,72%)" : "var(--accent)",
       border: `1px solid ${tone === "danger" ? "hsla(0,60%,55%,0.4)" : "hsla(40,45%,55%,0.35)"}`,
     }}>{children}</span>
   );

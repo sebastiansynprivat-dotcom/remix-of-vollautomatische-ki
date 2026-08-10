@@ -23,7 +23,7 @@ export function TimeTravelPanel({ convId }: { convId: string }) {
       background: "hsla(40,55%,55%,0.04)",
       display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center", fontSize: 12,
     }}>
-      <span style={{ color: "var(--gold)", letterSpacing: 0.6, textTransform: "uppercase", fontWeight: 600 }}>
+      <span style={{ color: "var(--accent)", letterSpacing: 0.6, textTransform: "uppercase", fontWeight: 600 }}>
         ⏰ Zeitreise
       </span>
 
@@ -65,7 +65,7 @@ export function TimeTravelPanel({ convId }: { convId: string }) {
         style={{
           marginLeft: "auto",
           padding: "6px 14px", borderRadius: 6,
-          background: "var(--gold)", color: "#000",
+          background: "var(--accent)", color: "#000",
           border: "none", fontWeight: 600, cursor: "pointer", fontSize: 12,
         }}
       >

@@ -46,12 +46,12 @@ export function FunnelLadderEditor({ onClose }: { onClose: () => void }) {
         style={{
           width: "min(760px, 100%)", maxHeight: "84vh", overflow: "auto",
           background: "var(--bg-elev, var(--bg))", color: "var(--fg)",
-          border: "1px solid color-mix(in oklab, var(--gold) 24%, transparent)",
+          border: "1px solid color-mix(in oklab, var(--accent) 24%, transparent)",
           borderRadius: 16, padding: 18,
           boxShadow: "0 24px 60px hsla(0,0%,0%,0.5)",
         }}
       >
-        <h2 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: "var(--gold)" }}>Verkaufs-Stufen</h2>
+        <h2 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: "var(--accent)" }}>Verkaufs-Stufen</h2>
         <p style={{ margin: "6px 0 14px", fontSize: 11.5, opacity: 0.7, lineHeight: 1.5 }}>
           Reihenfolge = Ablauf der Angebote. Der Auto-Pilot geht pro Angebot maximal eine Intensitäts-Stufe
           weiter; größere Sprünge brauchen doppelten Aufbau. Vor jedem Angebot kommt eine Brücken-Nachricht.
@@ -147,6 +147,6 @@ const ghostBtn: React.CSSProperties = {
 
 const goldBtn: React.CSSProperties = {
   padding: "7px 15px", borderRadius: 999, cursor: "pointer", fontSize: 11.5, fontWeight: 700,
-  background: "var(--gold)", color: "var(--bg)", border: "none",
+  background: "var(--accent)", color: "var(--bg)", border: "none",
   boxShadow: "0 6px 18px hsla(40,55%,55%,0.3)",
 };

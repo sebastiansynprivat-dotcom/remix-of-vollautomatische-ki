@@ -45,7 +45,7 @@ export function AutoModeToggle({
     <div style={{ display: "inline-flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
       <span style={{
         fontSize: 11, fontWeight: 500, letterSpacing: 0,
-        color: on ? "hsl(239 84% 74%)" : "hsl(43 96% 64%)",
+        color: on ? "var(--text)" : "var(--text-subtle)",
         transition: "color 200ms cubic-bezier(0.34,1.56,0.64,1)",
         whiteSpace: "nowrap",
       }}>Auto-Modus</span>
@@ -61,9 +61,7 @@ export function AutoModeToggle({
           position: "relative", border: "none",
           cursor: isDisabled ? "not-allowed" : "pointer",
           opacity: isDisabled ? 0.5 : 1,
-          background: on
-            ? "linear-gradient(90deg, hsl(239 84% 62%), hsl(272 72% 60%))"
-            : "#2A2A30",
+          background: on ? "var(--accent)" : "var(--surface-3)",
           boxShadow: "none",
           transition: "background 200ms cubic-bezier(0.34,1.56,0.64,1), box-shadow 200ms ease",
         }}

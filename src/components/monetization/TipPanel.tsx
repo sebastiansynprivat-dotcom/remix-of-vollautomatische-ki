@@ -43,7 +43,7 @@ export function TipPanel({ onClose, onSend }: Props) {
               className="tabular"
               style={{
                 padding: "10px 6px", borderRadius: 8, fontSize: 13, fontWeight: 600,
-                color: active ? "var(--gold)" : "var(--text)",
+                color: active ? "var(--accent)" : "var(--text)",
                 border: `1px solid ${active ? "hsla(40,45%,55%,0.5)" : "hsla(0,0%,100%,0.06)"}`,
                 background: active ? "hsla(40,45%,55%,0.10)" : "hsla(0,0%,100%,0.02)",
                 boxShadow: active ? "0 0 16px hsla(40,45%,55%,0.18)" : undefined,
@@ -78,7 +78,7 @@ export function TipPanel({ onClose, onSend }: Props) {
       <button
         onClick={handleTipSend}
         disabled={amount <= 0}
-        className="gold-gradient-bg"
+        className="accent-gradient-bg"
         style={{
           width: "100%", padding: "11px", borderRadius: 10, fontSize: 13, fontWeight: 700,
           opacity: amount <= 0 ? 0.5 : 1,

@@ -177,7 +177,7 @@ export function ChatArea({
         }} />
         <div className="display" style={{
           fontSize: 200, fontWeight: 500, lineHeight: 1,
-          color: "var(--gold)",
+          color: "var(--accent)",
           letterSpacing: "-0.05em",
           animation: "monogramBreathe 5s ease-in-out infinite",
           textShadow: "0 0 100px hsla(38,55%,55%,0.45)",
@@ -188,7 +188,7 @@ export function ChatArea({
           position: "absolute", bottom: 56, left: "50%", transform: "translateX(-50%)",
           display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
         }}>
-          <span style={{ width: 28, height: 1, background: "var(--hairline-gold)" }} />
+          <span style={{ width: 28, height: 1, background: "var(--hairline-accent)" }} />
           <span style={{ color: "var(--text-subtle)", fontSize: 11, letterSpacing: 1.4, textTransform: "uppercase" }}>
             Wähle eine Konversation
           </span>
@@ -274,12 +274,12 @@ export function ChatArea({
                     display: "flex", alignItems: "center", gap: 10,
                     padding: "10px 16px 2px",
                   }}>
-                    <span style={{ flex: 1, height: 1, background: "color-mix(in oklab, var(--gold) 30%, transparent)" }} />
+                    <span style={{ flex: 1, height: 1, background: "var(--hairline)" }} />
                     <span style={{
                       fontSize: 10, fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase",
-                      color: "var(--gold)",
+                      color: "var(--accent)",
                     }}>Neu ab hier</span>
-                    <span style={{ flex: 1, height: 1, background: "color-mix(in oklab, var(--gold) 30%, transparent)" }} />
+                    <span style={{ flex: 1, height: 1, background: "var(--hairline)" }} />
                   </div>
                 ) : null;
                 const body = !autopilot ? bubble : (
@@ -308,7 +308,7 @@ export function ChatArea({
                   display: "inline-flex", alignItems: "center", gap: 6,
                   padding: "6px 12px", borderRadius: 999,
                   fontSize: 11, fontWeight: 600, color: "var(--bg)",
-                  background: "var(--gold)",
+                  background: "var(--accent)",
                   boxShadow: "0 8px 24px hsla(40,55%,55%,0.35), 0 0 0 1px hsla(40,55%,55%,0.4)",
                   animation: "bubbleIn 240ms var(--easing-ios) both",
                   zIndex: 5,
@@ -324,15 +324,14 @@ export function ChatArea({
             <div style={{
               display: "flex", alignItems: "center", gap: 10,
               margin: "6px 16px 0", padding: "7px 12px", borderRadius: 10,
-              background: "color-mix(in oklab, var(--gold) 8%, transparent)",
-              border: "1px solid color-mix(in oklab, var(--gold) 26%, transparent)",
-              fontSize: 11, fontWeight: 600, letterSpacing: 0.3, color: "var(--gold)",
+              background: "var(--surface-1)",
+              border: "1px solid var(--hairline)",
+              fontSize: 11, fontWeight: 500, letterSpacing: 0, color: "var(--text)",
             }}>
               <span
-                className={simRun.state === "running" ? "gold-gradient-bg" : undefined}
                 style={{
                   width: 8, height: 8, borderRadius: 999,
-                  background: simRun.state === "running" ? undefined : "var(--text-subtle)",
+                  background: simRun.state === "running" ? "var(--status-success)" : "var(--text-disabled)",
                 }}
               />
               {simStatusLabel(simRun)}
@@ -342,9 +341,9 @@ export function ChatArea({
                   onClick={() => { fx.haptic("tick"); void setSimState(conv.id, simRun.state === "running" ? "paused" : "running"); }}
                   style={{
                     marginLeft: "auto", padding: "4px 10px", borderRadius: 999, cursor: "pointer",
-                    background: simRun.state === "running" ? "transparent" : "var(--gold)",
-                    color: simRun.state === "running" ? "var(--gold)" : "var(--bg)",
-                    border: "1px solid color-mix(in oklab, var(--gold) 34%, transparent)",
+                    background: simRun.state === "running" ? "transparent" : "var(--accent)",
+                    color: simRun.state === "running" ? "var(--accent)" : "var(--bg)",
+                    border: "1px solid color-mix(in oklab, var(--accent) 34%, transparent)",
                     fontSize: 10.5, fontWeight: 700,
                   }}
                 >
@@ -357,8 +356,8 @@ export function ChatArea({
                 onClick={() => setLadderOpen(true)}
                 style={{
                   padding: "4px 10px", borderRadius: 999, cursor: "pointer",
-                  background: "transparent", color: "var(--gold)",
-                  border: "1px solid color-mix(in oklab, var(--gold) 34%, transparent)",
+                  background: "transparent", color: "var(--accent)",
+                  border: "1px solid color-mix(in oklab, var(--accent) 34%, transparent)",
                   fontSize: 10.5, fontWeight: 700,
                 }}
               >
@@ -370,19 +369,19 @@ export function ChatArea({
             <div style={{
               display: "flex", alignItems: "center", gap: 8,
               margin: "6px 16px 0", padding: "7px 12px", borderRadius: 10,
-              background: "color-mix(in oklab, var(--gold) 8%, transparent)",
-              border: "1px solid color-mix(in oklab, var(--gold) 26%, transparent)",
-              fontSize: 11, fontWeight: 600, letterSpacing: 0.3, color: "var(--gold)",
+              background: "var(--surface-1)",
+              border: "1px solid var(--hairline)",
+              fontSize: 11, fontWeight: 500, letterSpacing: 0, color: "var(--text)",
             }}>
-              <span className="gold-gradient-bg" style={{ width: 8, height: 8, borderRadius: 999 }} />
+              <span style={{ width: 8, height: 8, borderRadius: 999, background: "var(--status-success)" }} />
               Auto-Pilot aktiv — du schreibst als Fan, der Creator antwortet automatisch
               <button
                 type="button"
                 onClick={() => setLadderOpen(true)}
                 style={{
                   marginLeft: "auto", padding: "4px 10px", borderRadius: 999, cursor: "pointer",
-                  background: "transparent", color: "var(--gold)",
-                  border: "1px solid color-mix(in oklab, var(--gold) 34%, transparent)",
+                  background: "transparent", color: "var(--accent)",
+                  border: "1px solid color-mix(in oklab, var(--accent) 34%, transparent)",
                   fontSize: 10.5, fontWeight: 700,
                 }}
               >
@@ -405,7 +404,7 @@ export function ChatArea({
                 onClick={() => chat.resumeAutopilot(conv.id)}
                 style={{
                   padding: "6px 12px", borderRadius: 999, border: "none",
-                  background: "var(--gold)", color: "var(--bg)",
+                  background: "var(--accent)", color: "var(--bg)",
                   fontSize: 11, fontWeight: 700, cursor: "pointer",
                   boxShadow: "0 6px 18px hsla(40,55%,55%,0.3)",
                 }}
