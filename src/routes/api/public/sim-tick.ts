@@ -444,6 +444,26 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
     if (fanEndsSession) log.push("fan-verabschiedet");
   }
 
+  // Hat der Fan das Angebot im Text klar abgelehnt, wird der Kauf zurückgenommen.
+  if (offerPurchased === true && fanTexts.length > 0) {
+    const fanText = fanTexts.join(" ").toLowerCase();
+    const rejectionWords = ["zu teuer", "kann nicht kaufen", "kann ich nicht", "ist mir zu viel", "so wird das nix", "leider nicht", "grad kein geld", "kann ich nicht kaufen", "echt viel", "immer noch viel zu teuer"];
+    if (rejectionWords.some((w) => fanText.includes(w))) {
+      offerPurchased = false;
+      if (openPpvRow) {
+        await admin.from("messages").update({ ppv_is_purchased: false }).eq("id", openPpvRow.id);
+        const idx = messages.findIndex((m) => m.id === String(openPpvRow.id));
+        if (idx >= 0 && messages[idx].ppv) {
+          messages[idx] = { ...messages[idx], ppv: { ...messages[idx].ppv!, isPurchased: false } };
+        }
+      }
+      purchasesInSession = Math.max(0, purchasesInSession - 1);
+      log.push("fan-rejected-override");
+    }
+  }
+
+
+
 
   const inserted: Json[] = [];
   for (let i = 0; i < fanTexts.length; i++) {
