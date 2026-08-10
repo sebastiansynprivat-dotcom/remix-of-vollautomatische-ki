@@ -29,17 +29,43 @@ async function handler({ request }: { request: Request }) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const admin = supabaseAdmin as unknown as { from: (t: string) => any };
 
-  let runQuery = admin
+  let runs: AnyRow[] = [];
+
+  const { data: simRuns, error: simError } = await admin
     .from("sim_runs")
-    .select("id, persona, sim_day, turn_count, state, conversation_id");
+    .select("id, persona, sim_day, turn_count, state, conversation_id")
+    .order("id", { ascending: true });
+
+  if (simError) return Response.json({ ok: false, error: simError.message }, { status: 500 });
+
   if (runIdFilter) {
-    runQuery = runQuery.eq("id", runIdFilter);
+    runs = (simRuns ?? []).filter((r: AnyRow) => r.id === runIdFilter || r.conversation_id === runIdFilter);
   }
-  const { data: runs, error: runError } = await runQuery.order("id", { ascending: true });
-  if (runError) return Response.json({ ok: false, error: runError.message }, { status: 500 });
+
+  if (runs.length === 0) {
+    // sim_runs empty or no matching run — fall back to autopilot conversations directly
+    let convQuery = admin
+      .from("conversations")
+      .select("id, is_autopilot")
+      .eq("is_autopilot", true);
+    if (runIdFilter) {
+      convQuery = convQuery.eq("id", runIdFilter);
+    }
+    const { data: autopilotConvs, error: convError } = await convQuery.order("id", { ascending: true });
+    if (convError) return Response.json({ ok: false, error: convError.message }, { status: 500 });
+
+    runs = (autopilotConvs ?? []).map((c: AnyRow) => ({
+      id: c.id,
+      conversation_id: c.id,
+      persona: "unknown",
+      sim_day: 0,
+      turn_count: 0,
+      state: "unknown",
+    }));
+  }
 
   const result: AnyRow[] = [];
-  for (const run of (runs ?? []) as AnyRow[]) {
+  for (const run of runs) {
     const { data: msgs, error: msgError } = await admin
       .from("messages")
       .select("sender_type, content_type, content, ppv_price_cents, ppv_is_purchased, created_at")
@@ -60,10 +86,10 @@ async function handler({ request }: { request: Request }) {
 
     result.push({
       run_id: run.id,
-      persona: run.persona,
-      sim_day: run.sim_day,
-      turn_count: run.turn_count,
-      state: run.state,
+      persona: run.persona ?? "unknown",
+      sim_day: run.sim_day ?? 0,
+      turn_count: run.turn_count ?? 0,
+      state: run.state ?? "unknown",
       messages,
     });
   }
