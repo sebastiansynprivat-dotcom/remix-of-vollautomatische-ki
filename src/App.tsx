@@ -113,7 +113,7 @@ function AppInner() {
         <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
           {/* Base pane: list or profile — fullscreen, tab bar floats on top */}
           <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column" }}>
-            {            ) : view.kind === "performance" ? (
+            {view.kind === "performance" ? (
               <div style={{ flex: 1, overflow: "auto", paddingBottom: "calc(64px + var(--safe-bottom) + 12px)" }}>
                 <PerformanceDashboard />
               </div>
