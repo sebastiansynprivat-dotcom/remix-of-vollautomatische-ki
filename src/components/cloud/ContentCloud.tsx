@@ -144,6 +144,7 @@ export function ContentCloud({ model, returnConvId, onBackToChat }: Props) {
       }}>
         <TabBtn active={tab === "media"} onClick={() => setTab("media")} label="Medien" count={media.length} />
         <TabBtn active={tab === "templates"} onClick={() => setTab("templates")} label="PPV-Vorlagen" count={templates.length} />
+        <TabBtn active={tab === "assets"} onClick={() => setTab("assets")} label="Assets" count={0} />
         <div style={{ flex: 1 }} />
         {isAdmin && tab === "media" && (
           <UploadButton modelId={model.id} />
