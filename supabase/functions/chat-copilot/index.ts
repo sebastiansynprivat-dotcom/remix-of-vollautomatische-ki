@@ -973,6 +973,58 @@ const TOOL = {
 // ============================================================
 // Persona / Steckbrief Block (höchste Priorität im System-Prompt)
 // ============================================================
+const COMM_STYLE_HINT: Record<string, string> = {
+  shy: "zurückhaltend, leise, vorsichtig",
+  friendly: "freundlich, locker, nahbar",
+  confident: "selbstbewusst, klar, souverän",
+  bold: "forsch, direkt, schlagfertig",
+  elegant: "elegant, gewählt, ruhig",
+};
+const APPROACH_HINT: Record<string, string> = {
+  gentle: "sanfte, behutsame Annäherung",
+  suggestive: "leicht andeutende, spielerische Annäherung",
+  direct: "direkte, klare Annäherung",
+  premium: "hochwertige, exklusive Annäherung",
+};
+const HUMOR_HINT: Record<string, string> = {
+  cute: "verspielter, süßer Humor",
+  cheeky: "frecher Humor mit Necken",
+  dry: "trockener, subtiler Humor",
+  none: "kaum Humor, eher ernst",
+};
+
+/** Baut den PERSONA-Block aus der strukturierten persona_config des Admins. */
+function buildPersonaConfigBlock(raw: unknown): string {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return "";
+  const c = raw as Record<string, unknown>;
+  const s = (k: string) => (typeof c[k] === "string" && (c[k] as string).trim() ? (c[k] as string).trim() : "");
+  const a = (k: string) => Array.isArray(c[k]) ? (c[k] as unknown[]).filter(x => typeof x === "string" && (x as string).trim()) as string[] : [];
+
+  const out: string[] = ["=== PERSONA-KONFIGURATION (verbindlich) ==="];
+  if (s("description")) out.push(`Charakter: ${s("description")}`);
+  if (s("nationality")) out.push(`Herkunft: ${s("nationality")}`);
+  const comm = COMM_STYLE_HINT[s("communication_style")];
+  if (comm) out.push(`Kommunikationsstil: ${comm}`);
+  const appr = APPROACH_HINT[s("approach_style")];
+  if (appr) out.push(`Ansprache: ${appr}`);
+  const hum = HUMOR_HINT[s("humor_type")];
+  if (hum) out.push(`Humor: ${hum}`);
+  const emojis = a("emoji_set");
+  if (emojis.length) out.push(`Emojis NUR aus diesem Set: ${emojis.join(" ")}`);
+  const phrases = a("signature_phrases");
+  if (phrases.length) out.push(`Typische Phrasen (gelegentlich einstreuen): ${phrases.map(x => `"${x}"`).join(", ")}`);
+  const avoid = a("avoid_words");
+  if (avoid.length) out.push(`Diese Wörter NIE verwenden: ${avoid.join(", ")}`);
+  if (s("opener_template")) out.push(`Opener-Vorlage (nur für die allererste Nachricht, sinngemäß): "${s("opener_template")}"`);
+  if (s("voice_sample")) {
+    out.push("Voice-Sample — genau dieser Ton, diese Länge, diese Groß-/Kleinschreibung:");
+    out.push(s("voice_sample"));
+  }
+  if (out.length === 1) return "";
+  out.push("=== PERSONA-KONFIGURATION ENDE ===");
+  return out.join("\n");
+}
+
 function buildPersonaBlock(p: Record<string, unknown> | null | undefined): string {
   const s = (k: string) => (p && typeof p[k] === "string" && (p[k] as string).trim().length > 0) ? p[k] as string : "";
   const n = (k: string) => (p && typeof p[k] === "number" && Number.isFinite(p[k] as number)) ? p[k] as number : undefined;
