@@ -329,7 +329,7 @@ export function ChatArea({
               fontSize: 11, fontWeight: 600, letterSpacing: 0.3, color: "var(--accent)",
             }}>
               <span
-                className={simRun.state === "running" ? "accent-gradient-bg" : undefined}
+                style={{ background: simRun.state === "running" ? "var(--status-success)" : "var(--text-disabled)" }}
                 style={{
                   width: 8, height: 8, borderRadius: 999,
                   background: simRun.state === "running" ? undefined : "var(--text-subtle)",
@@ -374,7 +374,7 @@ export function ChatArea({
               border: "1px solid color-mix(in oklab, var(--accent) 26%, transparent)",
               fontSize: 11, fontWeight: 600, letterSpacing: 0.3, color: "var(--accent)",
             }}>
-              <span className="accent-gradient-bg" style={{ width: 8, height: 8, borderRadius: 999 }} />
+              <span style={{ width: 8, height: 8, borderRadius: 999, background: "var(--status-success)" }} />
               Auto-Pilot aktiv — du schreibst als Fan, der Creator antwortet automatisch
               <button
                 type="button"

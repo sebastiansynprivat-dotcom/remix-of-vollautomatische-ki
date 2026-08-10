@@ -11,12 +11,14 @@ export function PPVMessageBubble({ convId, msg, isOwn }: { convId: string; msg: 
     <div style={{ display: "flex", justifyContent: isOwn ? "flex-end" : "flex-start", padding: "0 24px" }}>
       <div className="premium-card reveal" style={{
         maxWidth: 360, width: "100%",
-        borderColor: "hsla(40,45%,55%,0.25)",
+        background: "var(--surface-2)",
+        borderColor: "var(--hairline)",
+        borderLeft: "2px solid var(--accent)",
         overflow: "hidden",
       }}>
         <div style={{
           position: "relative", aspectRatio: "4/3",
-          background: "linear-gradient(135deg, hsl(280,30%,12%), hsl(40,30%,15%))",
+          background: "var(--surface-3)",
           display: "grid", placeItems: "center",
         }}>
           <div style={{
@@ -30,11 +32,11 @@ export function PPVMessageBubble({ convId, msg, isOwn }: { convId: string; msg: 
               position: "relative", zIndex: 1,
               width: 56, height: 56, borderRadius: "50%",
               background: "hsla(0,0%,0%,0.5)",
-              border: "1px solid hsla(40,45%,55%,0.4)",
+              border: "1px solid var(--hairline-strong)",
               display: "grid", placeItems: "center",
               backdropFilter: "blur(8px)",
             }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-subtle)" strokeWidth="2">
                 <rect x="3" y="11" width="18" height="11" rx="2"/>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
               </svg>
@@ -44,7 +46,7 @@ export function PPVMessageBubble({ convId, msg, isOwn }: { convId: string; msg: 
             <div style={{
               position: "absolute", top: 10, right: 10,
               padding: "4px 10px", borderRadius: 20,
-              background: "hsla(155,60%,30%,0.7)",
+              background: "rgba(16,185,129,0.16)",
               color: "var(--status-success)", fontSize: 11, fontWeight: 600,
               display: "flex", alignItems: "center", gap: 4,
               backdropFilter: "blur(8px)",

@@ -110,7 +110,7 @@ export function ContentCloud({ model, returnConvId, onBackToChat }: Props) {
       background: "linear-gradient(180deg, hsla(40,18%,8%,0.25), hsla(0,0%,4%,0.5))",
     }}>
       {/* Header */}
-      <header className="glass-strong" style={{
+      <header className="solid-2" style={{
         padding: "16px 24px",
         borderBottom: "1px solid var(--hairline-accent)",
         display: "flex", alignItems: "center", gap: 14,
