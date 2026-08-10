@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  CATEGORIES, CATEGORY_LABEL, TIERS, tierMeta, uploadAssetFile, resolveAssetUrl,
+  CATEGORIES, CATEGORY_LABEL, TIERS, tierMeta, uploadAssetFile, resolveAssetUrl, ASSET_BUCKET,
 } from "@/lib/modelAssets";
 
 interface Props {
@@ -53,8 +53,10 @@ export function AssetUploadModal({ modelId, onClose, onSaved }: Props) {
   const save = async () => {
     if (!file) { toast.error("Bitte zuerst eine Datei auswählen."); return; }
     setSaving(true);
+    let uploadedPath: string | null = null;
     try {
       const { path, mediaType } = await uploadAssetFile(file, modelId);
+      uploadedPath = path;
       const { error } = await supabase.from("model_assets").insert({
         model_id: modelId,
         url: path,
@@ -73,6 +75,9 @@ export function AssetUploadModal({ modelId, onClose, onSaved }: Props) {
       onSaved();
       onClose();
     } catch (e) {
+      if (uploadedPath) {
+        await supabase.storage.from(ASSET_BUCKET).remove([uploadedPath]).catch(() => {});
+      }
       toast.error("Speichern fehlgeschlagen: " + (e as Error).message);
     } finally {
       setSaving(false);
