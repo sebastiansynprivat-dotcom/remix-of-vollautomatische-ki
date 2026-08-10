@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ModelSetsManager } from "@/components/admin/ModelSetsManager";
+import { ModelCreateModal } from "@/components/admin/ModelCreateModal";
+import { PersonaEditor, PresetGrid } from "@/components/admin/PersonaEditor";
+import { DEFAULT_PERSONA, presetById, resolvePersonaConfig, type PersonaConfig } from "@/lib/personaPresets";
 import {
   type ChatBehavior, type EmojiFrequency, type MessageLength, type SalesTempo,
   DEFAULT_CHAT_BEHAVIOR, resolveChatBehavior, resolveEmojiFrequency,
@@ -148,9 +151,9 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
       </section>
 
       {showCreate && (
-        <CreateModal
+        <ModelCreateModal
           onClose={() => setShowCreate(false)}
-          onCreated={(id) => { setShowCreate(false); onEdit(id); }}
+          onCreated={(id: string) => { setShowCreate(false); onEdit(id); }}
         />
       )}
     </div>
@@ -160,7 +163,7 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
 
 
 
-type Tab = "basis" | "persona" | "personal" | "chat" | "sets";
+type Tab = "basis" | "kommunikation" | "persona" | "personal" | "chat" | "sets";
 
 function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
   const [tab, setTab] = useState<Tab>("basis");
@@ -214,7 +217,8 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
 
   const tabs: { id: Tab; label: string }[] = [
     { id: "basis", label: "Basis" },
-    { id: "persona", label: "Persona" },
+    { id: "kommunikation", label: "Kommunikation" },
+    { id: "persona", label: "Persona (Freitext)" },
     { id: "personal", label: "Persönlich" },
     { id: "chat", label: "Chat-Verhalten" },
     { id: "sets", label: "PPV Sets" },
@@ -277,6 +281,25 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
             <Field label="Avatar URL" value={m.avatar_url ?? ""} onChange={(v) => set("avatar_url", v)} />
             <Field label="Bio" value={m.bio ?? ""} onChange={(v) => set("bio", v)} multiline />
             <Field label="Subscriber" type="number" value={String(m.subscribers)} onChange={(v) => set("subscribers", parseInt(v) || 0)} />
+          </Panel>
+        )}
+
+        {tab === "kommunikation" && (
+          <Panel title="Kommunikationsstil">
+            <PresetGrid
+              selected={resolvePersonaConfig(m.persona_config)?.preset_id}
+              onSelect={(pid: string) => {
+                const preset = presetById(pid);
+                if (preset) set("persona_config", { ...preset.persona });
+              }}
+            />
+            <div style={{ marginTop: 18 }}>
+              <PersonaEditor
+                persona={resolvePersonaConfig(m.persona_config) ?? DEFAULT_PERSONA}
+                modelName={m.display_name}
+                onChange={(p: PersonaConfig) => set("persona_config", p)}
+              />
+            </div>
           </Panel>
         )}
 
