@@ -469,6 +469,7 @@ export type Database = {
           is_flex: boolean
           job: string | null
           languages: string[]
+          limits: Json | null
           location: string | null
           openers: string[]
           persona: string | null
@@ -502,6 +503,7 @@ export type Database = {
           is_flex?: boolean
           job?: string | null
           languages?: string[]
+          limits?: Json | null
           location?: string | null
           openers?: string[]
           persona?: string | null
@@ -535,6 +537,7 @@ export type Database = {
           is_flex?: boolean
           job?: string | null
           languages?: string[]
+          limits?: Json | null
           location?: string | null
           openers?: string[]
           persona?: string | null

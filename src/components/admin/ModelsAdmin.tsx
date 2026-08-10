@@ -4,6 +4,8 @@ import { ModelSetsManager } from "@/components/admin/ModelSetsManager";
 import { ModelCreateModal } from "@/components/admin/ModelCreateModal";
 import { PersonaEditor, PresetGrid } from "@/components/admin/PersonaEditor";
 import { StepConfigEditor } from "@/components/admin/StepConfigEditor";
+import { LimitsEditor } from "@/components/admin/LimitsEditor";
+import { resolveLimits, shieldState, SHIELD_COLOR, type ProfileLimits } from "@/lib/profileLimits";
 import type { FunnelStageConfig } from "@/lib/funnelConfig";
 import { DEFAULT_PERSONA, presetById, resolvePersonaConfig, type PersonaConfig } from "@/lib/personaPresets";
 import {
@@ -30,6 +32,7 @@ type Model = {
   handle: string;
   avatar_url: string | null;
   subscribers: number;
+  limits: unknown;
 };
 
 function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
@@ -38,27 +41,49 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
   const [query, setQuery] = useState("");
   const [showCreate, setShowCreate] = useState(false);
   const [autoCounts, setAutoCounts] = useState<Record<string, { auto: number; manual: number }>>({});
+  const [perfByModel, setPerfByModel] = useState<Record<string, { offers: number; buys: number }>>({});
 
   const load = async () => {
     setLoading(true);
     const { data } = await supabase
       .from("model_profiles")
-      .select("id,display_name,handle,avatar_url,subscribers")
+      .select("id,display_name,handle,avatar_url,subscribers,limits")
       .order("created_at", { ascending: false });
     setModels(data ?? []);
     setLoading(false);
 
     const { data: convs } = await supabase
       .from("conversations")
-      .select("model_id, autopilot_enabled");
+      .select("id, model_id, autopilot_enabled");
     const counts: Record<string, { auto: number; manual: number }> = {};
+    const convModel: Record<string, string> = {};
     for (const c of convs ?? []) {
-      const key = String((c as { model_id: string }).model_id);
+      const row = c as { id: string; model_id: string; autopilot_enabled: boolean | null };
+      const key = String(row.model_id);
+      convModel[String(row.id)] = key;
       counts[key] ??= { auto: 0, manual: 0 };
-      if ((c as { autopilot_enabled: boolean | null }).autopilot_enabled === false) counts[key].manual++;
+      if (row.autopilot_enabled === false) counts[key].manual++;
       else counts[key].auto++;
     }
     setAutoCounts(counts);
+
+    // Erfolgsquote der letzten 24 h je Profil (Angebote vs. Käufe).
+    const since = new Date(Date.now() - 86_400_000).toISOString();
+    const { data: msgs } = await supabase
+      .from("messages")
+      .select("conversation_id, content_type, ppv_is_purchased")
+      .eq("content_type", "ppv")
+      .gte("created_at", since);
+    const perf: Record<string, { offers: number; buys: number }> = {};
+    for (const msg of msgs ?? []) {
+      const row = msg as { conversation_id: string; ppv_is_purchased: boolean | null };
+      const key = convModel[String(row.conversation_id)];
+      if (!key) continue;
+      perf[key] ??= { offers: 0, buys: 0 };
+      perf[key].offers++;
+      if (row.ppv_is_purchased) perf[key].buys++;
+    }
+    setPerfByModel(perf);
   };
   useEffect(() => { load(); }, []);
 
@@ -147,9 +172,16 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
                   {!m.avatar_url && (m.display_name[0] ?? "?").toUpperCase()}
                 </div>
                 <div>
-                  <button onClick={() => onEdit(m.id)} className="module-title" style={{ display: "block", textAlign: "left" }}>
-                    {m.display_name || "Unbenannt"}
-                  </button>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <button onClick={() => onEdit(m.id)} className="module-title" style={{ display: "block", textAlign: "left" }}>
+                      {m.display_name || "Unbenannt"}
+                    </button>
+                    <LimitShield
+                      limits={resolveLimits(m.limits)}
+                      pausedCount={autoCounts[m.id]?.manual ?? 0}
+                      perf={perfByModel[m.id]}
+                    />
+                  </div>
                   <div className="module-desc" style={{ marginTop: 4 }}>
                     @{m.handle} &middot; <span className="tabular">{(m.subscribers ?? 0).toLocaleString("de-DE")}</span> Subscriber
                   </div>
@@ -192,7 +224,7 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
 
 
 
-type Tab = "basis" | "kommunikation" | "persona" | "personal" | "chat" | "stufen" | "sets";
+type Tab = "basis" | "kommunikation" | "persona" | "personal" | "chat" | "stufen" | "schutz" | "sets";
 
 function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
   const [tab, setTab] = useState<Tab>("basis");
@@ -251,6 +283,7 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
     { id: "personal", label: "Persönlich" },
     { id: "chat", label: "Chat-Verhalten" },
     { id: "stufen", label: "Stufen" },
+    { id: "schutz", label: "Schutz" },
     { id: "sets", label: "PPV Sets" },
   ];
 
@@ -367,6 +400,17 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
             onSaved={(steps: FunnelStageConfig[] | null) => {
               setM((prev: any) => ({ ...prev, step_config: steps }));
               setInitial((prev: any) => ({ ...prev, step_config: steps }));
+            }}
+          />
+        )}
+
+        {tab === "schutz" && (
+          <LimitsEditor
+            modelId={id}
+            value={m.limits}
+            onSaved={(limits) => {
+              setM((prev: any) => ({ ...prev, limits }));
+              setInitial((prev: any) => ({ ...prev, limits }));
             }}
           />
         )}
@@ -565,5 +609,40 @@ function Toggle({ label, value, onChange }: { label: string; value: boolean; onC
       <input type="checkbox" checked={value} onChange={(e) => onChange(e.target.checked)} />
       <span style={{ fontSize: 13, color: "hsl(0 0% 85%)" }}>{label}</span>
     </label>
+  );
+}
+
+
+function LimitShield({ limits, pausedCount, perf }: {
+  limits: ProfileLimits;
+  pausedCount: number;
+  perf?: { offers: number; buys: number };
+}) {
+  const successPct = perf && perf.offers > 0 ? (perf.buys / perf.offers) * 100 : null;
+  const state = shieldState({ pausedCount, successPct, minSuccessPct: limits.min_success_pct });
+  const color = SHIELD_COLOR[state];
+  const tip = [
+    `Max. gleichzeitige Chats: ${limits.max_concurrent_chats}`,
+    `Max. Nachrichten/Tag: ${limits.max_messages_per_day}`,
+    `Min. Erfolgsquote: ${limits.min_success_pct}%`,
+    `Auto-Pause: ${limits.auto_pause_low_performance ? "an" : "aus"}`,
+    successPct !== null ? `Erfolgsquote 24 h: ${successPct.toFixed(1)}%` : "Erfolgsquote 24 h: —",
+  ].join("\n");
+
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }} title={tip}>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2"
+        strokeLinecap="round" strokeLinejoin="round" aria-label="Schutz-Limits">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </svg>
+      {state === "paused" && (
+        <span style={{
+          padding: "1px 7px", borderRadius: 999, fontSize: 10, fontWeight: 700,
+          letterSpacing: 0.4, textTransform: "uppercase",
+          background: "hsla(0,78%,62%,0.12)", border: "1px solid hsla(0,78%,62%,0.3)",
+          color: "hsl(0 78% 72%)",
+        }}>Pausiert</span>
+      )}
+    </span>
   );
 }
