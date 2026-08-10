@@ -225,10 +225,7 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
 
 
 
-type Tab = "basis" | "kommunikation" | "persona" | "personal" | "chat" | "stufen" | "schutz" | "sets" | "cloud";
-
-function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
-  const [tab, setTab] = useState<Tab>("basis");
+type Tab = "profil" | "kommunikation" | "stufen" | "schutz" | "assets" | "sets";
   const [m, setM] = useState<any>(null);
   const [initial, setInitial] = useState<any>(null);
   const [saving, setSaving] = useState(false);
