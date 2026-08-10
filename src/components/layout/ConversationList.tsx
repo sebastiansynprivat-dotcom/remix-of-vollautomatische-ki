@@ -493,27 +493,26 @@ function ConversationRow({
             )}
             <span style={{
               color: unread > 0 ? "var(--text-strong)" : "var(--text-muted)",
-              fontSize: 14, fontWeight: unread > 0 ? 600 : 500,
+              fontSize: 13, fontWeight: unread > 0 ? 600 : 500,
+              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", minWidth: 0,
             }}>
               {conv.participant.displayName}
             </span>
             {conv.id === "conv-ai-mia" && (
               <span style={{
-                fontSize: 9, fontWeight: 700, letterSpacing: 0.6,
-                padding: "2px 6px", borderRadius: 6,
-                color: "var(--gold)",
-                background: "hsla(40,45%,55%,0.12)",
-                border: "1px solid hsla(40,45%,55%,0.35)",
+                fontSize: 10, fontWeight: 500, letterSpacing: 0.2, flexShrink: 0,
+                padding: "1px 6px", borderRadius: 999,
+                color: "#C7D2FE",
+                background: "rgba(99,102,241,0.16)",
                 textTransform: "uppercase",
               }}>AI</span>
             )}
             {conv.isAutopilot && (
               <span style={{
-                fontSize: 9, fontWeight: 700, letterSpacing: 0.6,
-                padding: "2px 6px", borderRadius: 6,
-                color: "var(--gold)",
-                background: "hsla(40,45%,55%,0.12)",
-                border: "1px solid hsla(40,45%,55%,0.35)",
+                fontSize: 10, fontWeight: 500, letterSpacing: 0.2, flexShrink: 0,
+                padding: "1px 6px", borderRadius: 999,
+                color: "#C7D2FE",
+                background: "rgba(99,102,241,0.16)",
                 textTransform: "uppercase",
               }}>Auto</span>
             )}
@@ -542,15 +541,14 @@ function ConversationRow({
 }
 
 function SpendChip({ amount, highlight = false }: { amount: number; highlight?: boolean }) {
-  const color = highlight ? "var(--gold)" : "var(--gold-dark)";
+  const color = "var(--money)";
   return (
     <span className="tabular" style={{
       display: "inline-flex", alignItems: "center",
-      fontSize: 10, fontWeight: 700, letterSpacing: 0.3,
-      color, padding: "2px 6px", borderRadius: 6,
-      background: `color-mix(in srgb, ${color} 12%, transparent)`,
-      border: `1px solid color-mix(in srgb, ${color} 28%, transparent)`,
-      boxShadow: highlight ? "0 0 12px hsla(40,45%,55%,0.25)" : undefined,
+      fontSize: 10.5, fontWeight: 500, letterSpacing: 0, flexShrink: 0,
+      color, padding: "1px 6px", borderRadius: 999,
+      background: "rgba(251,191,36,0.12)",
+      opacity: highlight ? 1 : 0.85,
     }}>{formatCurrency(amount)}</span>
   );
 }
