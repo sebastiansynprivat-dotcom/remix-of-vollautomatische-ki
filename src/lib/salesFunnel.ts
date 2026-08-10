@@ -154,6 +154,8 @@ export type FunnelOptions = {
    * Nachrichten geladen werden.
    */
   clearedBefore?: number;
+  /** Profil-eigene Stufen. Wenn gesetzt, ersetzen sie die globalen Standard-Stufen. */
+  stepConfig?: FunnelStageConfig[] | null;
 };
 
 
