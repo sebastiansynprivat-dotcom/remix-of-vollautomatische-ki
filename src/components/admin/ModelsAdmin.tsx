@@ -226,6 +226,9 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
 
 
 type Tab = "profil" | "kommunikation" | "stufen" | "schutz" | "assets" | "sets";
+
+function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
+  const [tab, setTab] = useState<Tab>("profil");
   const [m, setM] = useState<any>(null);
   const [initial, setInitial] = useState<any>(null);
   const [saving, setSaving] = useState(false);
