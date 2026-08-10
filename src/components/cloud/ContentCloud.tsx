@@ -9,6 +9,7 @@ import { useChat } from "@/lib/chatStore";
 import { fx } from "@/lib/feedback";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { AssetLibrary } from "./AssetLibrary";
 
 type Tab = "media" | "templates" | "assets";
 type StatusFilter = "all" | "fresh" | "used";
