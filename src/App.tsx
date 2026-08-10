@@ -78,7 +78,7 @@ function AppInner() {
   const handleSetView = (v: View) => {
     fx.haptic("tick");
     setView(v);
-    if (v.kind === "profile" || v.kind === "performance" || v.kind === "models") {
+    if (v.kind === "profile" || v.kind === "performance" || v.kind === "monitor" || v.kind === "models") {
       setShowChat(false);
       return;
     }
@@ -118,6 +118,10 @@ function AppInner() {
             {view.kind === "performance" ? (
               <div style={{ flex: 1, overflow: "auto", paddingBottom: "calc(64px + var(--safe-bottom) + 12px)" }}>
                 <PerformanceDashboard />
+              </div>
+            ) : view.kind === "monitor" ? (
+              <div style={{ flex: 1, overflow: "auto", padding: "16px 14px", paddingBottom: "calc(64px + var(--safe-bottom) + 12px)" }}>
+                <MonitorDashboard onOpenProfile={() => handleSetView({ kind: "models" })} />
               </div>
             ) : view.kind === "models" ? (
               <div style={{ flex: 1, overflow: "auto", padding: "16px 14px", paddingBottom: "calc(64px + var(--safe-bottom) + 12px)" }}>
