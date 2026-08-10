@@ -38,15 +38,24 @@ let stages: FunnelStageConfig[] = DEFAULT_FUNNEL_STAGES.map(s => ({ ...s }));
 let hydrated = false;
 const listeners = new Set<() => void>();
 
-function clampStage(s: Partial<FunnelStageConfig>, i: number): FunnelStageConfig {
+function clampStage(s: Partial<FunnelStageConfig> & { minInteractions?: number }, i: number): FunnelStageConfig {
   return {
     id: typeof s.id === "string" && s.id ? s.id : `s${i + 1}`,
     label: typeof s.label === "string" && s.label.trim() ? s.label.trim() : `Stufe ${i + 1}`,
     priceEur: Math.max(0, Math.round(Number(s.priceEur) || 0)),
     mediaType: s.mediaType === "video" ? "video" : "photo",
     intensity: Math.min(5, Math.max(1, Math.round(Number(s.intensity) || 1))),
-    minFanTurns: Math.min(20, Math.max(1, Math.round(Number(s.minFanTurns) || 3))),
+    minFanTurns: Math.min(20, Math.max(1, Math.round(Number(s.minFanTurns ?? s.minInteractions) || 3))),
   };
+}
+
+/**
+ * Profil-eigene Stufen (JSON aus der Datenbank) in eine saubere Liste bringen.
+ * Ungültig/leer → null, dann gelten die globalen Standard-Stufen.
+ */
+export function normalizeStepConfig(raw: unknown): FunnelStageConfig[] | null {
+  if (!Array.isArray(raw) || raw.length === 0) return null;
+  return raw.map((s, i) => clampStage((s ?? {}) as Partial<FunnelStageConfig>, i));
 }
 
 function hydrate() {
