@@ -64,14 +64,6 @@ export function Sidebar({ view, setView, models }: Props) {
         })}
       </div>
 
-      {/* Content */}
-      <SectionLabel>Content</SectionLabel>
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
-        <ContentCloudItem
-          active={view.kind === "cloud"}
-          onClick={() => setView({ kind: "cloud" })}
-        />
-      </div>
 
       {/* Dev */}
       <SectionLabel>Dev</SectionLabel>
