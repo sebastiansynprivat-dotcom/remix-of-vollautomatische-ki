@@ -184,7 +184,7 @@ export function computeFunnelState(messages: readonly Message[], fanId: string, 
   const clearedCount = ppvs.filter(isCleared).length + Math.max(0, Math.round(opts.clearedBefore ?? 0));
   // Startstufe des Models: überspringt die ersten Stufen der Leiter.
   const startOffset = Math.max(0, Math.round(opts.startStage ?? 0));
-  const stageBase = stageFor(clearedCount + 1 + startOffset);
+  const stageBase = stageFor(clearedCount + 1 + startOffset, opts.stepConfig);
 
 
 
