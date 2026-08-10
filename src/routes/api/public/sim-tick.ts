@@ -648,7 +648,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       turn: Number(run.turn_count ?? 0),
       sessionTurn,
       restartAfterHours: decision.gapHours > 0 ? Math.round(decision.gapHours) : 0,
-    });
+    }, modelId);
     if (Array.isArray(fanRes.messages)) {
       (fanRes.messages as unknown[])
         .map((s) => String(s).trim())
@@ -904,7 +904,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       sessionContext,
       forceSingleMessage: isFollowup,
       avoidLines: [...avoidLines.slice(0, 60), ...extraAvoid],
-    });
+    }, modelId);
 
   const readParts = (b: Json) => {
     const suggestion = (b.suggestions as Json[] | undefined)?.[0] ?? {};
