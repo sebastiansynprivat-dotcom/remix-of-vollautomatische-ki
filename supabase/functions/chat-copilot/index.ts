@@ -1174,6 +1174,7 @@ Deno.serve(async (req) => {
               languages: arr(row.languages),
               dos: arr(row.dos),
               donts: arr(row.donts),
+              personaConfig: row.persona_config ?? undefined,
             };
           }
         }
