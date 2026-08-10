@@ -453,10 +453,31 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
 
 function Panel({ title, children }: { title?: string; children: React.ReactNode }) {
   return (
-    <section className="premium-card" style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 16 }}>
-      {title && <div className="kpi-label" style={{ color: "hsl(40 45% 60%)", marginBottom: 6 }}>{title}</div>}
+    <section className="premium-card" style={{
+      display: "flex", flexDirection: "column",
+      gap: 16, padding: 20, marginBottom: 16,
+    }}>
+      {title && <div className="kpi-label" style={{
+        color: "var(--text-strong)",
+        marginBottom: 4, paddingBottom: 12,
+        borderBottom: "1px solid var(--hairline)",
+      }}>{title}</div>}
       {children}
     </section>
+  );
+}
+
+function SubSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div style={{
+      borderTop: "1px solid var(--hairline)",
+      margin: "4px 0 0",
+      paddingTop: 16,
+      display: "flex", flexDirection: "column", gap: 16,
+    }}>
+      <div className="kpi-label" style={{ color: "var(--text-subtle)" }}>{title}</div>
+      {children}
+    </div>
   );
 }
 
