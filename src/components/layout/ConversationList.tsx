@@ -8,6 +8,7 @@ import { StatusDot, UnreadBadge } from "@/components/sx/Badge";
 import { fx } from "@/lib/feedback";
 import { useLastOverride, useChat } from "@/lib/chatStore";
 import { useSimRuns, setAllSimStates } from "@/lib/simRuns";
+import { ProfileMasterBar } from "@/components/profile/ProfileMasterBar";
 
 /** Globale Steuerung der serverseitigen Test-Simulationen. */
 function SimControlBar() {
@@ -155,6 +156,15 @@ export function ConversationList({
       }}
     >
       <ListHeader headerContext={headerContext} onMenu={onMenu} />
+
+      {headerContext?.kind === "profile" && (
+        <ProfileMasterBar
+          key={headerContext.profile.id}
+          modelId={headerContext.profile.id}
+          displayName={headerContext.profile.displayName}
+          avatarUrl={headerContext.profile.avatarUrl}
+        />
+      )}
 
       <SimControlBar />
 

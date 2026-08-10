@@ -4,7 +4,6 @@ import { useAuth } from "@/hooks/useAuth";
 export type View =
   | { kind: "messages"; profileId: string }
   | { kind: "cloud"; profileId?: string; returnConvId?: string | null }
-  | { kind: "fahrplan" }
   | { kind: "performance" }
   | { kind: "models" }
   | { kind: "profile" };
@@ -77,14 +76,6 @@ export function Sidebar({ view, setView, models }: Props) {
       {/* Dev */}
       <SectionLabel>Dev</SectionLabel>
       <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
-        <NavCardItem
-          active={view.kind === "fahrplan"}
-          onClick={() => setView({ kind: "fahrplan" })}
-          title="Fahrplan"
-          subtitle="Chat-Logik & Dev-Doku"
-          icon={
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 19.5V6a2 2 0 0 1 2-2h11a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 19.5z" />
               <path d="M8 8h6M8 12h6" />
             </svg>
           }
