@@ -222,7 +222,14 @@ function AppInner() {
             <PerformanceDashboard />
           </div>
         </div>
+      ) : view.kind === "monitor" ? (
+        <div style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: "28px 32px" }}>
+          <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+            <MonitorDashboard onOpenProfile={() => setView({ kind: "models" })} />
+          </div>
+        </div>
       ) : view.kind === "models" ? (
+
         <div style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: "28px 32px" }}>
           <div style={{ maxWidth: 960, margin: "0 auto" }}>
             <ModelsAdmin />
