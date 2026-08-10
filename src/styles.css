@@ -506,3 +506,73 @@
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+/* ── Steckbrief-Upload ─────────────────────────────────────── */
+@keyframes sbPulseBorder {
+  0%, 100% { border-color: hsl(239 84% 67%); }
+  50% { border-color: hsl(239 84% 80%); }
+}
+@keyframes sbProgressShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+@keyframes sbSpin { to { transform: rotate(360deg); } }
+@keyframes sbFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sbSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes sbSlideUp {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-8px); }
+}
+
+.sb-drop {
+  background: hsl(240 5% 8%);
+  border: 1px dashed hsl(240 6% 17%);
+  border-radius: 12px;
+  padding: 48px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 200ms ease, border-color 200ms ease, color 200ms ease;
+}
+.sb-drop-hover {
+  border-color: hsl(239 84% 67% / 0.5);
+  background: hsl(239 84% 67% / 0.05);
+}
+.sb-drop-hover .sb-drop-icon { color: hsl(239 84% 76%); }
+.sb-drop-over {
+  border-style: solid;
+  background: hsl(239 84% 67% / 0.1);
+  animation: sbPulseBorder 1s infinite;
+}
+.sb-drop-over .sb-drop-icon { font-size: 48px; color: hsl(239 84% 76%); }
+.sb-drop-icon {
+  font-size: 40px;
+  line-height: 1;
+  color: var(--text-subtle);
+  margin-bottom: 12px;
+  transition: font-size 200ms ease, color 200ms ease;
+}
+.sb-spinner {
+  width: 24px; height: 24px; margin: 0 auto;
+  border: 2px solid hsl(239 84% 67% / 0.25);
+  border-top-color: hsl(239 84% 70%);
+  border-radius: 50%;
+  animation: sbSpin 1s linear infinite;
+}
+.sb-progress {
+  margin: 14px auto 0; max-width: 320px; height: 4px;
+  background: hsl(240 6% 12%); border-radius: 999px; overflow: hidden;
+}
+.sb-progress > span {
+  display: block; width: 30%; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, hsl(239 84% 67% / 0.2), hsl(239 84% 72%), hsl(239 84% 67% / 0.2));
+  animation: sbProgressShimmer 1.6s ease-in-out infinite;
+}
+.sb-panel {
+  background: hsl(240 5% 8%);
+  border: 1px solid hsl(240 6% 12%);
+  border-radius: 12px;
+  padding: 18px;
+}
