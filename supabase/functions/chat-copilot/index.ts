@@ -1234,12 +1234,59 @@ Deno.serve(async (req) => {
 
     const personaBlock = buildPersonaBlock(modelPersona);
 
+    // === STECKBRIEF-BLOCK (aus PDF-Extraktion befüllte Profilfelder) ===
+    let profileBlock = "";
+    if (modelId) {
+      try {
+        const supaUrl2 = Deno.env.get("SUPABASE_URL");
+        const svc2 = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+        if (supaUrl2 && svc2) {
+          const admin2 = createClient(supaUrl2, svc2, { auth: { persistSession: false } });
+          const { data: pr } = await admin2
+            .from("model_profiles")
+            .select("birthplace, dream, physical, favorites, content_info, no_gos, additional_info")
+            .eq("id", modelId)
+            .maybeSingle();
+          if (pr) {
+            const ph = (pr.physical ?? {}) as Record<string, unknown>;
+            const fv = (pr.favorites ?? {}) as Record<string, unknown>;
+            const t = (v: unknown) => (typeof v === "string" && v.trim().length > 0) ? v.trim() : (typeof v === "number" ? String(v) : "");
+            const lines: string[] = [];
+            const push = (label: string, v: unknown) => { const x = t(v); if (x) lines.push(`- ${label}: ${x}`); };
+            push("Geburtsort", pr.birthplace);
+            push("Traum", pr.dream);
+            push("Größe", ph.height_cm ? `${t(ph.height_cm)} cm` : "");
+            push("BH-Größe", ph.bra_size);
+            push("Schuhgröße", ph.shoe_size);
+            push("Natürliche Haarfarbe", ph.hair_color_natural);
+            push("Gewicht", ph.weight);
+            push("Lieblingsessen", fv.food);
+            push("Lieblingsmusik", fv.music);
+            push("Lieblingsfilm", fv.movie);
+            push("Lieblingsfarbe", fv.color);
+            push("Content-Infos", pr.content_info);
+            push("Zusätzliche Infos", pr.additional_info);
+            const noGos = t(pr.no_gos);
+            if (lines.length || noGos) {
+              profileBlock = [
+                "=== STECKBRIEF (Fakten über dich — nur nutzen, wenn der Fan danach fragt oder es natürlich passt) ===",
+                ...lines,
+                noGos ? `\n!!! NO-GOS (absolute Grenzen, NIEMALS anbieten oder zusagen): ${noGos}` : "",
+              ].filter(Boolean).join("\n");
+            }
+          }
+        }
+      } catch { /* Steckbrief optional */ }
+    }
+
     const systemPrompt = [
       SYSTEM_BASE,
       "",
       personaBlock,
       "",
+      ...(profileBlock ? [profileBlock, ""] : []),
       FEW_SHOT_TURNS,
+
       "",
       OPENERS,
       "",
