@@ -184,10 +184,8 @@ function AppInner() {
                 onClick={() => handleSetView({ kind: "messages", profileId: p.id })}
               />
             ))}
-path d="M8 8h6M8 12h6"/>
-                </svg>
-              }
-            />
+            <IconTab
+
             <IconTab
               label="Models"
               active={view.kind === "models"}
