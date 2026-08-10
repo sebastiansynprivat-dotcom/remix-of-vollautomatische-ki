@@ -314,7 +314,7 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
               {m.display_name || "Unbenannt"}
             </h1>
             <div style={{ marginTop: 10, display: "inline-flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
-              <span className="kpi-label" style={{ color: "hsl(40 45% 60%)" }}>@{m.handle}</span>
+              <span className="kpi-label" style={{ color: "var(--text-subtle)" }}>@{m.handle}</span>
               <span style={{ width: 1, height: 10, background: "hsl(0 0% 100% / 0.12)" }} />
               <span className="kpi-label">
                 <span className="tabular" style={{ color: "hsl(0 0% 92%)", fontSize: 13, fontWeight: 500, letterSpacing: 0 }}>
@@ -439,7 +439,7 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
 
       {(dirty || saving || savedAt) && (
         <div className="shex-savebar">
-          <span style={{ fontSize: 10.5, letterSpacing: "0.16em", textTransform: "uppercase", fontWeight: 600, color: dirty ? "hsl(40 45% 65%)" : "hsl(0 0% 60%)" }}>
+          <span style={{ fontSize: 10.5, letterSpacing: "0.16em", textTransform: "uppercase", fontWeight: 600, color: dirty ? "var(--text-strong)" : "var(--text-subtle)" }}>
             {savedAt && !dirty ? `Gespeichert · ${savedAt}` : "Ungesicherte Änderungen"}
           </span>
           <button onClick={save} disabled={saving || !dirty} className="shex-btn shex-btn-primary" style={{ borderRadius: 999 }}>
@@ -527,7 +527,7 @@ function ChatBehaviorTab({ m, set }: { m: any; set: (k: string, v: any) => void 
       </Panel>
 
       <Panel title="Multi-Reply">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
           <NumField label="Nachrichten min." value={b.multiReplyMin} onChange={(v) => setB({ multiReplyMin: Math.max(1, Math.min(3, Math.round(v))) })} />
           <NumField label="Nachrichten max." value={b.multiReplyMax} onChange={(v) => setB({ multiReplyMax: Math.max(1, Math.min(3, Math.round(v))) })} />
         </div>
@@ -552,7 +552,7 @@ function ChatBehaviorTab({ m, set }: { m: any; set: (k: string, v: any) => void 
         <div className="module-desc" style={{ margin: 0 }}>
           Außerhalb dieser Zeiten antwortet sie langsamer — wirkt menschlicher.
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
           <Field label="Aktiv von" type="time" value={b.activeFrom} onChange={(v) => setB({ activeFrom: v })} />
           <Field label="Aktiv bis" type="time" value={b.activeTo} onChange={(v) => setB({ activeTo: v })} />
         </div>
@@ -602,7 +602,7 @@ function Range({ label, min, max, onChange }: {
   return (
     <div>
       <span className="shex-field-label">{label}</span>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
         <NumField label="min" value={min} step={0.1} onChange={(v) => onChange(Math.max(0, v), Math.max(max, v))} />
         <NumField label="max" value={max} step={0.1} onChange={(v) => onChange(Math.min(min, v), Math.max(0, v))} />
       </div>
