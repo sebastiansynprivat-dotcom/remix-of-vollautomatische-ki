@@ -243,7 +243,10 @@ ${personaPrompt}`;
               properties: {
                 messages: {
                   type: "array",
-                  items: { type: "string" },
+                  items: {
+                    type: "string",
+                    description: "1-3 Fan-Nachrichten. VERBOTEN als erstes Wort: 'achso', 'ach so', 'achsoo', 'verstehe'. Beginne jede Nachricht mit einem echten Inhaltswort, einer Meinung, einer Frage oder einer Reaktion wie 'cool', 'krass', 'haha', 'boah', 'nice'.",
+                  },
                   minItems: 1,
                   maxItems: 3,
                   description: "1-3 kurze Fan-Nachrichten (deutsch, kleinschreibung)",
@@ -294,9 +297,23 @@ ${personaPrompt}`;
       if (typeof fallback === "string" && fallback.trim()) messages = [fallback.trim()];
     }
 
+    // HARTER Filter: verbotene Satzanfänge werden abgeschnitten.
+    const BANNED_OPENERS = ["achso", "ach so", "achsoo", "verstehe 😊", "verstehe 😅"];
+    messages = messages.map((m: string) => {
+      const lower = m.toLowerCase().trim();
+      for (const banned of BANNED_OPENERS) {
+        if (lower.startsWith(banned)) {
+          const rest = m.trim().slice(banned.length).replace(/^[\s,.!?]+/, "").trim();
+          return rest || m;
+        }
+      }
+      return m;
+    });
+
     if (messages.length === 1 && messages[0].trim().toUpperCase() === "[END]") {
       end = true;
     }
+
 
     return new Response(JSON.stringify({ messages, end }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -381,7 +381,18 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
   // ---- 2) Fan-Zug (entfällt, wenn das Model das Gespräch eröffnet) ----
   const fanTexts: string[] = [];
   let fanEndsSession = false;
-  if (!modelOpensDay) {
+
+  // Fan-seitige Monolog-Bremse: hat der Fan zuletzt mehrfach allein geschrieben
+  // (das Model hat nicht geantwortet), wird der Fan-Zug übersprungen.
+  let fanOnlyStreak = 0;
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (messages[i].senderId !== "user-001") fanOnlyStreak++;
+    else break;
+  }
+  const skipFanTurn = fanOnlyStreak >= 5;
+  if (skipFanTurn && !modelOpensDay) {
+    log.push("fan-monolog-skip:" + fanOnlyStreak);
+  } else if (!modelOpensDay) {
     // Themen extrahieren: Stichworte aus den letzten 60 Nachrichten
     const recentTranscript = transcript(messages).slice(-60);
     const topicsCovered: string[] = [];
@@ -432,6 +443,26 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
     fanEndsSession = fanRes.end === true;
     if (fanEndsSession) log.push("fan-verabschiedet");
   }
+
+  // Hat der Fan das Angebot im Text klar abgelehnt, wird der Kauf zurückgenommen.
+  if (offerPurchased === true && fanTexts.length > 0) {
+    const fanText = fanTexts.join(" ").toLowerCase();
+    const rejectionWords = ["zu teuer", "kann nicht kaufen", "kann ich nicht", "ist mir zu viel", "so wird das nix", "leider nicht", "grad kein geld", "kann ich nicht kaufen", "echt viel", "immer noch viel zu teuer"];
+    if (rejectionWords.some((w) => fanText.includes(w))) {
+      offerPurchased = false;
+      if (openPpvRow) {
+        await admin.from("messages").update({ ppv_is_purchased: false }).eq("id", openPpvRow.id);
+        const idx = messages.findIndex((m) => m.id === String(openPpvRow.id));
+        if (idx >= 0 && messages[idx].ppv) {
+          messages[idx] = { ...messages[idx], ppv: { ...messages[idx].ppv!, isPurchased: false } };
+        }
+      }
+      purchasesInSession = Math.max(0, purchasesInSession - 1);
+      log.push("fan-rejected-override");
+    }
+  }
+
+
 
 
   const inserted: Json[] = [];
