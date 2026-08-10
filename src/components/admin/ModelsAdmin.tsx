@@ -4,6 +4,8 @@ import { ModelSetsManager } from "@/components/admin/ModelSetsManager";
 import { ModelCreateModal } from "@/components/admin/ModelCreateModal";
 import { PersonaEditor, PresetGrid } from "@/components/admin/PersonaEditor";
 import { StepConfigEditor } from "@/components/admin/StepConfigEditor";
+import { LimitsEditor } from "@/components/admin/LimitsEditor";
+import { resolveLimits, shieldState, SHIELD_COLOR, type ProfileLimits } from "@/lib/profileLimits";
 import type { FunnelStageConfig } from "@/lib/funnelConfig";
 import { DEFAULT_PERSONA, presetById, resolvePersonaConfig, type PersonaConfig } from "@/lib/personaPresets";
 import {
@@ -30,6 +32,7 @@ type Model = {
   handle: string;
   avatar_url: string | null;
   subscribers: number;
+  limits: unknown;
 };
 
 function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
@@ -43,7 +46,7 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
     setLoading(true);
     const { data } = await supabase
       .from("model_profiles")
-      .select("id,display_name,handle,avatar_url,subscribers")
+      .select("id,display_name,handle,avatar_url,subscribers,limits")
       .order("created_at", { ascending: false });
     setModels(data ?? []);
     setLoading(false);
@@ -192,7 +195,7 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
 
 
 
-type Tab = "basis" | "kommunikation" | "persona" | "personal" | "chat" | "stufen" | "sets";
+type Tab = "basis" | "kommunikation" | "persona" | "personal" | "chat" | "stufen" | "schutz" | "sets";
 
 function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
   const [tab, setTab] = useState<Tab>("basis");
@@ -251,6 +254,7 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
     { id: "personal", label: "Persönlich" },
     { id: "chat", label: "Chat-Verhalten" },
     { id: "stufen", label: "Stufen" },
+    { id: "schutz", label: "Schutz" },
     { id: "sets", label: "PPV Sets" },
   ];
 
@@ -367,6 +371,17 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
             onSaved={(steps: FunnelStageConfig[] | null) => {
               setM((prev: any) => ({ ...prev, step_config: steps }));
               setInitial((prev: any) => ({ ...prev, step_config: steps }));
+            }}
+          />
+        )}
+
+        {tab === "schutz" && (
+          <LimitsEditor
+            modelId={id}
+            value={m.limits}
+            onSaved={(limits) => {
+              setM((prev: any) => ({ ...prev, limits }));
+              setInitial((prev: any) => ({ ...prev, limits }));
             }}
           />
         )}
