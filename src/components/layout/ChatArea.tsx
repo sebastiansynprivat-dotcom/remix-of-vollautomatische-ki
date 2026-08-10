@@ -40,6 +40,8 @@ export function ChatArea({
 }: { activeId: string | null; conversations: Conversation[]; onBack?: () => void }) {
   const conv = conversations.find(c => c.id === activeId) ?? conversations[0];
   const chat = useChat();
+  const ui = useChatUI();
+
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [ladderOpen, setLadderOpen] = useState(false);
