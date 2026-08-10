@@ -1,4 +1,4 @@
-      {import { useState, useEffect, useMemo, useRef } from "react";
+      import { useState, useEffect, useMemo, useRef } from "react";
 import "@/styles/tokens.css";
 import { Sidebar, type View } from "@/components/layout/Sidebar";
 import { ConversationList } from "@/components/layout/ConversationList";
