@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { AssetLibrary } from "@/components/cloud/AssetLibrary";
 
 const CARD_BG = "#131316";
 const BORDER = "#1E1E22";
@@ -16,12 +15,11 @@ interface Props {
  * Profil-Kopfleiste: Master-Auto-Modus für alle Conversations eines Profils
  * plus Schnellzugriff auf die Asset-Bibliothek des Profils.
  */
-export function ProfileMasterBar({ modelId, displayName, avatarUrl }: Props) {
+export function ProfileMasterBar({ modelId }: Props) {
   const [total, setTotal] = useState(0);
   const [autoOn, setAutoOn] = useState(0);
   const [busy, setBusy] = useState(false);
   const [confirmOff, setConfirmOff] = useState(false);
-  const [assetsOpen, setAssetsOpen] = useState(false);
 
   const refresh = useCallback(async () => {
     const { data } = await supabase
@@ -77,22 +75,6 @@ export function ProfileMasterBar({ modelId, displayName, avatarUrl }: Props) {
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <button
-            onClick={() => setAssetsOpen(true)}
-            style={{
-              display: "inline-flex", alignItems: "center", gap: 6,
-              background: "transparent", border: `1px solid ${BORDER}`, borderRadius: 10,
-              padding: "7px 11px", fontSize: 11.5, fontWeight: 600,
-              color: "var(--text-muted)", cursor: "pointer",
-            }}
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="9" cy="9" r="2" />
-              <path d="m21 15-4.35-4.35a2 2 0 0 0-2.83 0L3 21" />
-            </svg>
-            Assets
-          </button>
-
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
             <button
               onClick={onToggle}
@@ -132,14 +114,6 @@ export function ProfileMasterBar({ modelId, displayName, avatarUrl }: Props) {
         />
       )}
 
-      {assetsOpen && (
-        <AssetsPanel
-          modelId={modelId}
-          displayName={displayName}
-          avatarUrl={avatarUrl}
-          onClose={() => setAssetsOpen(false)}
-        />
-      )}
     </div>
   );
 }
@@ -183,45 +157,6 @@ function ConfirmDialog({ count, onCancel, onConfirm }: {
           }}>Alle deaktivieren</button>
         </div>
       </div>
-    </div>
-  );
-}
-
-function AssetsPanel({ modelId, displayName, avatarUrl, onClose }: {
-  modelId: string; displayName: string; avatarUrl?: string | null; onClose: () => void;
-}) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
-
-  return (
-    <div onClick={onClose} style={{
-      position: "fixed", inset: 0, zIndex: 85, background: "rgba(0,0,0,0.6)",
-      backdropFilter: "blur(8px)", display: "flex", justifyContent: "flex-end",
-    }}>
-      <div
-        onClick={e => e.stopPropagation()}
-        style={{
-          width: "min(896px, 100%)", height: "100%", background: CARD_BG,
-          borderLeft: `1px solid ${BORDER}`, boxShadow: "-24px 0 70px rgba(0,0,0,0.65)",
-          display: "flex", flexDirection: "column", padding: "16px 20px",
-          animation: "sx-slide-in 260ms cubic-bezier(.22,1,.36,1)",
-        }}
-      >
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <button onClick={onClose} aria-label="Schließen" style={{
-            background: "transparent", border: "none", color: "var(--text-muted)", cursor: "pointer",
-          }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 6 6 18M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <AssetLibrary modelId={modelId} profile={{ displayName, avatarUrl }} />
-      </div>
-      <style>{`@keyframes sx-slide-in{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}`}</style>
     </div>
   );
 }
