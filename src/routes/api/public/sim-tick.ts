@@ -381,7 +381,18 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
   // ---- 2) Fan-Zug (entfällt, wenn das Model das Gespräch eröffnet) ----
   const fanTexts: string[] = [];
   let fanEndsSession = false;
-  if (!modelOpensDay) {
+
+  // Fan-seitige Monolog-Bremse: hat der Fan zuletzt mehrfach allein geschrieben
+  // (das Model hat nicht geantwortet), wird der Fan-Zug übersprungen.
+  let fanOnlyStreak = 0;
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (messages[i].senderId !== "user-001") fanOnlyStreak++;
+    else break;
+  }
+  const skipFanTurn = fanOnlyStreak >= 5;
+  if (skipFanTurn && !modelOpensDay) {
+    log.push("fan-monolog-skip:" + fanOnlyStreak);
+  } else if (!modelOpensDay) {
     // Themen extrahieren: Stichworte aus den letzten 60 Nachrichten
     const recentTranscript = transcript(messages).slice(-60);
     const topicsCovered: string[] = [];
