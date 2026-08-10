@@ -297,9 +297,23 @@ ${personaPrompt}`;
       if (typeof fallback === "string" && fallback.trim()) messages = [fallback.trim()];
     }
 
+    // HARTER Filter: verbotene Satzanfänge werden abgeschnitten.
+    const BANNED_OPENERS = ["achso", "ach so", "achsoo", "verstehe 😊", "verstehe 😅"];
+    messages = messages.map((m: string) => {
+      const lower = m.toLowerCase().trim();
+      for (const banned of BANNED_OPENERS) {
+        if (lower.startsWith(banned)) {
+          const rest = m.trim().slice(banned.length).replace(/^[\s,.!?]+/, "").trim();
+          return rest || m;
+        }
+      }
+      return m;
+    });
+
     if (messages.length === 1 && messages[0].trim().toUpperCase() === "[END]") {
       end = true;
     }
+
 
     return new Response(JSON.stringify({ messages, end }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
