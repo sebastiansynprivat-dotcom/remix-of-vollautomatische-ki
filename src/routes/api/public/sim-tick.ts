@@ -318,7 +318,20 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
   const modelOpensDay = decision.modelOpens || isFollowup;
   const simDay = simDayFor(startedAt, clock.ts);
 
-  const funnelOpts = { hoursSinceLastMessage: decision.gapHours, restartAtIso, clearedBefore };
+  // Profil-eigene Stufen (falls gepflegt) statt der globalen Standard-Stufen.
+  const { data: stepCfgRow } = await admin
+    .from("model_profiles")
+    .select("step_config")
+    .eq("id", modelId)
+    .maybeSingle();
+  const stepConfig = normalizeStepConfig((stepCfgRow as Json)?.step_config ?? null);
+
+  const funnelOpts = {
+    hoursSinceLastMessage: decision.gapHours,
+    restartAtIso,
+    clearedBefore,
+    stepConfig: stepConfig ?? undefined,
+  };
 
   // ---- 1) Kaufentscheidung für ein offenes Angebot ----
   // Nach einer langen Pause wird nicht mehr nachträglich gekauft — das Angebot
