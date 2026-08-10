@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_request_log: {
+        Row: {
+          cost_cents: number
+          created_at: string
+          endpoint: string | null
+          id: number
+          profile_id: string | null
+          status: string
+          tokens_used: number
+        }
+        Insert: {
+          cost_cents?: number
+          created_at?: string
+          endpoint?: string | null
+          id?: never
+          profile_id?: string | null
+          status?: string
+          tokens_used?: number
+        }
+        Update: {
+          cost_cents?: number
+          created_at?: string
+          endpoint?: string | null
+          id?: never
+          profile_id?: string | null
+          status?: string
+          tokens_used?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_request_log_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "model_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversation_reads: {
         Row: {
           conversation_id: string
@@ -467,11 +505,13 @@ export type Database = {
           hobbies: string[]
           id: string
           is_flex: boolean
+          is_template: boolean
           job: string | null
           languages: string[]
           limits: Json | null
           location: string | null
           openers: string[]
+          parent_template_id: string | null
           persona: string | null
           persona_config: Json | null
           relationship_status: string | null
@@ -501,11 +541,13 @@ export type Database = {
           hobbies?: string[]
           id?: string
           is_flex?: boolean
+          is_template?: boolean
           job?: string | null
           languages?: string[]
           limits?: Json | null
           location?: string | null
           openers?: string[]
+          parent_template_id?: string | null
           persona?: string | null
           persona_config?: Json | null
           relationship_status?: string | null
@@ -535,11 +577,13 @@ export type Database = {
           hobbies?: string[]
           id?: string
           is_flex?: boolean
+          is_template?: boolean
           job?: string | null
           languages?: string[]
           limits?: Json | null
           location?: string | null
           openers?: string[]
+          parent_template_id?: string | null
           persona?: string | null
           persona_config?: Json | null
           relationship_status?: string | null
@@ -551,7 +595,15 @@ export type Database = {
           updated_at?: string
           writing_style?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "model_profiles_parent_template_id_fkey"
+            columns: ["parent_template_id"]
+            isOneToOne: false
+            referencedRelation: "model_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       model_stats_daily: {
         Row: {
@@ -668,6 +720,56 @@ export type Database = {
           {
             foreignKeyName: "ppv_templates_model_id_fkey"
             columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "model_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profile_platforms: {
+        Row: {
+          account_handle: string | null
+          auto_mode_enabled: boolean
+          config: Json
+          connection_status: string
+          created_at: string
+          id: string
+          is_connected: boolean
+          last_sync_at: string | null
+          platform: string
+          profile_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_handle?: string | null
+          auto_mode_enabled?: boolean
+          config?: Json
+          connection_status?: string
+          created_at?: string
+          id?: string
+          is_connected?: boolean
+          last_sync_at?: string | null
+          platform: string
+          profile_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_handle?: string | null
+          auto_mode_enabled?: boolean
+          config?: Json
+          connection_status?: string
+          created_at?: string
+          id?: string
+          is_connected?: boolean
+          last_sync_at?: string | null
+          platform?: string
+          profile_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_platforms_profile_id_fkey"
+            columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "model_profiles"
             referencedColumns: ["id"]
@@ -855,6 +957,71 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      system_events: {
+        Row: {
+          conversation_id: string | null
+          created_at: string
+          event_type: string
+          id: number
+          message: string
+          profile_id: string | null
+        }
+        Insert: {
+          conversation_id?: string | null
+          created_at?: string
+          event_type: string
+          id?: never
+          message: string
+          profile_id?: string | null
+        }
+        Update: {
+          conversation_id?: string | null
+          created_at?: string
+          event_type?: string
+          id?: never
+          message?: string
+          profile_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "system_events_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "model_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      system_limits: {
+        Row: {
+          current_daily_cost_cents: number
+          current_rpm: number
+          id: number
+          max_concurrent_profiles: number
+          max_daily_cost_cents: number
+          max_requests_per_minute: number
+          updated_at: string
+        }
+        Insert: {
+          current_daily_cost_cents?: number
+          current_rpm?: number
+          id?: number
+          max_concurrent_profiles?: number
+          max_daily_cost_cents?: number
+          max_requests_per_minute?: number
+          updated_at?: string
+        }
+        Update: {
+          current_daily_cost_cents?: number
+          current_rpm?: number
+          id?: number
+          max_concurrent_profiles?: number
+          max_daily_cost_cents?: number
+          max_requests_per_minute?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
