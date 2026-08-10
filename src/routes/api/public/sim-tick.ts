@@ -1127,6 +1127,7 @@ async function processRun(admin: SupabaseAdmin, run: Json, lockCutoff: string): 
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
     console.error("sim-tick turn failed", run.conversation_id, message);
+    await logEvent(admin, "error", `Turn failed: ${message}`, null, String(run.conversation_id));
     await admin
       .from("sim_runs")
       .update({
