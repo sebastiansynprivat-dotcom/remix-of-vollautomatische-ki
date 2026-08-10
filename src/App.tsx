@@ -215,13 +215,8 @@ function AppInner() {
     <div style={{ display: "flex", height: "100dvh", overflow: "hidden", position: "relative" }}>
       <Sidebar view={view} setView={setView} models={models} />
 
-      {view.kind === "fahrplan" ? (
-        <div style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: "28px 32px" }}>
-          <div style={{ maxWidth: 960, margin: "0 auto" }}>
-            <FahrplanView />
-          </div>
-        </div>
-      ) : view.kind === "performance" ? (
+      {view.kind === "performance" ? (
+
         <div style={{ flex: 1, minWidth: 0, overflowY: "auto" }}>
           <div style={{ maxWidth: 1280, margin: "0 auto" }}>
             <PerformanceDashboard />
