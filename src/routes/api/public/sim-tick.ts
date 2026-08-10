@@ -357,6 +357,27 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       }
       purchasesInSession += 1;
       log.push("kauft");
+      // Asset-Statistik: positive Reaktion + Umsatz zählen
+      const usedAssetId = (openPpvRow as Json).asset_id as string | null | undefined;
+      if (usedAssetId) {
+        const { data: prevAsset } = await admin
+          .from("model_assets")
+          .select("response_count, revenue_total_cents")
+          .eq("id", usedAssetId)
+          .maybeSingle();
+        if (prevAsset) {
+          await admin
+            .from("model_assets")
+            .update({
+              response_count: Number((prevAsset as Json).response_count ?? 0) + 1,
+              revenue_total_cents:
+                Number((prevAsset as Json).revenue_total_cents ?? 0) +
+                Number(openPpvRow.ppv_price_cents ?? 0),
+            })
+            .eq("id", usedAssetId);
+        }
+      }
+
       // After-Care-Lock: 4 Stunden kein neuer Pitch nach Kauf
       const lockUntil = new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString();
       const { data: brainForLock } = await admin
