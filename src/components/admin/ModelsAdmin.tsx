@@ -337,7 +337,7 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
           <StepConfigEditor
             modelId={id}
             value={m.step_config}
-            onSaved={(steps) => {
+            onSaved={(steps: FunnelStageConfig[] | null) => {
               setM((prev: any) => ({ ...prev, step_config: steps }));
               setInitial((prev: any) => ({ ...prev, step_config: steps }));
             }}
