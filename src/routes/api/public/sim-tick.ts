@@ -206,6 +206,71 @@ async function callFunction(name: string, body: Json): Promise<Json> {
   }
 }
 
+/** System-Ereignis protokollieren (darf einen Zug nie scheitern lassen). */
+async function logEvent(
+  admin: SupabaseAdmin,
+  eventType: "error" | "warning" | "info",
+  message: string,
+  profileId?: string | null,
+  conversationId?: string | null,
+): Promise<void> {
+  try {
+    await admin.from("system_events").insert({
+      profile_id: profileId ?? null,
+      event_type: eventType,
+      message: message.slice(0, 500),
+      conversation_id: conversationId ?? null,
+    });
+  } catch {
+    // Protokollierung ist best effort
+  }
+}
+
+/** Grobe Kostenschätzung eines LLM-Aufrufs (Zeichen → Tokens → Cent). */
+function estimateCost(chars: number): { tokens: number; cents: number } {
+  const tokens = Math.round(chars / 4);
+  return { tokens, cents: Math.max(1, Math.round(tokens / 2000)) };
+}
+
+/** LLM-Aufruf inkl. Protokoll in api_request_log und Tagesbudget-Zähler. */
+async function callLLM(
+  admin: SupabaseAdmin,
+  name: string,
+  body: Json,
+  modelId: string | null,
+): Promise<Json> {
+  const inChars = JSON.stringify(body).length;
+  try {
+    const res = await callFunction(name, body);
+    const { tokens, cents } = estimateCost(inChars + JSON.stringify(res).length);
+    try {
+      await admin.from("api_request_log").insert({
+        profile_id: modelId,
+        endpoint: name,
+        tokens_used: tokens,
+        cost_cents: cents,
+        status: "ok",
+      });
+      const { data: lim } = await admin.from("system_limits").select("current_daily_cost_cents").eq("id", 1).maybeSingle();
+      await admin.from("system_limits")
+        .update({ current_daily_cost_cents: Number((lim as Json)?.current_daily_cost_cents ?? 0) + cents })
+        .eq("id", 1);
+    } catch {
+      // Kostenzähler darf den Zug nicht stoppen
+    }
+    return res;
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    try {
+      await admin.from("api_request_log").insert({
+        profile_id: modelId, endpoint: name, tokens_used: 0, cost_cents: 0, status: "error",
+      });
+    } catch { /* ignore */ }
+    await logEvent(admin, "error", `LLM call failed (${name}): ${message}`, modelId);
+    throw e;
+  }
+}
+
 interface TurnResult {
   note: string;
   simDay: number;
@@ -346,6 +411,45 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
   const stepConfig = normalizeStepConfig((stepCfgRow as Json)?.step_config ?? null);
   const limits = resolveLimits((stepCfgRow as Json)?.limits ?? null);
 
+  // ---- Globale API-Limits (Rate, Tagesbudget, gleichzeitige Profile) ----
+  const { data: globalLimitsRow } = await admin
+    .from("system_limits").select("*").eq("id", 1).maybeSingle();
+  const globalLimits = (globalLimitsRow as Json) ?? null;
+  if (globalLimits) {
+    const oneMinAgo = new Date(Date.now() - 60_000).toISOString();
+    const { count: recentRequests } = await admin
+      .from("api_request_log")
+      .select("id", { count: "exact", head: true })
+      .gte("created_at", oneMinAgo);
+    if (Number(recentRequests ?? 0) >= Number(globalLimits.max_requests_per_minute ?? 60)) {
+      await logEvent(admin, "warning", "Rate limit reached — skipping turn", modelId, convId);
+      log.push("rate-limited");
+      return { ...baseResult, note: log.join(" "), simDay, gapHours: 0.1, done: false };
+    }
+
+    if (
+      Number(globalLimits.current_daily_cost_cents ?? 0) >=
+      Number(globalLimits.max_daily_cost_cents ?? 5000)
+    ) {
+      await logEvent(admin, "error", "Daily budget exceeded — all profiles paused", modelId, convId);
+      await admin.from("conversations")
+        .update({ autopilot_enabled: false })
+        .neq("id", "00000000-0000-0000-0000-000000000000");
+      log.push("daily-budget-exceeded");
+      return { ...baseResult, note: log.join(" "), simDay, done: true };
+    }
+
+    const fiveMinAgo = new Date(Date.now() - 300_000).toISOString();
+    const { count: activeProfileCount } = await admin
+      .from("conversations")
+      .select("model_id", { count: "exact", head: true })
+      .eq("autopilot_enabled", true)
+      .gte("last_message_at", fiveMinAgo);
+    if (Number(activeProfileCount ?? 0) >= Number(globalLimits.max_concurrent_profiles ?? 20)) {
+      log.push("max-concurrent-profiles");
+    }
+  }
+
   // ---- Schutz-Limits ----
   // a) Obergrenze gleichzeitig aktiver Chats: keine neuen Chats starten,
   //    laufende dürfen weiterlaufen.
@@ -373,6 +477,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
     .gte("created_at", todayIso);
   if (Number(msgCountToday ?? 0) >= limits.max_messages_per_day) {
     log.push(`daily-message-limit-reached:${msgCountToday}`);
+    await logEvent(admin, "warning", "Daily message limit reached", modelId, convId);
     return { ...baseResult, note: log.join(" "), simDay, done: false, gapHours: 2 };
   }
 
@@ -393,6 +498,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
         .update({ autopilot_enabled: false })
         .eq("id", convId);
       log.push(`auto-paused-low-performance:${successRate.toFixed(1)}%`);
+      await logEvent(admin, "warning", `Auto-paused: low performance (${successRate.toFixed(1)}%)`, modelId, convId);
       return {
         ...baseResult, note: log.join(" "), simDay,
         phase: "break" as SimPhase, done: false, gapHours: 0,
@@ -532,7 +638,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       if (p.match.some((m) => modelText.includes(m))) modelFactHints.push(p.fact);
     }
 
-    const fanRes = await callFunction("fan-sim-bot", {
+    const fanRes = await callLLM(admin, "fan-sim-bot", {
       persona: persona.key,
       history: transcript(messages).slice(-40),
       topicsCovered,
@@ -635,6 +741,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
     const purchases = messages.filter((m) => m.ppv?.isPurchased).length;
     if (purchases === 0 && paidOffers >= NON_BUYER_STOP_OFFERS) {
       log.push(`non-buyer-stop:${paidOffers}`);
+      await logEvent(admin, "warning", "Non-responder stopped", modelId, convId);
       return {
         ...baseResult,
         note: log.join(" "),
@@ -651,7 +758,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
         let boundaryText =
           "ich investiere hier so viel zeit und herz... und irgendwie fühlt sich das einseitig an 🥺";
         try {
-          const boundaryRes = await callFunction("chat-copilot", {
+          const boundaryRes = await callLLM(admin, "chat-copilot", {
             messages: copilotHistory(messages),
             fanMeta: {
               displayName: String(guardFan?.display_name ?? "Fan"),
@@ -780,7 +887,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
   const avoidLines = usedLines(messages, (m) => m.senderId === "user-001");
 
   const askCopilot = (extraAvoid: string[] = []) =>
-    callFunction("chat-copilot", {
+    callLLM(admin, "chat-copilot", {
       messages: copilotHistory(messages),
       fanMeta: {
         displayName: String(fanRow?.display_name ?? "Fan"),
