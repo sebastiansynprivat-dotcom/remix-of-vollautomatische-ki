@@ -10,7 +10,7 @@ import { fx } from "@/lib/feedback";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-type Tab = "media" | "templates";
+type Tab = "media" | "templates" | "assets";
 type StatusFilter = "all" | "fresh" | "used";
 type Sort = "new" | "sent" | "revenue";
 
