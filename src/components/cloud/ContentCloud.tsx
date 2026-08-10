@@ -201,6 +201,7 @@ export function ContentCloud({ model, returnConvId, onBackToChat }: Props) {
           </div>
         )}
       </div>
+      )}
 
       {/* Grid */}
       {tab === "assets" ? (
