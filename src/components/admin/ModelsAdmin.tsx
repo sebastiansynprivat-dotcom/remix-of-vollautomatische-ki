@@ -221,6 +221,7 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
     { id: "persona", label: "Persona (Freitext)" },
     { id: "personal", label: "Persönlich" },
     { id: "chat", label: "Chat-Verhalten" },
+    { id: "stufen", label: "Stufen" },
     { id: "sets", label: "PPV Sets" },
   ];
 
