@@ -37,6 +37,7 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [showCreate, setShowCreate] = useState(false);
+  const [autoCounts, setAutoCounts] = useState<Record<string, { auto: number; manual: number }>>({});
 
   const load = async () => {
     setLoading(true);
@@ -46,6 +47,18 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
       .order("created_at", { ascending: false });
     setModels(data ?? []);
     setLoading(false);
+
+    const { data: convs } = await supabase
+      .from("conversations")
+      .select("model_id, autopilot_enabled");
+    const counts: Record<string, { auto: number; manual: number }> = {};
+    for (const c of convs ?? []) {
+      const key = String((c as { model_id: string }).model_id);
+      counts[key] ??= { auto: 0, manual: 0 };
+      if ((c as { autopilot_enabled: boolean | null }).autopilot_enabled === false) counts[key].manual++;
+      else counts[key].auto++;
+    }
+    setAutoCounts(counts);
   };
   useEffect(() => { load(); }, []);
 
@@ -139,6 +152,20 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
                   </button>
                   <div className="module-desc" style={{ marginTop: 4 }}>
                     @{m.handle} &middot; <span className="tabular">{(m.subscribers ?? 0).toLocaleString("de-DE")}</span> Subscriber
+                  </div>
+                  <div style={{ marginTop: 6, display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11, fontWeight: 600 }}>
+                    <span style={{
+                      padding: "2px 8px", borderRadius: 999,
+                      background: "hsla(239,84%,62%,0.12)",
+                      border: "1px solid hsla(239,84%,62%,0.28)",
+                      color: "hsl(239 84% 76%)",
+                    }}>{autoCounts[m.id]?.auto ?? 0} auto</span>
+                    <span style={{
+                      padding: "2px 8px", borderRadius: 999,
+                      background: (autoCounts[m.id]?.manual ?? 0) > 0 ? "hsla(43,96%,56%,0.12)" : "hsla(0,0%,100%,0.04)",
+                      border: (autoCounts[m.id]?.manual ?? 0) > 0 ? "1px solid hsla(43,96%,56%,0.28)" : "1px solid hsla(0,0%,100%,0.08)",
+                      color: (autoCounts[m.id]?.manual ?? 0) > 0 ? "hsl(43 96% 70%)" : "var(--text-subtle)",
+                    }}>{autoCounts[m.id]?.manual ?? 0} manuell</span>
                   </div>
                 </div>
                 <div style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>
