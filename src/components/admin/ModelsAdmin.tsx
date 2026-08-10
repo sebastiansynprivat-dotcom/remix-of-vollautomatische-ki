@@ -157,72 +157,8 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
   );
 }
 
-function CreateModal({ onClose, onCreated }: { onClose: () => void; onCreated: (id: string) => void }) {
-  const [displayName, setDisplayName] = useState("");
-  const [handle, setHandle] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState("");
-  const [subscribers, setSubscribers] = useState("0");
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!displayName.trim() || !handle.trim()) {
-      setErr("Anzeigename und Handle sind Pflicht.");
-      return;
-    }
-    setBusy(true); setErr(null);
-    const { data, error } = await supabase
-      .from("model_profiles")
-      .insert({
-        display_name: displayName.trim(),
-        handle: handle.trim().replace(/^@/, ""),
-        avatar_url: avatarUrl.trim() || null,
-        subscribers: parseInt(subscribers) || 0,
-      })
-      .select("id").single();
-    setBusy(false);
-    if (error) { setErr(error.message); return; }
-    onCreated(data.id);
-  };
 
-  return (
-    <div role="dialog" aria-modal="true" onClick={onClose} className="shex-modal-backdrop">
-      <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="shex-modal">
-        <div style={{ marginBottom: 18 }}>
-          <div className="shex-eyebrow" style={{ marginBottom: 14 }}>
-            <span className="shex-bar" />
-            ANLEGEN
-          </div>
-          <h2 className="shex-h1" style={{ fontSize: 36, margin: 0 }}>Neues Model.</h2>
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <Field label="Anzeigename *" value={displayName} onChange={setDisplayName} placeholder="z. B. Mia" />
-          <Field label="Handle * (ohne @)" value={handle} onChange={setHandle} placeholder="mia_official" />
-          <Field label="Avatar URL" value={avatarUrl} onChange={setAvatarUrl} placeholder="https://…" />
-          <Field label="Subscriber" type="number" value={subscribers} onChange={setSubscribers} />
-        </div>
-
-        {err && (
-          <div style={{
-            marginTop: 14, padding: "10px 12px", borderRadius: 8, fontSize: 12,
-            background: "hsl(0 75% 58% / 0.08)",
-            border: "1px solid hsl(0 75% 58% / 0.3)",
-            color: "hsl(0 75% 75%)",
-          }}>{err}</div>
-        )}
-
-        <div style={{ display: "flex", gap: 10, marginTop: 22 }}>
-          <button type="button" onClick={onClose} className="shex-btn shex-btn-ghost" style={{ flex: 1 }}>Abbrechen</button>
-          <button type="submit" disabled={busy} className="shex-btn shex-btn-primary" style={{ flex: 1 }}>
-            {busy ? "Lege an…" : "Anlegen"}
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-}
 
 type Tab = "basis" | "persona" | "personal" | "chat" | "sets";
 
