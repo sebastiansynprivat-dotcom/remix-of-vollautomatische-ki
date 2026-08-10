@@ -64,14 +64,6 @@ export function Sidebar({ view, setView, models }: Props) {
         })}
       </div>
 
-      {/* Content */}
-      <SectionLabel>Content</SectionLabel>
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
-        <ContentCloudItem
-          active={view.kind === "cloud"}
-          onClick={() => setView({ kind: "cloud" })}
-        />
-      </div>
 
       {/* Dev */}
       <SectionLabel>Dev</SectionLabel>
@@ -160,44 +152,6 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ContentCloudItem({ active, onClick }: { active: boolean; onClick: () => void }) {
-  return (
-    <button onClick={onClick} style={{
-      position: "relative",
-      display: "flex", alignItems: "center", gap: 10,
-      padding: "10px", borderRadius: 12,
-      background: active
-        ? "linear-gradient(90deg, hsla(38,42%,58%,0.14), hsla(38,42%,58%,0.02) 70%, transparent)"
-        : "linear-gradient(90deg, hsla(40,30%,30%,0.06), transparent)",
-      border: `1px solid ${active ? "hsla(38,42%,58%,0.22)" : "hsla(40,30%,40%,0.12)"}`,
-      boxShadow: active ? "inset 0 1px 0 hsla(40,60%,75%,0.08), 0 4px 16px hsla(38,45%,52%,0.10)" : undefined,
-      transition: "all 240ms var(--easing)",
-      textAlign: "left",
-    }}>
-      <span style={{
-        position: "absolute", left: -14, top: "50%", width: 2,
-        height: active ? "60%" : 0, transform: "translateY(-50%)",
-        background: "var(--gold)", boxShadow: active ? "0 0 12px var(--gold)" : undefined,
-        borderRadius: 2, transition: "height 240ms var(--easing)",
-      }} />
-      <span style={{
-        width: 32, height: 32, borderRadius: 10,
-        display: "grid", placeItems: "center", flexShrink: 0,
-        background: "linear-gradient(135deg, hsla(40,42%,55%,0.22), hsla(40,30%,30%,0.06))",
-        color: "var(--gold)",
-        border: "1px solid hsla(40,42%,58%,0.22)",
-      }}>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M17.5 19a4.5 4.5 0 1 0-1.34-8.79A6 6 0 0 0 4 13a4 4 0 0 0 4 4h9.5z"/>
-        </svg>
-      </span>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ color: "var(--text-strong)", fontSize: 13, fontWeight: 600, letterSpacing: -0.1 }}>Content Cloud</div>
-        <div style={{ color: "var(--text-subtle)", fontSize: 10 }}>Medien & PPV-Vorlagen</div>
-      </div>
-    </button>
-  );
-}
 
 function ProfileNavItem({
   avatarUrl, name, handle, unread, active, onClick,
