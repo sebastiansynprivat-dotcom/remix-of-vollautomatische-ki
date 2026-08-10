@@ -329,10 +329,9 @@ export function ChatArea({
               fontSize: 11, fontWeight: 600, letterSpacing: 0.3, color: "var(--accent)",
             }}>
               <span
-                style={{ background: simRun.state === "running" ? "var(--status-success)" : "var(--text-disabled)" }}
                 style={{
                   width: 8, height: 8, borderRadius: 999,
-                  background: simRun.state === "running" ? undefined : "var(--text-subtle)",
+                  background: simRun.state === "running" ? "var(--status-success)" : "var(--text-disabled)",
                 }}
               />
               {simStatusLabel(simRun)}

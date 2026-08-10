@@ -27,10 +27,9 @@ function SimControlBar() {
         border: "1px solid color-mix(in oklab, var(--accent) 24%, transparent)",
       }}>
         <span
-          style={{ background: anyRunning ? "var(--status-success)" : "var(--text-disabled)" }}
           style={{
             width: 8, height: 8, borderRadius: 999, flexShrink: 0,
-            background: anyRunning ? undefined : "var(--text-subtle)",
+            background: anyRunning ? "var(--status-success)" : "var(--text-disabled)",
           }}
         />
         <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.3, color: "var(--accent)" }}>
