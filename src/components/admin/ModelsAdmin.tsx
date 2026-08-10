@@ -435,8 +435,6 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
             <ModelSetsManager modelId={id} />
           </Panel>
         )}
-          </div>
-        )}
       </div>
 
       {(dirty || saving || savedAt) && (
