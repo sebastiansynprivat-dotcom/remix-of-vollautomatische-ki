@@ -201,6 +201,11 @@ export function ContentCloud({ model, returnConvId, onBackToChat }: Props) {
       </div>
 
       {/* Grid */}
+      {tab === "assets" ? (
+        <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", padding: "0 24px 12px" }}>
+          <AssetLibrary modelId={model.id} />
+        </div>
+      ) : (
       <div style={{ flex: 1, overflowY: "auto", padding: "8px 24px 24px" }}>
         {tab === "media" ? (
           loadingMedia ? <Empty text="Lade Medien…" /> :
@@ -226,6 +231,8 @@ export function ContentCloud({ model, returnConvId, onBackToChat }: Props) {
           )
         )}
       </div>
+      )}
+
 
       {lightbox && <Lightbox a={lightbox} onClose={() => setLightbox(null)} />}
     </main>
