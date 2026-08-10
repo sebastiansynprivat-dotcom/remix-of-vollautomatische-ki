@@ -49,7 +49,7 @@ export function ChatHeader({
       >
         <Avatar id={conv.participant.id} name={conv.participant.displayName} size={28} />
       </button>
-      <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 8 }}>
+      <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 8, overflow: "hidden" }}>
         <span style={{ color: "var(--text-strong)", fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
           {conv.participant.displayName}
         </span>
@@ -59,14 +59,6 @@ export function ChatHeader({
             color: "var(--money)", padding: "1px 8px", borderRadius: 999,
             background: "rgba(251,191,36,0.12)",
           }}>{formatCurrency(conv.totalSpent)}</span>
-        )}
-        {conv.isAutopilot && (
-          <span title="Creator antwortet vollautomatisch" style={{
-            fontSize: 11, fontWeight: 500, letterSpacing: 0, flexShrink: 0,
-            padding: "1px 8px", borderRadius: 999,
-            color: "#C7D2FE",
-            background: "rgba(99,102,241,0.18)",
-          }}>Auto-Pilot</span>
         )}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
