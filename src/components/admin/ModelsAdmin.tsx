@@ -225,10 +225,10 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
 
 
 
-type Tab = "basis" | "kommunikation" | "persona" | "personal" | "chat" | "stufen" | "schutz" | "sets" | "cloud";
+type Tab = "profil" | "kommunikation" | "stufen" | "schutz" | "assets" | "sets";
 
 function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
-  const [tab, setTab] = useState<Tab>("basis");
+  const [tab, setTab] = useState<Tab>("profil");
   const [m, setM] = useState<any>(null);
   const [initial, setInitial] = useState<any>(null);
   const [saving, setSaving] = useState(false);
@@ -278,15 +278,12 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
   };
 
   const tabs: { id: Tab; label: string }[] = [
-    { id: "basis", label: "Basis" },
+    { id: "profil", label: "Profil" },
     { id: "kommunikation", label: "Kommunikation" },
-    { id: "persona", label: "Persona (Freitext)" },
-    { id: "personal", label: "Persönlich" },
-    { id: "chat", label: "Chat-Verhalten" },
     { id: "stufen", label: "Stufen" },
     { id: "schutz", label: "Schutz" },
-    { id: "sets", label: "PPV Sets" },
-    { id: "cloud", label: "Content Cloud" },
+    { id: "assets", label: "Assets" },
+    { id: "sets", label: "Sets" },
   ];
 
   return (
@@ -317,7 +314,7 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
               {m.display_name || "Unbenannt"}
             </h1>
             <div style={{ marginTop: 10, display: "inline-flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
-              <span className="kpi-label" style={{ color: "hsl(40 45% 60%)" }}>@{m.handle}</span>
+              <span className="kpi-label" style={{ color: "var(--text-subtle)" }}>@{m.handle}</span>
               <span style={{ width: 1, height: 10, background: "hsl(0 0% 100% / 0.12)" }} />
               <span className="kpi-label">
                 <span className="tabular" style={{ color: "hsl(0 0% 92%)", fontSize: 13, fontWeight: 500, letterSpacing: 0 }}>
@@ -339,61 +336,71 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
       </div>
 
       <div style={{ maxWidth: 760 }} className="reveal-stagger">
-        {tab === "basis" && (
-          <Panel title="Basisdaten">
-            <Field label="Anzeigename" value={m.display_name} onChange={(v) => set("display_name", v)} />
-            <Field label="Handle (ohne @)" value={m.handle} onChange={(v) => set("handle", v)} />
-            <Field label="Avatar URL" value={m.avatar_url ?? ""} onChange={(v) => set("avatar_url", v)} />
-            <Field label="Bio" value={m.bio ?? ""} onChange={(v) => set("bio", v)} multiline />
-            <Field label="Subscriber" type="number" value={String(m.subscribers)} onChange={(v) => set("subscribers", parseInt(v) || 0)} />
-          </Panel>
+        {tab === "profil" && (
+          <>
+            <Panel title="Basisdaten">
+              <Field label="Anzeigename" value={m.display_name} onChange={(v) => set("display_name", v)} />
+              <Field label="Handle (ohne @)" value={m.handle} onChange={(v) => set("handle", v)} />
+              <Field label="Avatar URL" value={m.avatar_url ?? ""} onChange={(v) => set("avatar_url", v)} />
+              <Field label="Bio" value={m.bio ?? ""} onChange={(v) => set("bio", v)} multiline />
+              <Field label="Subscriber" type="number" value={String(m.subscribers)} onChange={(v) => set("subscribers", parseInt(v) || 0)} />
+
+              <SubSection title="Persönliche Daten">
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  <Field label="Alter" type="number" value={m.age ? String(m.age) : ""} onChange={(v) => set("age", v ? parseInt(v) : null)} />
+                  <Field label="Geburtstag" type="date" value={m.birthday ?? ""} onChange={(v) => set("birthday", v || null)} />
+                </div>
+                <Field label="Wohnort" value={m.location ?? ""} onChange={(v) => set("location", v)} />
+                <Field label="Job" value={m.job ?? ""} onChange={(v) => set("job", v)} />
+                <Field label="Beziehungsstatus" value={m.relationship_status ?? ""} onChange={(v) => set("relationship_status", v)} />
+                <ArrayField label="Hobbys" value={m.hobbies} onChange={(v) => set("hobbies", v)} />
+                <ArrayField label="Sprachen" value={m.languages} onChange={(v) => set("languages", v)} />
+                <Field label="Fun Facts" value={m.fun_facts ?? ""} onChange={(v) => set("fun_facts", v)} multiline />
+              </SubSection>
+            </Panel>
+
+            <Panel title="Gefahrenzone">
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: "var(--text-strong)", marginBottom: 6 }}>Model löschen</div>
+                  <div className="module-desc" style={{ margin: 0 }}>
+                    Entfernt das Profil dauerhaft. Zuweisungen werden mit gelöscht.
+                  </div>
+                </div>
+                <button onClick={remove} className="shex-btn shex-btn-danger">Endgültig löschen</button>
+              </div>
+            </Panel>
+          </>
         )}
 
         {tab === "kommunikation" && (
-          <Panel title="Kommunikationsstil">
-            <PresetGrid
-              selected={resolvePersonaConfig(m.persona_config)?.preset_id}
-              onSelect={(pid: string) => {
-                const preset = presetById(pid);
-                if (preset) set("persona_config", { ...preset.persona });
-              }}
-            />
-            <div style={{ marginTop: 18 }}>
+          <>
+            <Panel title="Kommunikationsstil">
+              <PresetGrid
+                selected={resolvePersonaConfig(m.persona_config)?.preset_id}
+                onSelect={(pid: string) => {
+                  const preset = presetById(pid);
+                  if (preset) set("persona_config", { ...preset.persona });
+                }}
+              />
               <PersonaEditor
                 persona={resolvePersonaConfig(m.persona_config) ?? DEFAULT_PERSONA}
                 modelName={m.display_name}
                 onChange={(p: PersonaConfig) => set("persona_config", p)}
               />
-            </div>
-          </Panel>
-        )}
 
-        {tab === "persona" && (
-          <Panel title="Persona & Stil">
-            <Field label="Persona" value={m.persona ?? ""} onChange={(v) => set("persona", v)} multiline placeholder="z. B. flirty, mysteriös, fürsorglich…" />
-            <Field label="Tone of Voice" value={m.tone_of_voice ?? ""} onChange={(v) => set("tone_of_voice", v)} multiline />
-            <Field label="Schreibstil" value={m.writing_style ?? ""} onChange={(v) => set("writing_style", v)} multiline />
-            <ArrayField label="Do's" value={m.dos} onChange={(v) => set("dos", v)} />
-            <ArrayField label="Don'ts" value={m.donts} onChange={(v) => set("donts", v)} />
-          </Panel>
-        )}
+              <SubSection title="Persona & Stil (Freitext)">
+                <Field label="Persona" value={m.persona ?? ""} onChange={(v) => set("persona", v)} multiline placeholder="z. B. flirty, mysteriös, fürsorglich…" />
+                <Field label="Tone of Voice" value={m.tone_of_voice ?? ""} onChange={(v) => set("tone_of_voice", v)} multiline />
+                <Field label="Schreibstil" value={m.writing_style ?? ""} onChange={(v) => set("writing_style", v)} multiline />
+                <ArrayField label="Do's" value={m.dos} onChange={(v) => set("dos", v)} />
+                <ArrayField label="Don'ts" value={m.donts} onChange={(v) => set("donts", v)} />
+              </SubSection>
+            </Panel>
 
-        {tab === "personal" && (
-          <Panel title="Persönliche Daten">
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-              <Field label="Alter" type="number" value={m.age ? String(m.age) : ""} onChange={(v) => set("age", v ? parseInt(v) : null)} />
-              <Field label="Geburtstag" type="date" value={m.birthday ?? ""} onChange={(v) => set("birthday", v || null)} />
-            </div>
-            <Field label="Wohnort" value={m.location ?? ""} onChange={(v) => set("location", v)} />
-            <Field label="Job" value={m.job ?? ""} onChange={(v) => set("job", v)} />
-            <Field label="Beziehungsstatus" value={m.relationship_status ?? ""} onChange={(v) => set("relationship_status", v)} />
-            <ArrayField label="Hobbys" value={m.hobbies} onChange={(v) => set("hobbies", v)} />
-            <ArrayField label="Sprachen" value={m.languages} onChange={(v) => set("languages", v)} />
-            <Field label="Fun Facts" value={m.fun_facts ?? ""} onChange={(v) => set("fun_facts", v)} multiline />
-          </Panel>
+            <ChatBehaviorTab m={m} set={set} />
+          </>
         )}
-
-        {tab === "chat" && <ChatBehaviorTab m={m} set={set} />}
 
         {tab === "stufen" && (
           <StepConfigEditor
@@ -417,9 +424,9 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
           />
         )}
 
-        {tab === "cloud" && (
-          <div style={{ marginTop: 22 }}>
-            <ContentCloud model={m} returnConvId={null} onBackToChat={() => setTab("basis")} />
+        {tab === "assets" && (
+          <div style={{ marginTop: 16 }}>
+            <ContentCloud model={m} returnConvId={null} onBackToChat={() => setTab("profil")} />
           </div>
         )}
 
@@ -428,27 +435,11 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
             <ModelSetsManager modelId={id} />
           </Panel>
         )}
-
-        {tab === "basis" && (
-          <div style={{ marginTop: 22 }}>
-            <Panel title="Gefahrenzone">
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: "hsl(0 0% 88%)", marginBottom: 6 }}>Model löschen</div>
-                  <div className="module-desc" style={{ margin: 0 }}>
-                    Entfernt das Profil dauerhaft. Zuweisungen werden mit gelöscht.
-                  </div>
-                </div>
-                <button onClick={remove} className="shex-btn shex-btn-danger">Endgültig löschen</button>
-              </div>
-            </Panel>
-          </div>
-        )}
       </div>
 
       {(dirty || saving || savedAt) && (
         <div className="shex-savebar">
-          <span style={{ fontSize: 10.5, letterSpacing: "0.16em", textTransform: "uppercase", fontWeight: 600, color: dirty ? "hsl(40 45% 65%)" : "hsl(0 0% 60%)" }}>
+          <span style={{ fontSize: 10.5, letterSpacing: "0.16em", textTransform: "uppercase", fontWeight: 600, color: dirty ? "var(--text-strong)" : "var(--text-subtle)" }}>
             {savedAt && !dirty ? `Gespeichert · ${savedAt}` : "Ungesicherte Änderungen"}
           </span>
           <button onClick={save} disabled={saving || !dirty} className="shex-btn shex-btn-primary" style={{ borderRadius: 999 }}>
@@ -462,10 +453,31 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
 
 function Panel({ title, children }: { title?: string; children: React.ReactNode }) {
   return (
-    <section className="premium-card" style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 16 }}>
-      {title && <div className="kpi-label" style={{ color: "hsl(40 45% 60%)", marginBottom: 6 }}>{title}</div>}
+    <section className="premium-card" style={{
+      display: "flex", flexDirection: "column",
+      gap: 16, padding: 20, marginBottom: 16,
+    }}>
+      {title && <div className="kpi-label" style={{
+        color: "var(--text-strong)",
+        marginBottom: 4, paddingBottom: 12,
+        borderBottom: "1px solid var(--hairline)",
+      }}>{title}</div>}
       {children}
     </section>
+  );
+}
+
+function SubSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div style={{
+      borderTop: "1px solid var(--hairline)",
+      margin: "4px 0 0",
+      paddingTop: 16,
+      display: "flex", flexDirection: "column", gap: 16,
+    }}>
+      <div className="kpi-label" style={{ color: "var(--text-subtle)" }}>{title}</div>
+      {children}
+    </div>
   );
 }
 
@@ -475,7 +487,7 @@ function Field({ label, value, onChange, type = "text", multiline, placeholder }
 }) {
   return (
     <label style={{ display: "block" }}>
-      <span className="shex-field-label">{label}</span>
+      <span className="shex-field-label" style={{ display: "block", marginBottom: 6 }}>{label}</span>
       {multiline
         ? <textarea rows={3} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="shex-textarea" />
         : <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="shex-input" />}
@@ -515,7 +527,7 @@ function ChatBehaviorTab({ m, set }: { m: any; set: (k: string, v: any) => void 
       </Panel>
 
       <Panel title="Multi-Reply">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
           <NumField label="Nachrichten min." value={b.multiReplyMin} onChange={(v) => setB({ multiReplyMin: Math.max(1, Math.min(3, Math.round(v))) })} />
           <NumField label="Nachrichten max." value={b.multiReplyMax} onChange={(v) => setB({ multiReplyMax: Math.max(1, Math.min(3, Math.round(v))) })} />
         </div>
@@ -540,7 +552,7 @@ function ChatBehaviorTab({ m, set }: { m: any; set: (k: string, v: any) => void 
         <div className="module-desc" style={{ margin: 0 }}>
           Außerhalb dieser Zeiten antwortet sie langsamer — wirkt menschlicher.
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
           <Field label="Aktiv von" type="time" value={b.activeFrom} onChange={(v) => setB({ activeFrom: v })} />
           <Field label="Aktiv bis" type="time" value={b.activeTo} onChange={(v) => setB({ activeTo: v })} />
         </div>
@@ -590,7 +602,7 @@ function Range({ label, min, max, onChange }: {
   return (
     <div>
       <span className="shex-field-label">{label}</span>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
         <NumField label="min" value={min} step={0.1} onChange={(v) => onChange(Math.max(0, v), Math.max(max, v))} />
         <NumField label="max" value={max} step={0.1} onChange={(v) => onChange(Math.min(min, v), Math.max(0, v))} />
       </div>
