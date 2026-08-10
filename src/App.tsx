@@ -186,7 +186,6 @@ function AppInner() {
             ))}
             <IconTab
 
-            <IconTab
               label="Models"
               active={view.kind === "models"}
               onClick={() => handleSetView({ kind: "models" })}
