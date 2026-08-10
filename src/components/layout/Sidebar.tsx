@@ -76,10 +76,8 @@ export function Sidebar({ view, setView, models }: Props) {
       {/* Dev */}
       <SectionLabel>Dev</SectionLabel>
       <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
-              <path d="M8 8h6M8 12h6" />
-            </svg>
-          }
-        />
+        <NavCardItem
+
         <NavCardItem
           active={view.kind === "performance"}
           onClick={() => setView({ kind: "performance" })}
