@@ -65,7 +65,7 @@ export function PerformanceDashboard() {
         const preset = presetById(resolvePersonaConfig(m.persona_config)?.preset_id ?? null);
         return {
           model: m,
-          template: preset?.name ?? "Individuell",
+          template: preset?.label ?? "Individuell",
           chats: cc.auto + cc.paused,
           auto: cc.auto,
           paused: cc.paused,
@@ -333,7 +333,7 @@ function ProfileDetail({ model, days, onBack }: {
         <Avatar url={model.avatar_url} name={model.display_name} size={48} />
         <div>
           <div style={{ fontSize: 20, fontWeight: 600, color: "hsl(0 0% 95%)" }}>{model.display_name}</div>
-          <div style={{ marginTop: 5 }}><Badge>{preset?.name ?? "Individuell"}</Badge></div>
+          <div style={{ marginTop: 5 }}><Badge>{preset?.label ?? "Individuell"}</Badge></div>
         </div>
       </div>
 
