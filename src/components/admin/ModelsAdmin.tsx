@@ -487,7 +487,7 @@ function Field({ label, value, onChange, type = "text", multiline, placeholder }
 }) {
   return (
     <label style={{ display: "block" }}>
-      <span className="shex-field-label">{label}</span>
+      <span className="shex-field-label" style={{ display: "block", marginBottom: 6 }}>{label}</span>
       {multiline
         ? <textarea rows={3} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="shex-textarea" />
         : <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="shex-input" />}
