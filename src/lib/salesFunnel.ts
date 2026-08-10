@@ -208,7 +208,7 @@ export function computeFunnelState(messages: readonly Message[], fanId: string, 
   const highStageDemote = stageBase.offerNo >= 7 ? 3 : stageBase.offerNo >= 5 ? 2 : 1;
   const demoteSteps = Math.floor(retryCount / DEMOTE_AFTER_RETRIES) * highStageDemote + coldDemote;
   const effectiveOfferNo = Math.max(minOfferNo, stageBase.offerNo - demoteSteps);
-  const stageNow = effectiveOfferNo === stageBase.offerNo ? stageBase : stageFor(effectiveOfferNo);
+  const stageNow = effectiveOfferNo === stageBase.offerNo ? stageBase : stageFor(effectiveOfferNo, opts.stepConfig);
 
   // Wiederholung darf ab 10 € moderat rabattiert werden — mehr Abschlüsse,
   // ohne den Wert der Stufe zu zerstören.
