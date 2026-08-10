@@ -14,6 +14,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type { Message } from "@/data/mockData";
 import { computeFunnelState, funnelPayload } from "@/lib/salesFunnel";
+import { normalizeStepConfig } from "@/lib/funnelConfig";
 import { decidePurchase, simPersona } from "@/lib/simPersonas";
 import { buyerFollowupRules, restartRules } from "@/lib/reengage";
 import { filterFresh, usedLines } from "@/lib/repetition";
