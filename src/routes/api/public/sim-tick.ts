@@ -339,10 +339,65 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
   // Profil-eigene Stufen (falls gepflegt) statt der globalen Standard-Stufen.
   const { data: stepCfgRow } = await admin
     .from("model_profiles")
-    .select("step_config")
+    .select("step_config, limits")
     .eq("id", modelId)
     .maybeSingle();
   const stepConfig = normalizeStepConfig((stepCfgRow as Json)?.step_config ?? null);
+  const limits = resolveLimits((stepCfgRow as Json)?.limits ?? null);
+
+  // ---- Schutz-Limits ----
+  // a) Obergrenze gleichzeitig aktiver Chats: keine neuen Chats starten,
+  //    laufende dürfen weiterlaufen.
+  const { count: activeConvCount } = await admin
+    .from("conversations")
+    .select("id", { count: "exact", head: true })
+    .eq("model_id", modelId)
+    .eq("autopilot_enabled", true);
+  const activeConvs = Number(activeConvCount ?? 0);
+  const isNewChat = messages.length === 0;
+  if (activeConvs >= limits.max_concurrent_chats) {
+    log.push(`max-conversations-reached:${activeConvs}`);
+    if (isNewChat) {
+      return { ...baseResult, note: log.join(" "), simDay, done: false, gapHours: 2 };
+    }
+  }
+
+  // b) Tageslimit an Model-Nachrichten in diesem Chat.
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const { count: msgCountToday } = await admin
+    .from("messages")
+    .select("id", { count: "exact", head: true })
+    .eq("conversation_id", convId)
+    .eq("sender_type", "model")
+    .gte("created_at", todayIso);
+  if (Number(msgCountToday ?? 0) >= limits.max_messages_per_day) {
+    log.push(`daily-message-limit-reached:${msgCountToday}`);
+    return { ...baseResult, note: log.join(" "), simDay, done: false, gapHours: 2 };
+  }
+
+  // c) Performance-Wächter: zu schwache Kaufquote in 24 h → Auto-Pause.
+  if (limits.auto_pause_low_performance) {
+    const yesterday = new Date(Date.now() - 86_400_000).toISOString();
+    const { data: recentMsgs } = await admin
+      .from("messages")
+      .select("content_type, ppv_is_purchased")
+      .eq("conversation_id", convId)
+      .gte("created_at", yesterday);
+    const recent = (recentMsgs ?? []) as Json[];
+    const offers = recent.filter((r) => r.content_type === "ppv").length;
+    const successes = recent.filter((r) => r.ppv_is_purchased === true).length;
+    const successRate = offers > 0 ? (successes / offers) * 100 : 100;
+    if (offers >= 5 && successRate < limits.min_success_pct) {
+      await admin.from("conversations")
+        .update({ autopilot_enabled: false })
+        .eq("id", convId);
+      log.push(`auto-paused-low-performance:${successRate.toFixed(1)}%`);
+      return {
+        ...baseResult, note: log.join(" "), simDay,
+        phase: "break" as SimPhase, done: false, gapHours: 0,
+      };
+    }
+  }
 
   const funnelOpts = {
     hoursSinceLastMessage: decision.gapHours,
@@ -350,6 +405,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
     clearedBefore,
     stepConfig: stepConfig ?? undefined,
   };
+
 
   // ---- 1) Kaufentscheidung für ein offenes Angebot ----
   // Nach einer langen Pause wird nicht mehr nachträglich gekauft — das Angebot
