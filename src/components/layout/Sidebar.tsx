@@ -5,8 +5,10 @@ export type View =
   | { kind: "messages"; profileId: string }
   | { kind: "cloud"; profileId?: string; returnConvId?: string | null }
   | { kind: "performance" }
+  | { kind: "monitor" }
   | { kind: "models" }
   | { kind: "profile" };
+
 
 
 interface Props {
