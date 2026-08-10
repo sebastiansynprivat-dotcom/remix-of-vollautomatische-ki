@@ -147,6 +147,7 @@ function modelPersonaPayload(row: Json | null): Json {
     languages: arr(row.languages),
     dos: arr(row.dos),
     donts: arr(row.donts),
+    personaConfig: (row.persona_config ?? undefined) as Json | undefined,
   };
 }
 
