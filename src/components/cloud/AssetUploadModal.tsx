@@ -54,7 +54,7 @@ export function AssetUploadModal({ modelId, onClose, onSaved }: Props) {
     if (!file) { toast.error("Bitte zuerst eine Datei auswählen."); return; }
     setSaving(true);
     try {
-      const { path, mediaType } = await uploadAssetFile(file);
+      const { path, mediaType } = await uploadAssetFile(file, modelId);
       const { error } = await supabase.from("model_assets").insert({
         model_id: modelId,
         url: path,
@@ -69,7 +69,7 @@ export function AssetUploadModal({ modelId, onClose, onSaved }: Props) {
       });
       if (error) throw error;
       await resolveAssetUrl(path);
-      toast.success("Asset gespeichert");
+      toast.success("Asset hinzugefügt");
       onSaved();
       onClose();
     } catch (e) {
