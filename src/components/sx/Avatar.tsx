@@ -1,4 +1,3 @@
-import { colorFromId } from "@/data/mockData";
 
 interface Props { id: string; name: string; size?: number; ring?: boolean; }
 
@@ -8,13 +7,11 @@ export function Avatar({ id, name, size = 40, ring = false }: Props) {
     <div
       style={{
         width: size, height: size, borderRadius: "50%",
-        background: colorFromId(id),
+        background: "var(--surface-3)",
         display: "flex", alignItems: "center", justifyContent: "center",
-        color: "var(--text-strong)", fontWeight: 600, fontSize: size * 0.38,
+        color: "var(--text)", fontWeight: 500, fontSize: size * 0.38,
         flexShrink: 0,
-        boxShadow: ring
-          ? "0 0 0 2px var(--accent), 0 0 0 4px var(--background), 0 0 24px hsla(40,45%,55%,0.3)"
-          : "inset 0 0 0 1px hsla(0,0%,100%,0.08)",
+        boxShadow: "inset 0 0 0 1px var(--hairline-strong)",
       }}
       aria-label={name}
     >{initials}</div>

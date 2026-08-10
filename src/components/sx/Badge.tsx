@@ -16,10 +16,11 @@ export function StatusDot({ status, size = 8 }: { status: OnlineStatus; size?: n
 export function UnreadBadge({ count }: { count: number }) {
   if (!count) return null;
   return (
-    <span className="accent-gradient-bg tabular" style={{
+    <span className="tabular" style={{
+      background: "var(--surface-3)", color: "var(--text-strong)",
       display: "inline-flex", alignItems: "center", justifyContent: "center",
       minWidth: 20, height: 20, padding: "0 6px", borderRadius: 10,
-      fontSize: 11, fontWeight: 700,
+      fontSize: 11, fontWeight: 500,
     }}>{count}</span>
   );
 }

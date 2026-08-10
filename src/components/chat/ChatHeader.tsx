@@ -23,7 +23,7 @@ export function ChatHeader({
   const [debugOpen, setDebugOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   return (
-    <header className="glass-strong" style={{
+    <header className="solid-2" style={{
       display: "flex", alignItems: "center", gap: 10,
       padding: "12px 16px",
       borderBottom: "1px solid #1A1A1E",
