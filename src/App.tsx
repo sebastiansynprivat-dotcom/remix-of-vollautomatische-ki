@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+      import { useState, useEffect, useMemo, useRef } from "react";
 import "@/styles/tokens.css";
 import { Sidebar, type View } from "@/components/layout/Sidebar";
 import { ConversationList } from "@/components/layout/ConversationList";
@@ -13,7 +13,6 @@ import { CommandPalette } from "@/components/chat/CommandPalette";
 import { HotkeyLayer } from "@/components/chat/HotkeyLayer";
 import { useAssignedModels, useConversationsForModel, useMessagesLoader } from "@/lib/cloudChat";
 import { ContentCloud } from "@/components/cloud/ContentCloud";
-import { FahrplanView } from "@/components/profile/FahrplanView";
 import { PerformanceDashboard } from "@/components/profile/PerformanceDashboard";
 import { ModelsAdmin } from "@/components/admin/ModelsAdmin";
 
@@ -62,7 +61,7 @@ function AppInner() {
     : null;
 
   const ensureActive = (id: string) => setActiveId(id);
-  if (view.kind !== "profile" && view.kind !== "cloud" && view.kind !== "fahrplan" && view.kind !== "performance" && view.kind !== "models" && conversations.length && !conversations.find(c => c.id === activeId)) {
+  if (view.kind !== "profile" && view.kind !== "cloud" && view.kind !== "performance" && view.kind !== "models" && conversations.length && !conversations.find(c => c.id === activeId)) {
     queueMicrotask(() => ensureActive(conversations[0].id));
   }
 
@@ -77,7 +76,7 @@ function AppInner() {
   const handleSetView = (v: View) => {
     fx.haptic("tick");
     setView(v);
-    if (v.kind === "profile" || v.kind === "fahrplan" || v.kind === "performance" || v.kind === "models") {
+    if (v.kind === "profile" || v.kind === "performance" || v.kind === "models") {
       setShowChat(false);
       return;
     }
@@ -114,11 +113,7 @@ function AppInner() {
         <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
           {/* Base pane: list or profile — fullscreen, tab bar floats on top */}
           <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column" }}>
-            {view.kind === "fahrplan" ? (
-              <div style={{ flex: 1, overflow: "auto", padding: "16px 14px", paddingBottom: "calc(64px + var(--safe-bottom) + 12px)" }}>
-                <FahrplanView />
-              </div>
-            ) : view.kind === "performance" ? (
+            {view.kind === "performance" ? (
               <div style={{ flex: 1, overflow: "auto", paddingBottom: "calc(64px + var(--safe-bottom) + 12px)" }}>
                 <PerformanceDashboard />
               </div>
@@ -190,16 +185,7 @@ function AppInner() {
               />
             ))}
             <IconTab
-              label="Fahrplan"
-              active={view.kind === "fahrplan"}
-              onClick={() => handleSetView({ kind: "fahrplan" })}
-              icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M4 19.5V6a2 2 0 0 1 2-2h11a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 19.5z"/><path d="M8 8h6M8 12h6"/>
-                </svg>
-              }
-            />
-            <IconTab
+
               label="Models"
               active={view.kind === "models"}
               onClick={() => handleSetView({ kind: "models" })}
@@ -229,13 +215,8 @@ function AppInner() {
     <div style={{ display: "flex", height: "100dvh", overflow: "hidden", position: "relative" }}>
       <Sidebar view={view} setView={setView} models={models} />
 
-      {view.kind === "fahrplan" ? (
-        <div style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: "28px 32px" }}>
-          <div style={{ maxWidth: 960, margin: "0 auto" }}>
-            <FahrplanView />
-          </div>
-        </div>
-      ) : view.kind === "performance" ? (
+      {view.kind === "performance" ? (
+
         <div style={{ flex: 1, minWidth: 0, overflowY: "auto" }}>
           <div style={{ maxWidth: 1280, margin: "0 auto" }}>
             <PerformanceDashboard />
