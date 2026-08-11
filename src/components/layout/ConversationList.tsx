@@ -69,9 +69,10 @@ interface Props {
 
 const SWIPE_THRESHOLD = 76;
 
-type FilterId = "unread" | "unanswered";
+type FilterId = "all" | "unread" | "unanswered";
 
 const FILTERS: { id: FilterId; label: string }[] = [
+  { id: "all",         label: "Alle" },
   { id: "unread",      label: "Ungelesen" },
   { id: "unanswered",  label: "Unbeantwortet" },
 ];
