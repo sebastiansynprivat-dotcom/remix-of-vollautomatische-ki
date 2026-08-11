@@ -10,6 +10,11 @@ export type EmojiFrequency = "none" | "sparse" | "normal" | "many";
 export type MessageLength = "short" | "medium" | "long";
 export type SalesTempo = "slow" | "normal" | "fast";
 
+/** Ein Aktiv-Fenster (lokale Uhrzeit, "HH:MM") */
+export type ActiveWindow = { from: string; to: string };
+
+
+
 export type ChatBehavior = {
   /** Wartezeit bevor die erste Nachricht rausgeht (Sekunden) */
   replyDelayMinSec: number;
