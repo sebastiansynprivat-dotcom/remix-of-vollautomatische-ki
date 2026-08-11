@@ -1,5 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { generatePreviewChat, type PreviewTurn } from "@/lib/previewChat.functions";
+
 import {
   PERSONA_PRESETS,
   COMMUNICATION_STYLE_LABEL,
