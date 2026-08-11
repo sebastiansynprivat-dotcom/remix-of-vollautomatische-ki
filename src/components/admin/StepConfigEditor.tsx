@@ -72,7 +72,9 @@ export function StepConfigEditor({ modelId, value, onSaved, onChange }: {
 
   const resetToDefault = async () => {
     if (!confirm("Stufen wirklich auf den Standard zurücksetzen?")) return;
-    setSteps(DEFAULT_FUNNEL_STAGES.map(s => ({ ...s })));
+    const defaults = DEFAULT_FUNNEL_STAGES.map(s => ({ ...s }));
+    setSteps(defaults);
+    if (onChange) { onChange(defaults); return; }
     setSaving(true);
     const { error } = await supabase.from("model_profiles").update({ step_config: null } as never).eq("id", modelId);
     setSaving(false);
@@ -80,6 +82,7 @@ export function StepConfigEditor({ modelId, value, onSaved, onChange }: {
     onSaved?.(null);
     toast.success("Auf Standard zurückgesetzt");
   };
+
 
   const save = async () => {
     const clean = normalizeStepConfig(steps) ?? [];
