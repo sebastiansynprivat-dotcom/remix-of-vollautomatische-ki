@@ -294,16 +294,18 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
 
   const { data: conv } = await admin
     .from("conversations")
-    .select("id, model_id, fan_id, autopilot_enabled, fans!inner(id, display_name, total_spent_cents, tip_volume_cents)")
+    .select("id, model_id, fan_id, autopilot_enabled, fans!inner(id, display_name, total_spent_cents, tip_volume_cents, external_ref)")
     .eq("id", convId)
     .maybeSingle();
   if (!conv) throw new Error("conversation missing");
 
-  // Manuelle Übersteuerung: Auto-Modus aus → dieser Chat wird nicht bearbeitet.
-  if ((conv as Json).autopilot_enabled === false) {
+  const isManualTest = ((conv as Json).fans as Json)?.external_ref === "manual_test";
+
+  // Manuelle Übersteuerung bzw. fester Test-Chat: nicht simulieren.
+  if ((conv as Json).autopilot_enabled === false || isManualTest) {
     const rh = rhythmFromRow(run);
     return {
-      note: "manual-override-skip",
+      note: isManualTest ? "manual-test-chat-skip" : "manual-override-skip",
       simDay: rh.simDay,
       sessionTurn: rh.sessionTurn,
       phase: rh.phase,
@@ -314,6 +316,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       done: false,
     };
   }
+
 
 
   const fanId = String((conv as Json).fan_id);
@@ -436,9 +439,14 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       Number(globalLimits.max_daily_cost_cents ?? 5000)
     ) {
       await logEvent(admin, "error", "Daily budget exceeded — all profiles paused", modelId, convId);
-      await admin.from("conversations")
+      const { data: testFans } = await admin.from("fans").select("id").eq("external_ref", "manual_test");
+      const testFanIds = ((testFans ?? []) as Json[]).map(f => String(f.id));
+      let pause = admin.from("conversations")
         .update({ autopilot_enabled: false })
         .neq("id", "00000000-0000-0000-0000-000000000000");
+      if (testFanIds.length > 0) pause = pause.not("fan_id", "in", `(${testFanIds.join(",")})`);
+      await pause;
+
       log.push("daily-budget-exceeded");
       return { ...baseResult, note: log.join(" "), simDay, done: true };
     }

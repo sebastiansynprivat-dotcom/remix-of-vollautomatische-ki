@@ -1,5 +1,7 @@
 import { useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { ensureManualTestChat } from "@/lib/manualTestChat";
+
 import { PresetGrid, PersonaEditor } from "@/components/admin/PersonaEditor";
 import {
   DEFAULT_PERSONA, presetById, type PersonaConfig,
@@ -65,7 +67,10 @@ export function ModelCreateModal({
       .select("id").single();
     setBusy(false);
     if (error) { setErr(error.message); return; }
+    // Fester manueller Test-Chat für das neue Profil.
+    await ensureManualTestChat(data.id);
     onCreated(data.id);
+
   };
 
   return (

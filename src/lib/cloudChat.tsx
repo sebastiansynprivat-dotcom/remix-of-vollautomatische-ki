@@ -2,6 +2,8 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { ModelProfile, Conversation, Message } from "@/data/mockData";
 import { ingestCloudMessages, registerCloudConversations } from "@/lib/chatStore";
+import { ensureManualTestChat, MANUAL_TEST_REF } from "@/lib/manualTestChat";
+
 
 /**
  * Loads all model profiles (admin-only app).
@@ -66,7 +68,7 @@ export function useConversationsForModel(modelId: string | null): Conversation[]
         .select(`
           id, model_id, fan_id, last_message_preview, last_message_at,
           last_message_from_model, unread_count, is_autopilot, autopilot_enabled,
-          fans!inner(id, display_name, status, total_spent_cents, tip_volume_cents)
+          fans!inner(id, display_name, status, total_spent_cents, tip_volume_cents, external_ref)
         `)
         .eq("model_id", modelId)
         .order("last_message_at", { ascending: false });
@@ -90,12 +92,16 @@ export function useConversationsForModel(modelId: string | null): Conversation[]
         totalSpent: c.fans.total_spent_cents ?? 0,
         isAutopilot: !!c.is_autopilot,
         autopilotEnabled: c.autopilot_enabled !== false,
+        isManualTest: c.fans.external_ref === MANUAL_TEST_REF,
       }));
       setConvs(mapped);
       registerCloudConversations(mapped);
     };
 
+    // Jedes Profil bekommt seinen festen manuellen Test-Chat.
+    void ensureManualTestChat(modelId).then(() => { if (!cancelled) void load(); });
     load();
+
 
     const channel = supabase
       .channel(`conv-${modelId}`)

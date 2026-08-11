@@ -263,7 +263,11 @@ export function ChatArea({
                 </div>
               )}
               {filtered.map(msg => {
-                const isOwn = msg.senderId === mockCurrentUser.id;
+                // Test-Chat: gespiegelt — meine Fan-Nachrichten rechts, Model links.
+                const isOwn = conv.isManualTest
+                  ? msg.senderId !== mockCurrentUser.id
+                  : msg.senderId === mockCurrentUser.id;
+
                 const bubble = msg.contentType === "ppv"
                   ? <PPVMessageBubble convId={conv.id} msg={msg} isOwn={isOwn} />
                   : msg.contentType === "tip"

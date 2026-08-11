@@ -104,16 +104,20 @@ export function ConversationList({
   const filtered = conversations
     .filter(c => c.participant.displayName.toLowerCase().includes(search.toLowerCase()))
     .filter(c => {
+      if (c.isManualTest) return true; // Test-Chat ist immer angepinnt
       if (filter === "unread") return (unreadMap[c.id] ?? c.unreadCount) > 0;
       if (filter === "unanswered") return !c.lastMessage.fromMe;
       return true;
     })
+
     .sort((a, b) => {
+      if (!!a.isManualTest !== !!b.isManualTest) return a.isManualTest ? -1 : 1;
       if (!!a.isAutopilot !== !!b.isAutopilot) return a.isAutopilot ? -1 : 1;
       if (a.id === "conv-ai-mia") return -1;
       if (b.id === "conv-ai-mia") return 1;
       return b.totalSpent - a.totalSpent;
     });
+
 
   const sortLabel = filter === "unread"
     ? "Ungelesene Chats"

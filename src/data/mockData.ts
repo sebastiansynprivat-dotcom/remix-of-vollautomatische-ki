@@ -62,7 +62,10 @@ export interface Conversation {
   isAutopilot?: boolean;
   /** Manuelle Übersteuerung: false = Mensch schreibt, KI pausiert. */
   autopilotEnabled?: boolean;
+  /** Fester Test-Chat des Profils: du schreibst als Fan, das Model antwortet. */
+  isManualTest?: boolean;
 }
+
 
 export const AI_CONV_ID = "conv-ai-mia";
 export const AI_FAN_ID = "fan-ai-mia";
