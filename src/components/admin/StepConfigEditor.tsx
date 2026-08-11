@@ -151,7 +151,7 @@ export function StepConfigEditor({ modelId, value, onSaved, onChange }: {
                 color: "#fff", fontSize: 13, fontWeight: 600,
               }}>{i + 1}</div>
 
-              <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(4, minmax(0,1fr))", gap: 12 }}>
+              <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(5, minmax(0,1fr))", gap: 12 }}>
                 <FieldBox label="Label">
                   <input
                     value={s.label} placeholder="Einstieg"
@@ -164,7 +164,10 @@ export function StepConfigEditor({ modelId, value, onSaved, onChange }: {
                   <div style={{ position: "relative" }}>
                     <input
                       type="number" min={0} value={s.priceEur}
-                      onChange={e => patch(i, { priceEur: Number(e.target.value) })}
+                      onChange={e => {
+                        const p = Number(e.target.value);
+                        patch(i, { priceEur: p, minPriceEur: Math.min(p, s.minPriceEur ?? p) });
+                      }}
                       onFocus={e => (e.currentTarget.style.color = "hsl(42 60% 62%)")}
                       onBlur={e => (e.currentTarget.style.color = "hsl(0 0% 90%)")}
                       style={{ ...inputStyle, paddingRight: 24 }}
@@ -172,6 +175,17 @@ export function StepConfigEditor({ modelId, value, onSaved, onChange }: {
                     <span style={{ position: "absolute", right: 9, top: 8, fontSize: 12, color: "hsl(0 0% 45%)" }}>€</span>
                   </div>
                 </FieldBox>
+                <FieldBox label="Rabatt bis">
+                  <div style={{ position: "relative" }} title="Tiefster Preis, auf den die KI in dieser Stufe runtergehen darf. Gleich dem Betrag = kein Rabatt.">
+                    <input
+                      type="number" min={0} max={s.priceEur} value={s.minPriceEur ?? s.priceEur}
+                      onChange={e => patch(i, { minPriceEur: Math.min(s.priceEur, Math.max(0, Number(e.target.value))) })}
+                      style={{ ...inputStyle, paddingRight: 24 }}
+                    />
+                    <span style={{ position: "absolute", right: 9, top: 8, fontSize: 12, color: "hsl(0 0% 45%)" }}>€</span>
+                  </div>
+                </FieldBox>
+
                 <FieldBox label="Typ">
                   <select
                     value={s.mediaType}
