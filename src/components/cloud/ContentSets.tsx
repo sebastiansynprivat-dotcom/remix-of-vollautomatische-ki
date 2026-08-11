@@ -345,7 +345,7 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
       description: draft.description.trim() || null,
       price_cents: Math.max(0, Math.round(Number(draft.price.replace(",", ".")) * 100 || 0)),
       time_of_day: draft.time_of_day,
-      tier: draft.level,
+      tags: draft.tags,
       tags: draft.tags,
     });
     setSaving(false);
