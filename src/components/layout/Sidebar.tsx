@@ -173,7 +173,7 @@ function SectionLabel({ children, collapsed, onToggle, count }: {
   const base: React.CSSProperties = {
     padding: "0 10px 6px",
     display: "flex", alignItems: "center", gap: 6,
-    fontSize: 8, fontWeight: 500, letterSpacing: "0.03em",
+    fontSize: 10, fontWeight: 500, letterSpacing: "0.03em",
     color: "var(--text-subtle)",
   };
   if (!onToggle) return <div style={base}>{children}</div>;
@@ -185,7 +185,7 @@ function SectionLabel({ children, collapsed, onToggle, count }: {
       style={{
         ...base, width: "100%", background: "none", border: "none",
         cursor: "pointer", textAlign: "left", font: "inherit",
-        fontSize: 8, fontWeight: 500, letterSpacing: "0.03em",
+        fontSize: 10, fontWeight: 500, letterSpacing: "0.03em",
       }}
     >
       <svg
