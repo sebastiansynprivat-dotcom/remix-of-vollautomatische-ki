@@ -513,9 +513,18 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
           onSaved={() => { void onChanged(); }}
         />
       )}
+
+      {editingId && order.some((a) => a.id === editingId) && (
+        <AssetEditPanel
+          asset={order.find((a) => a.id === editingId)!}
+          onClose={() => { setEditingId(null); void onChanged(); }}
+          onSaved={(patch) => setOrder((o) => o.map((a) => (a.id === editingId ? { ...a, ...patch } : a)))}
+        />
+      )}
     </div>
   );
 }
+
 
 function MediaRow({ asset, index, onDragStart, onDrop, onRemove, onTier, onEdit }: {
   asset: ModelAsset; index: number;
