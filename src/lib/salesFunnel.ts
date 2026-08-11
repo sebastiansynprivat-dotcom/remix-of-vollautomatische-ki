@@ -81,16 +81,26 @@ export const DISCOUNT_MIN_PRICE_CENTS = 1000;
 export const DISCOUNT_STEP_PCT = 10;
 export const DISCOUNT_MAX_PCT = 25;
 
-export function retryPriceCents(basePriceCents: number, retryCount: number): { priceCents: number; discountPct: number } {
-  if (retryCount <= 0 || basePriceCents < DISCOUNT_MIN_PRICE_CENTS) {
+export function retryPriceCents(
+  basePriceCents: number,
+  retryCount: number,
+  /** Untergrenze aus der Stufen-Konfiguration (Kundenrabatt-Spanne). */
+  floorCents?: number,
+): { priceCents: number; discountPct: number } {
+  const floor = Math.min(
+    basePriceCents,
+    Math.max(0, floorCents ?? Math.min(basePriceCents, DISCOUNT_MIN_PRICE_CENTS)),
+  );
+  if (retryCount <= 0 || floor >= basePriceCents) {
     return { priceCents: basePriceCents, discountPct: 0 };
   }
   const discountPct = Math.min(DISCOUNT_MAX_PCT, retryCount * DISCOUNT_STEP_PCT);
   const raw = basePriceCents * (1 - discountPct / 100);
   const rounded = Math.round(raw / 100) * 100;
-  const priceCents = Math.max(DISCOUNT_MIN_PRICE_CENTS, rounded);
+  const priceCents = Math.max(floor, Math.min(basePriceCents, rounded));
   return { priceCents, discountPct: Math.round((1 - priceCents / basePriceCents) * 100) };
 }
+
 
 export interface FunnelState {
   stage: FunnelStage;
