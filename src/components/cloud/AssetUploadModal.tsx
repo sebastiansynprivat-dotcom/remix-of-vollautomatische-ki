@@ -7,9 +7,14 @@ import {
 
 interface Props {
   modelId: string;
+  /** Optional: direkt in einen Content-Ordner einsortieren. */
+  setId?: string | null;
+  /** Position in der Versand-Reihenfolge des Ordners. */
+  sequenceOrder?: number;
   onClose: () => void;
   onSaved: () => void;
 }
+
 
 const panel: React.CSSProperties = {
   width: "min(680px, 94vw)", maxHeight: "92vh", overflowY: "auto",
