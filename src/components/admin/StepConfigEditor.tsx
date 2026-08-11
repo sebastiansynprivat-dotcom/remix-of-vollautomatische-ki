@@ -9,10 +9,12 @@ import {
  * Profil-eigene Stufen-Konfiguration.
  * Leer / nicht gesetzt → globale Standard-Stufen gelten.
  */
-export function StepConfigEditor({ modelId, value, onSaved }: {
+export function StepConfigEditor({ modelId, value, onSaved, onChange }: {
   modelId: string;
   value: unknown;
   onSaved?: (steps: FunnelStageConfig[] | null) => void;
+  /** Wenn gesetzt: kein eigener Speichern-Button, Parent übernimmt Auto-Save. */
+  onChange?: (steps: FunnelStageConfig[]) => void;
 }) {
   const initial = useMemo(
     () => normalizeStepConfig(value) ?? DEFAULT_FUNNEL_STAGES.map(s => ({ ...s })),
@@ -29,14 +31,24 @@ export function StepConfigEditor({ modelId, value, onSaved }: {
     mounted.current = true;
   }, [initial]);
 
+  const emit = (next: FunnelStageConfig[]) => {
+    if (!onChange) return;
+    const clean = normalizeStepConfig(next) ?? [];
+    if (JSON.stringify(clean) !== JSON.stringify(normalizeStepConfig(value) ?? [])) onChange(clean);
+  };
+
+
+  const apply = (fn: (rs: FunnelStageConfig[]) => FunnelStageConfig[]) =>
+    setSteps(rs => { const next = fn(rs); emit(next); return next; });
+
   const patch = (i: number, p: Partial<FunnelStageConfig>) =>
-    setSteps(rs => rs.map((r, idx) => (idx === i ? { ...r, ...p } : r)));
+    apply(rs => rs.map((r, idx) => (idx === i ? { ...r, ...p } : r)));
 
   const removeAt = (i: number) =>
-    setSteps(rs => (rs.length > 1 ? rs.filter((_, idx) => idx !== i) : rs));
+    apply(rs => (rs.length > 1 ? rs.filter((_, idx) => idx !== i) : rs));
 
   const addStep = () =>
-    setSteps(rs => [...rs, {
+    apply(rs => [...rs, {
       id: `s${Date.now()}`,
       label: `Stufe ${rs.length + 1}`,
       priceEur: (rs[rs.length - 1]?.priceEur ?? 0) + 10,
@@ -46,7 +58,7 @@ export function StepConfigEditor({ modelId, value, onSaved }: {
     }]);
 
   const drop = (target: number) => {
-    setSteps(rs => {
+    apply(rs => {
       if (dragIdx === null || dragIdx === target) return rs;
       const next = [...rs];
       const [moved] = next.splice(dragIdx, 1);
@@ -57,9 +69,12 @@ export function StepConfigEditor({ modelId, value, onSaved }: {
     setOverIdx(null);
   };
 
+
   const resetToDefault = async () => {
     if (!confirm("Stufen wirklich auf den Standard zurücksetzen?")) return;
-    setSteps(DEFAULT_FUNNEL_STAGES.map(s => ({ ...s })));
+    const defaults = DEFAULT_FUNNEL_STAGES.map(s => ({ ...s }));
+    setSteps(defaults);
+    if (onChange) { onChange(defaults); return; }
     setSaving(true);
     const { error } = await supabase.from("model_profiles").update({ step_config: null } as never).eq("id", modelId);
     setSaving(false);
@@ -67,6 +82,7 @@ export function StepConfigEditor({ modelId, value, onSaved }: {
     onSaved?.(null);
     toast.success("Auf Standard zurückgesetzt");
   };
+
 
   const save = async () => {
     const clean = normalizeStepConfig(steps) ?? [];
@@ -216,18 +232,21 @@ export function StepConfigEditor({ modelId, value, onSaved }: {
         + Stufe hinzufügen
       </button>
 
-      <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 18 }}>
-        <button
-          type="button" onClick={save} disabled={saving}
-          style={{
-            padding: "10px 22px", borderRadius: 999, border: "none", cursor: saving ? "default" : "pointer",
-            background: "linear-gradient(135deg, hsl(243 75% 59%), hsl(270 70% 58%))",
-            color: "#fff", fontSize: 13, fontWeight: 600, opacity: saving ? 0.6 : 1,
-          }}
-        >
-          {saving ? "Speichere…" : "Speichern"}
-        </button>
-      </div>
+      {!onChange && (
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 18 }}>
+          <button
+            type="button" onClick={save} disabled={saving}
+            style={{
+              padding: "10px 22px", borderRadius: 999, border: "none", cursor: saving ? "default" : "pointer",
+              background: "linear-gradient(135deg, hsl(243 75% 59%), hsl(270 70% 58%))",
+              color: "#fff", fontSize: 13, fontWeight: 600, opacity: saving ? 0.6 : 1,
+            }}
+          >
+            {saving ? "Speichere…" : "Speichern"}
+          </button>
+        </div>
+      )}
+
     </div>
   );
 }

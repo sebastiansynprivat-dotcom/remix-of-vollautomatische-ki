@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ModelSetsManager } from "@/components/admin/ModelSetsManager";
 import { ContentCloud } from "@/components/cloud/ContentCloud";
@@ -235,8 +235,9 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
   const [tab, setTab] = useState<Tab>("profil");
   const [m, setM] = useState<any>(null);
   const [initial, setInitial] = useState<any>(null);
-  const [saving, setSaving] = useState(false);
-  const [savedAt, setSavedAt] = useState<string | null>(null);
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -252,6 +253,54 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
     return JSON.stringify(m) !== JSON.stringify(initial);
   }, [m, initial]);
 
+  // Debounced Auto-Save
+  useEffect(() => {
+    if (!dirty || !m) return;
+    setSaveState("saving");
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(async () => {
+      const { id: _id, created_at: _c, updated_at: _u, created_by: _b, ...rest } = m;
+      const snapshot = m;
+      const { error } = await supabase
+        .from("model_profiles")
+        .update({ ...rest, updated_at: new Date().toISOString() })
+        .eq("id", id);
+      if (error) {
+        setSaveState("idle");
+        toast.error("Speichern fehlgeschlagen");
+        return;
+      }
+      setInitial(snapshot);
+      setSaveState("saved");
+      if (snapshot.is_template) {
+        const children = await syncTemplateChildren(id);
+        if (children > 0) toast.success(`Template aktualisiert — ${children} Profile synchronisiert`);
+      }
+      if (idleTimer.current) clearTimeout(idleTimer.current);
+      idleTimer.current = setTimeout(() => setSaveState("idle"), 2000);
+    }, 1500);
+
+    return () => { if (saveTimer.current) clearTimeout(saveTimer.current); };
+  }, [m, dirty, id]);
+
+  // Warnung beim Schließen des Tabs
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (dirty || saveState === "saving") { e.preventDefault(); e.returnValue = ""; }
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [dirty, saveState]);
+
+  const handleBack = () => {
+    if (saveState === "saving" || dirty) {
+      toast.info("Änderungen werden gespeichert…");
+      setTimeout(() => onBack(), 2000);
+    } else {
+      onBack();
+    }
+  };
+
   if (!m) {
     return (
       <div className="shex">
@@ -264,26 +313,13 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
 
   const set = (k: string, v: any) => setM({ ...m, [k]: v });
 
-  const save = async () => {
-    setSaving(true);
-    const { id: _id, created_at: _c, updated_at: _u, created_by: _b, ...rest } = m;
-    const { error } = await supabase.from("model_profiles").update(rest).eq("id", id);
-    setSaving(false);
-    if (error) { alert(error.message); return; }
-    setInitial(m);
-    setSavedAt(new Date().toLocaleTimeString("de-DE"));
-    if (m.is_template) {
-      const children = await syncTemplateChildren(id);
-      toast.success(`Template aktualisiert — ${children} Profile synchronisiert`);
-    }
-  };
-
   const remove = async () => {
     if (!confirm(`Model „${m.display_name}" wirklich löschen? Das kann nicht rückgängig gemacht werden.`)) return;
     const { error } = await supabase.from("model_profiles").delete().eq("id", id);
     if (error) { alert(error.message); return; }
     onBack();
   };
+
 
   const tabs: { id: Tab; label: string }[] = [
     { id: "profil", label: "Profil" },
@@ -297,7 +333,7 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
 
   return (
     <div className="shex" style={{ paddingBottom: 120 }}>
-      <button onClick={onBack} style={{
+      <button onClick={handleBack} style={{
         fontSize: 10.5, letterSpacing: "0.18em", textTransform: "uppercase",
         fontWeight: 600, color: "hsl(0 0% 50%)",
         display: "inline-flex", alignItems: "center", gap: 8, paddingTop: 8,
@@ -319,9 +355,12 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
             {!m.avatar_url && (m.display_name?.[0] ?? "?").toUpperCase()}
           </div>
           <div style={{ flex: 1, minWidth: 240 }}>
-            <h1 className="shex-h1" style={{ margin: 0, fontSize: "clamp(32px, 3vw + 10px, 48px)" }}>
-              {m.display_name || "Unbenannt"}
-            </h1>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
+              <h1 className="shex-h1" style={{ margin: 0, fontSize: "clamp(32px, 3vw + 10px, 48px)" }}>
+                {m.display_name || "Unbenannt"}
+              </h1>
+              <SaveIndicator state={saveState} />
+            </div>
             <div style={{ marginTop: 10, display: "inline-flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
               <span className="kpi-label" style={{ color: "var(--text-subtle)" }}>@{m.handle}</span>
               <span style={{ width: 1, height: 10, background: "hsl(0 0% 100% / 0.12)" }} />
@@ -465,10 +504,7 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
           <StepConfigEditor
             modelId={id}
             value={m.step_config}
-            onSaved={(steps: FunnelStageConfig[] | null) => {
-              setM((prev: any) => ({ ...prev, step_config: steps }));
-              setInitial((prev: any) => ({ ...prev, step_config: steps }));
-            }}
+            onChange={(steps: FunnelStageConfig[]) => set("step_config", steps)}
           />
         )}
 
@@ -476,12 +512,10 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
           <LimitsEditor
             modelId={id}
             value={m.limits}
-            onSaved={(limits) => {
-              setM((prev: any) => ({ ...prev, limits }));
-              setInitial((prev: any) => ({ ...prev, limits }));
-            }}
+            onChange={(limits) => set("limits", limits)}
           />
         )}
+
 
         {tab === "platforms" && <PlatformsTab profileId={id} />}
 
@@ -498,19 +532,46 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
         )}
       </div>
 
-      {(dirty || saving || savedAt) && (
-        <div className="shex-savebar">
-          <span style={{ fontSize: 10.5, letterSpacing: "0.16em", textTransform: "uppercase", fontWeight: 600, color: dirty ? "var(--text-strong)" : "var(--text-subtle)" }}>
-            {savedAt && !dirty ? `Gespeichert · ${savedAt}` : "Ungesicherte Änderungen"}
+    </div>
+  );
+}
+
+/** Dezenter Auto-Save-Status: nichts / Spinner / grüner Haken. */
+function SaveIndicator({ state }: { state: "idle" | "saving" | "saved" }) {
+  if (state === "idle") return null;
+  return (
+    <div style={{
+      display: "inline-flex", alignItems: "center", gap: 7, flexShrink: 0,
+      paddingTop: 10, animation: "sbFadeIn 150ms ease",
+    }}>
+      {state === "saving" ? (
+        <>
+          <span style={{
+            width: 12, height: 12, borderRadius: "50%", display: "block",
+            border: "1.5px solid hsl(243 75% 59% / 0.25)",
+            borderTopColor: "hsl(243 75% 66%)",
+            animation: "sbSpin 0.8s linear infinite",
+          }} />
+          <span style={{ fontSize: 11.5, color: "var(--text-subtle, hsl(0 0% 55%))", letterSpacing: "0.02em" }}>
+            Speichern…
           </span>
-          <button onClick={save} disabled={saving || !dirty} className="shex-btn shex-btn-primary" style={{ borderRadius: 999 }}>
-            {saving ? "Speichere…" : "Speichern"}
-          </button>
-        </div>
+        </>
+      ) : (
+        <>
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M3 8.5l3.2 3.2L13 5" stroke="hsl(152 62% 60%)" strokeWidth="2"
+              strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span style={{ fontSize: 11.5, color: "hsl(152 62% 60%)", letterSpacing: "0.02em" }}>
+            Gespeichert
+          </span>
+        </>
       )}
     </div>
   );
 }
+
+
 
 function setJson(
   m: any,
