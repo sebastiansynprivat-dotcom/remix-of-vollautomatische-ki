@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   PERSONA_PRESETS,
@@ -170,7 +170,7 @@ export function PersonaEditor({
   onChange: (p: PersonaConfig) => void;
   modelName?: string;
   /** Zusatzfelder, die direkt unter dem Emoji-Set erscheinen. */
-  emojiExtras?: React.ReactNode;
+  emojiExtras?: ReactNode;
 }) {
   const set = <K extends keyof PersonaConfig>(k: K, v: PersonaConfig[K]) =>
     onChange({ ...persona, [k]: v });
@@ -236,6 +236,7 @@ export function PersonaEditor({
 
       <TagInput label="Emoji-Set" values={persona.emoji_set} onChange={(v) => set("emoji_set", v)}
         placeholder="Emoji eingeben + Enter" tone="gold" />
+      {emojiExtras}
       <TagInput label="Signature-Phrasen" values={persona.signature_phrases}
         onChange={(v) => set("signature_phrases", v)} placeholder="Phrase + Enter" />
       <TagInput label="Verbotene Wörter" values={persona.avoid_words}
