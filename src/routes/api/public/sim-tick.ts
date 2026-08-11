@@ -11,6 +11,7 @@
 //
 // Läuft komplett serverseitig — der Browser muss nicht offen sein.
 // =========================================================================
+import { timeOfDayFromHour } from "@/lib/contentSets";
 import { createFileRoute } from "@tanstack/react-router";
 import type { Message } from "@/data/mockData";
 import { computeFunnelState, funnelPayload } from "@/lib/salesFunnel";
@@ -1021,7 +1022,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       asset_id: (selectedAsset?.id as string | undefined) ?? null,
       ppv_price_cents: stageValueCents,
       ppv_media_type: funnelNow.stage.config.mediaType,
-      ppv_media_count: 1,
+      ppv_media_count: Math.max(1, setAssets.length),
       ppv_is_purchased: false,
       created_at: clock.next(20, 90),
     });
