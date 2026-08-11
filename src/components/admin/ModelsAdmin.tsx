@@ -523,9 +523,10 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
 
         {tab === "assets" && (
           <div style={{ marginTop: 16 }}>
-            <ContentCloud model={m} returnConvId={null} onBackToChat={() => setTab("profil")} />
+            <ContentSets modelId={id} stepConfig={m.step_config} />
           </div>
         )}
+
 
         {tab === "sets" && (
           <Panel title="PPV Sets">
