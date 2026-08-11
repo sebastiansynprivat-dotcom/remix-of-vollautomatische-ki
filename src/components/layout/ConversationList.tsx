@@ -69,21 +69,18 @@ interface Props {
 
 const SWIPE_THRESHOLD = 76;
 
-type FilterId = "top" | "hot" | "open_money" | "unread" | "unanswered";
+type FilterId = "unread" | "unanswered";
 
 const FILTERS: { id: FilterId; label: string }[] = [
-  { id: "top",         label: "Top" },
-  { id: "hot",         label: "Heiß" },
-  { id: "open_money",  label: "$ offen" },
   { id: "unread",      label: "Ungelesen" },
-  { id: "unanswered",  label: "Unbeantw." },
+  { id: "unanswered",  label: "Unbeantwortet" },
 ];
 
 export function ConversationList({
   conversations, headerContext, activeId, setActiveId, onMenu,
 }: Props) {
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<FilterId>("top");
+  const [filter, setFilter] = useState<FilterId>("unread");
   const chat = useChat();
   const [unreadMap, setUnreadMap] = useState<Record<string, number>>(() => (
     Object.fromEntries(conversations.map(c => [c.id, c.unreadCount]))
