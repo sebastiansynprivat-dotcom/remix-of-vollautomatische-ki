@@ -109,11 +109,13 @@ export function ConversationList({
       return true;
     })
     .sort((a, b) => {
+      if (!!a.isManualTest !== !!b.isManualTest) return a.isManualTest ? -1 : 1;
       if (!!a.isAutopilot !== !!b.isAutopilot) return a.isAutopilot ? -1 : 1;
       if (a.id === "conv-ai-mia") return -1;
       if (b.id === "conv-ai-mia") return 1;
       return b.totalSpent - a.totalSpent;
     });
+
 
   const sortLabel = filter === "unread"
     ? "Ungelesene Chats"
