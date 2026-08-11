@@ -235,8 +235,9 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
   const [tab, setTab] = useState<Tab>("profil");
   const [m, setM] = useState<any>(null);
   const [initial, setInitial] = useState<any>(null);
-  const [saving, setSaving] = useState(false);
-  const [savedAt, setSavedAt] = useState<string | null>(null);
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -252,6 +253,54 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
     return JSON.stringify(m) !== JSON.stringify(initial);
   }, [m, initial]);
 
+  // Debounced Auto-Save
+  useEffect(() => {
+    if (!dirty || !m) return;
+    setSaveState("saving");
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(async () => {
+      const { id: _id, created_at: _c, updated_at: _u, created_by: _b, ...rest } = m;
+      const snapshot = m;
+      const { error } = await supabase
+        .from("model_profiles")
+        .update({ ...rest, updated_at: new Date().toISOString() })
+        .eq("id", id);
+      if (error) {
+        setSaveState("idle");
+        toast.error("Speichern fehlgeschlagen");
+        return;
+      }
+      setInitial(snapshot);
+      setSaveState("saved");
+      if (snapshot.is_template) {
+        const children = await syncTemplateChildren(id);
+        if (children > 0) toast.success(`Template aktualisiert — ${children} Profile synchronisiert`);
+      }
+      if (idleTimer.current) clearTimeout(idleTimer.current);
+      idleTimer.current = setTimeout(() => setSaveState("idle"), 2000);
+    }, 1500);
+
+    return () => { if (saveTimer.current) clearTimeout(saveTimer.current); };
+  }, [m, dirty, id]);
+
+  // Warnung beim Schließen des Tabs
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (dirty || saveState === "saving") { e.preventDefault(); e.returnValue = ""; }
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [dirty, saveState]);
+
+  const handleBack = () => {
+    if (saveState === "saving" || dirty) {
+      toast.info("Änderungen werden gespeichert…");
+      setTimeout(() => onBack(), 2000);
+    } else {
+      onBack();
+    }
+  };
+
   if (!m) {
     return (
       <div className="shex">
@@ -264,26 +313,13 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
 
   const set = (k: string, v: any) => setM({ ...m, [k]: v });
 
-  const save = async () => {
-    setSaving(true);
-    const { id: _id, created_at: _c, updated_at: _u, created_by: _b, ...rest } = m;
-    const { error } = await supabase.from("model_profiles").update(rest).eq("id", id);
-    setSaving(false);
-    if (error) { alert(error.message); return; }
-    setInitial(m);
-    setSavedAt(new Date().toLocaleTimeString("de-DE"));
-    if (m.is_template) {
-      const children = await syncTemplateChildren(id);
-      toast.success(`Template aktualisiert — ${children} Profile synchronisiert`);
-    }
-  };
-
   const remove = async () => {
     if (!confirm(`Model „${m.display_name}" wirklich löschen? Das kann nicht rückgängig gemacht werden.`)) return;
     const { error } = await supabase.from("model_profiles").delete().eq("id", id);
     if (error) { alert(error.message); return; }
     onBack();
   };
+
 
   const tabs: { id: Tab; label: string }[] = [
     { id: "profil", label: "Profil" },
