@@ -174,20 +174,12 @@ export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, onC
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-            <label style={{ display: "grid", gap: 6 }}>
-              <span style={lbl}>Kategorie</span>
-              <select value={category} onChange={e => setCategory(e.target.value)} style={field}>
-                {CATEGORIES.map(c => <option key={c} value={c}>{CATEGORY_LABEL[c]}</option>)}
-              </select>
-            </label>
-            <label style={{ display: "grid", gap: 6 }}>
-              <span style={lbl}>Wert (€)</span>
-              <input value={valueEur} onChange={e => setValueEur(e.target.value)} inputMode="decimal"
-                placeholder="0 für gratis, oder Wert in Euro"
-                style={{ ...field, color: "var(--accent, #d4af6a)" }} />
-            </label>
-          </div>
+          <label style={{ display: "grid", gap: 6 }}>
+            <span style={lbl}>Wert (€)</span>
+            <input value={valueEur} onChange={e => setValueEur(e.target.value)} inputMode="decimal"
+              placeholder="0 für gratis, oder Wert in Euro"
+              style={{ ...field, color: "var(--accent, #d4af6a)" }} />
+          </label>
 
           <label style={{ display: "grid", gap: 6 }}>
             <span style={lbl}>Notiz (optional)</span>
