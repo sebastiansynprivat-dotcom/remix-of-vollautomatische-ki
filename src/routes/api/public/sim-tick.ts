@@ -11,7 +11,10 @@
 //
 // Läuft komplett serverseitig — der Browser muss nicht offen sein.
 // =========================================================================
-import { timeOfDayFromHour } from "@/lib/contentSets";
+/** 6–18 Uhr = Tag, sonst Nacht (Spiegel von src/lib/contentSets.ts). */
+const timeOfDayFromHour = (hour: number): "day" | "night" =>
+  hour >= 6 && hour < 18 ? "day" : "night";
+
 import { createFileRoute } from "@tanstack/react-router";
 import type { Message } from "@/data/mockData";
 import { computeFunnelState, funnelPayload } from "@/lib/salesFunnel";
