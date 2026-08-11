@@ -43,7 +43,7 @@ export function Sidebar({ view, setView, models }: Props) {
           display: "grid", placeItems: "center",
           fontWeight: 600, fontSize: 10, letterSpacing: -0.2,
         }}>SX</div>
-        <span style={{ color: "var(--text-strong)", fontWeight: 600, fontSize: 13, letterSpacing: -0.1 }}>Studio</span>
+        <span style={{ color: "var(--text-strong)", fontWeight: 600, fontSize: 13, letterSpacing: -0.1 }}>{"\n"}</span>
       </div>
 
       {/* Assigned profiles section */}
