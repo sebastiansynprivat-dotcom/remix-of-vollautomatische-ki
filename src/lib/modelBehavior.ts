@@ -89,14 +89,26 @@ const strArr = (v: unknown): string[] =>
 const time = (v: unknown, fallback: string): string =>
   typeof v === "string" && /^\d{1,2}:\d{2}$/.test(v.trim()) ? v.trim().padStart(5, "0") : fallback;
 
+/** Fenster-Liste aus jsonb lesen; fällt auf das alte from/to-Paar zurück. */
+function resolveWindows(r: Record<string, unknown>, d: ChatBehavior): ActiveWindow[] {
+  const raw = Array.isArray(r.activeWindows) ? r.activeWindows : [];
+  const list: ActiveWindow[] = raw
+    .filter((w): w is Record<string, unknown> => !!w && typeof w === "object")
+    .map((w) => ({ from: time(w.from, "08:00"), to: time(w.to, "23:59") }))
+    .slice(0, 6);
+  if (list.length) return list;
+  return [{ from: time(r.activeFrom, d.activeFrom), to: time(r.activeTo, d.activeTo) }];
+}
+
 /** Rohes jsonb aus der DB in ein vollständiges, valides Verhalten überführen. */
 export function resolveChatBehavior(raw: unknown): ChatBehavior {
   const d = DEFAULT_CHAT_BEHAVIOR;
-  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return { ...d };
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return { ...d, activeWindows: [...d.activeWindows] };
   const r = raw as Record<string, unknown>;
 
   const lengths: MessageLength[] = ["short", "medium", "long"];
   const tempos: SalesTempo[] = ["slow", "normal", "fast"];
+  const windows = resolveWindows(r, d);
 
   const b: ChatBehavior = {
     replyDelayMinSec: num(r.replyDelayMinSec, d.replyDelayMinSec, 0, 600),
@@ -112,9 +124,11 @@ export function resolveChatBehavior(raw: unknown): ChatBehavior {
     messageLength: lengths.includes(r.messageLength as MessageLength) ? (r.messageLength as MessageLength) : d.messageLength,
     typoRate: Math.round(num(r.typoRate, d.typoRate, 0, 100)),
     petNames: strArr(r.petNames).slice(0, 8),
-    activeFrom: time(r.activeFrom, d.activeFrom),
-    activeTo: time(r.activeTo, d.activeTo),
+    activeFrom: windows[0].from,
+    activeTo: windows[0].to,
+    activeWindows: windows,
     offHoursDelayFactor: num(r.offHoursDelayFactor, d.offHoursDelayFactor, 1, 20),
+    offHoursDelayFactorMax: num(r.offHoursDelayFactorMax, num(r.offHoursDelayFactor, d.offHoursDelayFactorMax, 1, 20), 1, 20),
     salesStartStage: Math.round(num(r.salesStartStage, d.salesStartStage, 0, 10)),
     salesTempo: tempos.includes(r.salesTempo as SalesTempo) ? (r.salesTempo as SalesTempo) : d.salesTempo,
   };
@@ -123,6 +137,7 @@ export function resolveChatBehavior(raw: unknown): ChatBehavior {
   if (b.replyDelayMaxSec < b.replyDelayMinSec) b.replyDelayMaxSec = b.replyDelayMinSec;
   if (b.multiGapMaxSec < b.multiGapMinSec) b.multiGapMaxSec = b.multiGapMinSec;
   if (b.ppvDelayMaxSec < b.ppvDelayMinSec) b.ppvDelayMaxSec = b.ppvDelayMinSec;
+
   if (b.multiReplyMax < b.multiReplyMin) b.multiReplyMax = b.multiReplyMin;
   return b;
 }
