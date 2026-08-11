@@ -493,8 +493,10 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
               onDrop={() => void drop(a.id)}
               onRemove={() => void detach(a.id)}
               onTier={(t) => void setAssetTier(a.id, t)}
+              onEdit={() => setEditingId(a.id)}
             />
           ))}
+
         </div>
       </section>
 
