@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import type { ModelProfile } from "@/data/mockData";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -19,6 +20,13 @@ interface Props {
 
 export function Sidebar({ view, setView, models }: Props) {
   const { user } = useAuth();
+  const [profilesCollapsed, setProfilesCollapsed] = useState(false);
+  useEffect(() => {
+    setProfilesCollapsed(localStorage.getItem("sidebar.profilesCollapsed") === "1");
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("sidebar.profilesCollapsed", profilesCollapsed ? "1" : "0");
+  }, [profilesCollapsed]);
   const email = user?.email ?? "";
   const metaName = (user?.user_metadata as { display_name?: string; full_name?: string } | undefined);
   const displayName = metaName?.display_name || metaName?.full_name || (email ? email.split("@")[0] : "Account");
@@ -47,23 +55,33 @@ export function Sidebar({ view, setView, models }: Props) {
       </div>
 
       {/* Assigned profiles section */}
-      <SectionLabel>Meine Profile</SectionLabel>
-      <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 12 }}>
-        {models.map((p) => {
-          const active = view.kind === "messages" && view.profileId === p.id;
-          return (
-            <ProfileNavItem
-              key={p.id}
-              avatarUrl={p.avatarUrl}
-              name={p.displayName}
-              handle={p.handle}
-              unread={p.unread}
-              active={active}
-              onClick={() => setView({ kind: "messages", profileId: p.id })}
-            />
-          );
-        })}
-      </div>
+      <SectionLabel
+        collapsed={profilesCollapsed}
+        onToggle={() => setProfilesCollapsed(v => !v)}
+        count={models.length}
+      >
+        Meine Profile
+      </SectionLabel>
+      {!profilesCollapsed && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 12 }}>
+          {models.map((p) => {
+            const active = view.kind === "messages" && view.profileId === p.id;
+            return (
+              <ProfileNavItem
+                key={p.id}
+                avatarUrl={p.avatarUrl}
+                name={p.displayName}
+                handle={p.handle}
+                unread={p.unread}
+                active={active}
+                onClick={() => setView({ kind: "messages", profileId: p.id })}
+              />
+            );
+          })}
+        </div>
+      )}
+      {profilesCollapsed && <div style={{ marginBottom: 12 }} />}
+
 
 
       {/* Dev */}
@@ -146,18 +164,45 @@ export function Sidebar({ view, setView, models }: Props) {
   );
 }
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
+function SectionLabel({ children, collapsed, onToggle, count }: {
+  children: React.ReactNode;
+  collapsed?: boolean;
+  onToggle?: () => void;
+  count?: number;
+}) {
+  const base: React.CSSProperties = {
+    padding: "0 10px 6px",
+    display: "flex", alignItems: "center", gap: 6,
+    fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.06em",
+    color: "var(--text-subtle)",
+  };
+  if (!onToggle) return <div style={base}>{children}</div>;
   return (
-    <div style={{
-      padding: "0 10px 6px",
-      display: "flex", alignItems: "center", gap: 8,
-      fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.06em",
-      color: "var(--text-subtle)",
-    }}>
-      {children}
-    </div>
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-expanded={!collapsed}
+      style={{
+        ...base, width: "100%", background: "none", border: "none",
+        cursor: "pointer", textAlign: "left", font: "inherit",
+        fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.06em",
+      }}
+    >
+      <svg
+        width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"
+        strokeLinecap="round" strokeLinejoin="round"
+        style={{ transform: collapsed ? "rotate(-90deg)" : "none", transition: "transform .15s ease", flexShrink: 0 }}
+      >
+        <path d="M6 9l6 6 6-6" />
+      </svg>
+      <span>{children}</span>
+      {collapsed && typeof count === "number" && (
+        <span style={{ marginLeft: "auto", color: "var(--text-subtle)", opacity: 0.8 }}>{count}</span>
+      )}
+    </button>
   );
 }
+
 
 
 function ProfileNavItem({
