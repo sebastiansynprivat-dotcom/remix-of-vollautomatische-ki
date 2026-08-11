@@ -75,9 +75,13 @@ export function useContentSets(modelId: string | null | undefined) {
   return { sets, loading, reload };
 }
 
-export async function createContentSet(modelId: string, name: string) {
+export async function createContentSet(
+  modelId: string,
+  name: string,
+  timeOfDay: ContentSet["time_of_day"] = "any",
+) {
   return supabase.from("content_sets")
-    .insert({ model_id: modelId, name })
+    .insert({ model_id: modelId, name, time_of_day: timeOfDay })
     .select("id").single();
 }
 

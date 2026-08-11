@@ -66,6 +66,8 @@ export function ContentSets({ modelId, stepConfig }: {
   const { sets, loading, reload } = useContentSets(modelId);
   const [filter, setFilter] = useState<"all" | "day" | "night">("all");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+
 
   const steps: FunnelStageConfig[] = useMemo(
     () => normalizeStepConfig(stepConfig) ?? getFunnelStages(),
@@ -79,10 +81,11 @@ export function ContentSets({ modelId, stepConfig }: {
 
   const open = sets.find((s) => s.id === openId) ?? null;
 
-  const addSet = async () => {
-    const { data, error } = await createContentSet(modelId, "Neuer Ordner");
+  const addSet = async (name: string, tod: TimeOfDay) => {
+    const { data, error } = await createContentSet(modelId, name, tod);
     if (error || !data) { toast.error(error?.message ?? "Anlegen fehlgeschlagen"); return; }
     await reload();
+    setCreating(false);
     setOpenId(data.id);
     toast.success("Content-Ordner angelegt");
   };
@@ -104,6 +107,16 @@ export function ContentSets({ modelId, stepConfig }: {
 
   return (
     <div style={{ animation: "sbFadeIn 200ms ease" }}>
+      {creating && (
+        <SetSettingsDialog
+          title="Neuer Content-Ordner"
+          initialName=""
+          initialTod="any"
+          confirmLabel="Ordner anlegen"
+          onCancel={() => setCreating(false)}
+          onSave={(n, t) => addSet(n, t)}
+        />
+      )}
       <header style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
         <div>
           <div style={{ fontSize: 16, fontWeight: 600, color: "var(--text-strong)" }}>Content-Ordner</div>
@@ -111,13 +124,14 @@ export function ContentSets({ modelId, stepConfig }: {
             Gruppen von Medien die als Einheit verschickt werden
           </div>
         </div>
-        <button onClick={addSet} style={{
+        <button onClick={() => setCreating(true)} style={{
           background: "var(--accent-grad)", color: "#fff", border: "none",
           borderRadius: 10, padding: "9px 16px", fontSize: 13, fontWeight: 600,
           cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 7,
         }}>
           <span style={{ fontSize: 15, lineHeight: 1 }}>+</span> Ordner hinzufügen
         </button>
+
       </header>
 
       <div style={{ display: "flex", gap: 8, marginTop: 14, flexWrap: "wrap" }}>
@@ -223,25 +237,8 @@ function SetCard({ set, onOpen }: { set: ContentSetWithAssets; onOpen: () => voi
         <div style={{ fontSize: 13.5, fontWeight: 500, color: "var(--text-strong)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {set.name}
         </div>
-        {set.description && (
-          <div style={{ fontSize: 11.5, color: "var(--text-subtle)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {set.description}
-          </div>
-        )}
-        <div style={{ fontSize: 13, color: "var(--money)", fontVariantNumeric: "tabular-nums", marginTop: 5 }}>
-          {euro(set.price_cents)}
-        </div>
 
-        {set.tags.length > 0 && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 8 }}>
-            {set.tags.map((t) => (
-              <span key={t} style={{
-                borderRadius: 999, background: "var(--surface-3)", color: "var(--text-subtle)",
-                fontSize: 11, padding: "2px 8px",
-              }}>{t}</span>
-            ))}
-          </div>
-        )}
+
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12, color: "var(--text-subtle)" }}>
           <span style={{ fontSize: 11.5 }}>{sent}× gesendet</span>
@@ -310,7 +307,66 @@ function TodCoverage({ ok, icon, label }: { ok: boolean; icon: React.ReactNode; 
   );
 }
 
+/* ──────────────── Ordner-Einstellungen (Name + Tageszeit) ──────────────── */
+
+function SetSettingsDialog({ title, initialName, initialTod, confirmLabel, onCancel, onSave }: {
+  title: string;
+  initialName: string;
+  initialTod: TimeOfDay;
+  confirmLabel: string;
+  onCancel: () => void;
+  onSave: (name: string, tod: TimeOfDay) => void | Promise<void>;
+}) {
+  const [name, setName] = useState(initialName);
+  const [tod, setTod] = useState<TimeOfDay>(initialTod);
+  const [busy, setBusy] = useState(false);
+
+  const submit = async () => {
+    setBusy(true);
+    await onSave(name, tod);
+    setBusy(false);
+  };
+
+  return (
+    <div onClick={onCancel} style={{
+      position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", backdropFilter: "blur(3px)",
+      display: "grid", placeItems: "center", zIndex: 60, padding: 20,
+    }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ ...CARD, padding: 20, width: "min(420px, 100%)" }}>
+        <div style={{ fontSize: 14.5, fontWeight: 600, color: "var(--text-strong)" }}>{title}</div>
+        <div style={{ display: "grid", gap: 12, marginTop: 14 }}>
+          <label style={{ display: "grid", gap: 6 }}>
+            <span style={LBL}>Name</span>
+            <input autoFocus value={name} onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") void submit(); }}
+              placeholder="z. B. Strand-Set" style={FIELD} />
+          </label>
+          <label style={{ display: "grid", gap: 6 }}>
+            <span style={LBL}>Tageszeit</span>
+            <select value={tod} onChange={(e) => setTod(e.target.value as TimeOfDay)} style={FIELD}>
+              <option value="day">Tagsüber</option>
+              <option value="night">Nachts</option>
+              <option value="any">Jederzeit</option>
+            </select>
+          </label>
+        </div>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 18 }}>
+          <button onClick={onCancel} style={{
+            background: "transparent", border: "1px solid #1E1E22", borderRadius: 9,
+            color: "var(--text)", fontSize: 12.5, padding: "8px 14px", cursor: "pointer",
+          }}>Abbrechen</button>
+          <button onClick={() => void submit()} disabled={busy} style={{
+            background: "var(--accent-grad)", border: "none", borderRadius: 9,
+            color: "#fff", fontSize: 12.5, fontWeight: 600, padding: "8px 16px", cursor: "pointer",
+          }}>{busy ? "…" : confirmLabel}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ───────────────────────── Detail ───────────────────────── */
+
 
 function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: {
   modelId: string;
@@ -321,38 +377,23 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
   onChanged: () => void | Promise<void>;
   onDeleted: () => void;
 }) {
-  const [draft, setDraft] = useState({
-    name: set.name,
-    description: set.description ?? "",
-    price: String(set.price_cents / 100),
-    time_of_day: set.time_of_day,
-    
-    tags: set.tags,
-  });
-  const [tagDraft, setTagDraft] = useState("");
   const [order, setOrder] = useState<ModelAsset[]>(set.assets);
   const [dragId, setDragId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
-
-  const patch = (p: Partial<typeof draft>) => setDraft((d) => ({ ...d, ...p }));
-
-  const save = async () => {
-    setSaving(true);
+  const save = async (name: string, tod: TimeOfDay) => {
     const { error } = await updateContentSet(set.id, {
-      name: draft.name.trim() || "Unbenannt",
-      description: draft.description.trim() || null,
-      price_cents: Math.max(0, Math.round(Number(draft.price.replace(",", ".")) * 100 || 0)),
-      time_of_day: draft.time_of_day,
-      tags: draft.tags,
+      name: name.trim() || "Unbenannt",
+      time_of_day: tod,
     });
-    setSaving(false);
     if (error) { toast.error(error.message); return; }
+    setSettingsOpen(false);
     await onChanged();
     toast.success("Ordner gespeichert");
   };
+
 
   const removeSet = async () => {
     if (!confirm(`Ordner „${set.name}" wirklich löschen?`)) return;
@@ -392,20 +433,36 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
 
   return (
     <div style={{ animation: "sbSlideInRight 200ms ease" }}>
+      {settingsOpen && (
+        <SetSettingsDialog
+          title="Ordner bearbeiten"
+          initialName={set.name}
+          initialTod={set.time_of_day}
+          confirmLabel="Speichern"
+          onCancel={() => setSettingsOpen(false)}
+          onSave={(n, t) => save(n, t)}
+        />
+      )}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 14, minWidth: 0 }}>
           <button onClick={onBack} style={{
             background: "transparent", border: "none", color: "var(--text)", fontSize: 12.5, cursor: "pointer",
           }}>← Content-Ordner</button>
           <span style={{ fontSize: 16, fontWeight: 600, color: "var(--text-strong)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {draft.name || "Unbenannt"}
+            {set.name || "Unbenannt"}
           </span>
+          <span style={{
+            fontSize: 11, color: "var(--text-subtle)", border: "1px solid #1E1E22",
+            borderRadius: 999, padding: "2px 9px", whiteSpace: "nowrap",
+          }}>{TIME_OF_DAY_META[set.time_of_day].label}</span>
         </div>
         <div style={{ display: "inline-flex", gap: 8 }}>
-          <button onClick={save} disabled={saving} style={{
+          <button onClick={() => setSettingsOpen(true)} aria-label="Ordner bearbeiten" style={{
             background: "transparent", border: "1px solid #1E1E22", borderRadius: 9,
-            color: "var(--text)", fontSize: 12.5, padding: "7px 14px", cursor: "pointer",
-          }}>{saving ? "Speichert…" : "Speichern"}</button>
+            color: "var(--text-subtle)", padding: "7px 10px", cursor: "pointer",
+          }}>
+            <Ico size={16} d="M4 20h4L19 9l-4-4L4 16v4z" />
+          </button>
           <button onClick={removeSet} aria-label="Ordner löschen" style={{
             background: "transparent", border: "1px solid #1E1E22", borderRadius: 9,
             color: "var(--text-subtle)", padding: "7px 10px", cursor: "pointer",
@@ -417,56 +474,6 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
 
       <CoverageBar sets={sets} steps={steps} />
 
-      <div style={{ ...CARD, padding: 16, marginTop: 14 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
-          <label style={{ display: "grid", gap: 6 }}>
-            <span style={LBL}>Name</span>
-            <input value={draft.name} onChange={(e) => patch({ name: e.target.value })} style={FIELD} />
-          </label>
-          <label style={{ display: "grid", gap: 6 }}>
-            <span style={LBL}>Preis (€)</span>
-            <input value={draft.price} onChange={(e) => patch({ price: e.target.value })} inputMode="decimal"
-              style={{ ...FIELD, color: "var(--money)", fontVariantNumeric: "tabular-nums" }} />
-          </label>
-          <label style={{ display: "grid", gap: 6 }}>
-            <span style={LBL}>Tageszeit</span>
-            <select value={draft.time_of_day} onChange={(e) => patch({ time_of_day: e.target.value as TimeOfDay })} style={FIELD}>
-              <option value="day">Tagsüber</option>
-              <option value="night">Nachts</option>
-              <option value="any">Jederzeit</option>
-            </select>
-          </label>
-          <label style={{ display: "grid", gap: 6, gridColumn: "1 / -1" }}>
-            <span style={LBL}>Beschreibung</span>
-            <textarea rows={2} value={draft.description} onChange={(e) => patch({ description: e.target.value })} style={FIELD} />
-          </label>
-          <div style={{ display: "grid", gap: 6, gridColumn: "1 / -1" }}>
-            <span style={LBL}>Tags</span>
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {draft.tags.map((t) => (
-                <span key={t} style={{
-                  display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11,
-                  background: "#0A0A0B", border: "1px solid #1E1E22", color: "var(--text-strong)",
-                  padding: "3px 10px", borderRadius: 999,
-                }}>
-                  {t}
-                  <button onClick={() => patch({ tags: draft.tags.filter((x) => x !== t) })}
-                    style={{ background: "transparent", border: "none", color: "var(--text-subtle)", cursor: "pointer", lineHeight: 1 }}>×</button>
-                </span>
-              ))}
-            </div>
-            <input value={tagDraft} onChange={(e) => setTagDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key !== "Enter") return;
-                e.preventDefault();
-                const t = tagDraft.trim().toLowerCase();
-                if (t && !draft.tags.includes(t)) patch({ tags: [...draft.tags, t] });
-                setTagDraft("");
-              }}
-              placeholder="Tag eingeben und Enter" style={FIELD} />
-          </div>
-        </div>
-      </div>
 
       <section style={{ marginTop: 18 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
@@ -504,7 +511,7 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
         </div>
       </section>
 
-      <SetPreview assets={order} priceCents={Math.max(0, Math.round(Number(draft.price.replace(",", ".")) * 100 || 0))} />
+      <SetPreview assets={order} priceCents={order.reduce((s, a) => s + (a.value_cents ?? 0), 0)} />
 
       {uploading && (
         <AssetUploadModal
