@@ -327,7 +327,7 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
     description: set.description ?? "",
     price: String(set.price_cents / 100),
     time_of_day: set.time_of_day,
-    tier: set.level,
+    
     tags: set.tags,
   });
   const [tagDraft, setTagDraft] = useState("");
