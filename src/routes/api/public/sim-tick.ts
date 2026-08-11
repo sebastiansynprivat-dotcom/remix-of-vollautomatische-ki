@@ -439,9 +439,14 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       Number(globalLimits.max_daily_cost_cents ?? 5000)
     ) {
       await logEvent(admin, "error", "Daily budget exceeded — all profiles paused", modelId, convId);
-      await admin.from("conversations")
+      const { data: testFans } = await admin.from("fans").select("id").eq("external_ref", "manual_test");
+      const testFanIds = ((testFans ?? []) as Json[]).map(f => String(f.id));
+      let pause = admin.from("conversations")
         .update({ autopilot_enabled: false })
         .neq("id", "00000000-0000-0000-0000-000000000000");
+      if (testFanIds.length > 0) pause = pause.not("fan_id", "in", `(${testFanIds.join(",")})`);
+      await pause;
+
       log.push("daily-budget-exceeded");
       return { ...baseResult, note: log.join(" "), simDay, done: true };
     }
