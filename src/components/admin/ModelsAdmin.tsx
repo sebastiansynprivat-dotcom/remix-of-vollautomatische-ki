@@ -375,8 +375,6 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
         </div>
       </header>
 
-      </header>
-
       <div className="shex-tabs reveal-stagger">
         {tabs.map((t) => (
           <button key={t.id} onClick={() => setTab(t.id)} className={`shex-tab ${tab === t.id ? "shex-tab-active" : ""}`}>
