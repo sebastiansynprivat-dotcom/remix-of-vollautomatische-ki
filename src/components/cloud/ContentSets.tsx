@@ -335,38 +335,23 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
   onChanged: () => void | Promise<void>;
   onDeleted: () => void;
 }) {
-  const [draft, setDraft] = useState({
-    name: set.name,
-    description: set.description ?? "",
-    price: String(set.price_cents / 100),
-    time_of_day: set.time_of_day,
-    
-    tags: set.tags,
-  });
-  const [tagDraft, setTagDraft] = useState("");
   const [order, setOrder] = useState<ModelAsset[]>(set.assets);
   const [dragId, setDragId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
-
-  const patch = (p: Partial<typeof draft>) => setDraft((d) => ({ ...d, ...p }));
-
-  const save = async () => {
-    setSaving(true);
+  const save = async (name: string, tod: TimeOfDay) => {
     const { error } = await updateContentSet(set.id, {
-      name: draft.name.trim() || "Unbenannt",
-      description: draft.description.trim() || null,
-      price_cents: Math.max(0, Math.round(Number(draft.price.replace(",", ".")) * 100 || 0)),
-      time_of_day: draft.time_of_day,
-      tags: draft.tags,
+      name: name.trim() || "Unbenannt",
+      time_of_day: tod,
     });
-    setSaving(false);
     if (error) { toast.error(error.message); return; }
+    setSettingsOpen(false);
     await onChanged();
     toast.success("Ordner gespeichert");
   };
+
 
   const removeSet = async () => {
     if (!confirm(`Ordner „${set.name}" wirklich löschen?`)) return;
