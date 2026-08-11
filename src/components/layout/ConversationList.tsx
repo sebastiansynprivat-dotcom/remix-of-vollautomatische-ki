@@ -81,7 +81,6 @@ export function ConversationList({
 }: Props) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterId>("unread");
-  const chat = useChat();
   const [unreadMap, setUnreadMap] = useState<Record<string, number>>(() => (
     Object.fromEntries(conversations.map(c => [c.id, c.unreadCount]))
   ));
