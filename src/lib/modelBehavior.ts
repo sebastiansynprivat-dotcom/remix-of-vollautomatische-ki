@@ -69,7 +69,10 @@ export const DEFAULT_CHAT_BEHAVIOR: ChatBehavior = {
   petNames: [],
   activeFrom: "08:00",
   activeTo: "23:59",
+  activeWindows: [{ from: "08:00", to: "23:59" }],
   offHoursDelayFactor: 1,
+  offHoursDelayFactorMax: 1,
+
   salesStartStage: 0,
   salesTempo: "normal",
 };
