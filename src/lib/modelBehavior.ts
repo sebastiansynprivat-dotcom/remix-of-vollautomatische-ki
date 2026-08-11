@@ -30,13 +30,19 @@ export type ChatBehavior = {
   messageLength: MessageLength;
   typoRate: number; // 0–100
   petNames: string[];
-  /** Aktivzeiten (lokale Uhrzeit, "HH:MM") */
+  /** Aktivzeiten (lokale Uhrzeit, "HH:MM") — Legacy-Feld, entspricht dem ersten Fenster */
   activeFrom: string;
   activeTo: string;
-  /** Faktor auf die Verzögerung außerhalb der Aktivzeiten */
+  /** Mehrere Aktiv-Fenster pro Tag (z. B. mittags + abends) */
+  activeWindows: ActiveWindow[];
+  /**
+   * Multiplikator auf ALLE Wartezeiten außerhalb der Aktivzeiten.
+   * Keine Zeiteinheit — 1 = gleich schnell, 3 = dreimal so lange Pausen.
+   * Pro Antwort wird ein Zufallswert zwischen Min und Max gezogen.
+   */
   offHoursDelayFactor: number;
-  /** Verkauf */
-  salesStartStage: number; // 0 = erste Stufe (gratis)
+  offHoursDelayFactorMax: number;
+
   salesTempo: SalesTempo;
 };
 
