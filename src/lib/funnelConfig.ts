@@ -15,6 +15,11 @@ export interface FunnelStageConfig {
   label: string;
   /** Preis in Euro (0 = kostenlos). */
   priceEur: number;
+  /**
+   * Untergrenze in Euro, bis zu der die KI bei Wiederholungen rabattieren darf.
+   * Gleich `priceEur` = kein Rabatt erlaubt.
+   */
+  minPriceEur: number;
   mediaType: MediaType;
   /** Intensität 1–5, von dir gesetzt. Steuert das Nicht-Überspringen. */
   intensity: number;
@@ -23,14 +28,15 @@ export interface FunnelStageConfig {
 }
 
 export const DEFAULT_FUNNEL_STAGES: FunnelStageConfig[] = [
-  { id: "s1", label: "Stufe 1 — Einstieg (kostenlos)", priceEur: 0,  mediaType: "photo", intensity: 1, minFanTurns: 8 },
-  { id: "s2", label: "Stufe 2 — kleiner erster Kauf",  priceEur: 5,  mediaType: "photo", intensity: 2, minFanTurns: 8 },
-  { id: "s3", label: "Stufe 3 — Aufbau",               priceEur: 10, mediaType: "photo", intensity: 3, minFanTurns: 10 },
-  { id: "s4", label: "Stufe 4 — Video",                priceEur: 20, mediaType: "video", intensity: 4, minFanTurns: 12 },
-  { id: "s5", label: "Stufe 5 — Top-Stufe",            priceEur: 30, mediaType: "video", intensity: 5, minFanTurns: 14 },
-  { id: "s6", label: "Stufe 6 — Premium",              priceEur: 50, mediaType: "video", intensity: 5, minFanTurns: 16 },
-  { id: "s7", label: "Stufe 7 — Top-Premium",          priceEur: 100, mediaType: "video", intensity: 5, minFanTurns: 20 },
+  { id: "s1", label: "Stufe 1 — Einstieg (kostenlos)", priceEur: 0,  minPriceEur: 0,  mediaType: "photo", intensity: 1, minFanTurns: 8 },
+  { id: "s2", label: "Stufe 2 — kleiner erster Kauf",  priceEur: 5,  minPriceEur: 5,  mediaType: "photo", intensity: 2, minFanTurns: 8 },
+  { id: "s3", label: "Stufe 3 — Aufbau",               priceEur: 10, minPriceEur: 8,  mediaType: "photo", intensity: 3, minFanTurns: 10 },
+  { id: "s4", label: "Stufe 4 — Video",                priceEur: 20, minPriceEur: 15, mediaType: "video", intensity: 4, minFanTurns: 12 },
+  { id: "s5", label: "Stufe 5 — Top-Stufe",            priceEur: 30, minPriceEur: 22, mediaType: "video", intensity: 5, minFanTurns: 14 },
+  { id: "s6", label: "Stufe 6 — Premium",              priceEur: 50, minPriceEur: 38, mediaType: "video", intensity: 5, minFanTurns: 16 },
+  { id: "s7", label: "Stufe 7 — Top-Premium",          priceEur: 100, minPriceEur: 75, mediaType: "video", intensity: 5, minFanTurns: 20 },
 ];
+
 
 const STORAGE_KEY = "fanbrain.funnelStages.v1";
 
