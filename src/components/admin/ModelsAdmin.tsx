@@ -504,10 +504,7 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
           <StepConfigEditor
             modelId={id}
             value={m.step_config}
-            onSaved={(steps: FunnelStageConfig[] | null) => {
-              setM((prev: any) => ({ ...prev, step_config: steps }));
-              setInitial((prev: any) => ({ ...prev, step_config: steps }));
-            }}
+            onChange={(steps: FunnelStageConfig[]) => set("step_config", steps)}
           />
         )}
 
@@ -515,12 +512,10 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
           <LimitsEditor
             modelId={id}
             value={m.limits}
-            onSaved={(limits) => {
-              setM((prev: any) => ({ ...prev, limits }));
-              setInitial((prev: any) => ({ ...prev, limits }));
-            }}
+            onChange={(limits) => set("limits", limits)}
           />
         )}
+
 
         {tab === "platforms" && <PlatformsTab profileId={id} />}
 
