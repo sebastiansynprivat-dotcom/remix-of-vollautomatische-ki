@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import type { ModelProfile } from "@/data/mockData";
 import { useAuth } from "@/hooks/useAuth";
 
