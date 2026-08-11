@@ -237,25 +237,8 @@ function SetCard({ set, onOpen }: { set: ContentSetWithAssets; onOpen: () => voi
         <div style={{ fontSize: 13.5, fontWeight: 500, color: "var(--text-strong)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {set.name}
         </div>
-        {set.description && (
-          <div style={{ fontSize: 11.5, color: "var(--text-subtle)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {set.description}
-          </div>
-        )}
-        <div style={{ fontSize: 13, color: "var(--money)", fontVariantNumeric: "tabular-nums", marginTop: 5 }}>
-          {euro(set.price_cents)}
-        </div>
 
-        {set.tags.length > 0 && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 8 }}>
-            {set.tags.map((t) => (
-              <span key={t} style={{
-                borderRadius: 999, background: "var(--surface-3)", color: "var(--text-subtle)",
-                fontSize: 11, padding: "2px 8px",
-              }}>{t}</span>
-            ))}
-          </div>
-        )}
+
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12, color: "var(--text-subtle)" }}>
           <span style={{ fontSize: 11.5 }}>{sent}× gesendet</span>
