@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { MANUAL_TEST_REF, manualTestConversationIds } from "@/lib/manualTestChat";
+
 
 const CARD_BG = "#131316";
 const BORDER = "#1E1E22";
