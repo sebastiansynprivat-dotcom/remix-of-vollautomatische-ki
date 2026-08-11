@@ -534,16 +534,6 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
         )}
       </div>
 
-      {(dirty || saving || savedAt) && (
-        <div className="shex-savebar">
-          <span style={{ fontSize: 10.5, letterSpacing: "0.16em", textTransform: "uppercase", fontWeight: 600, color: dirty ? "var(--text-strong)" : "var(--text-subtle)" }}>
-            {savedAt && !dirty ? `Gespeichert · ${savedAt}` : "Ungesicherte Änderungen"}
-          </span>
-          <button onClick={save} disabled={saving || !dirty} className="shex-btn shex-btn-primary" style={{ borderRadius: 999 }}>
-            {saving ? "Speichere…" : "Speichern"}
-          </button>
-        </div>
-      )}
     </div>
   );
 }
