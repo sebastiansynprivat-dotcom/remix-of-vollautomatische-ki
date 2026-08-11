@@ -7,9 +7,14 @@ import {
 
 interface Props {
   modelId: string;
+  /** Optional: direkt in einen Content-Ordner einsortieren. */
+  setId?: string | null;
+  /** Position in der Versand-Reihenfolge des Ordners. */
+  sequenceOrder?: number;
   onClose: () => void;
   onSaved: () => void;
 }
+
 
 const panel: React.CSSProperties = {
   width: "min(680px, 94vw)", maxHeight: "92vh", overflowY: "auto",
@@ -23,7 +28,7 @@ const field: React.CSSProperties = {
   fontSize: 13, outline: "none", resize: "vertical",
 };
 
-export function AssetUploadModal({ modelId, onClose, onSaved }: Props) {
+export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, onClose, onSaved }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -68,6 +73,9 @@ export function AssetUploadModal({ modelId, onClose, onSaved }: Props) {
         tags,
         value_cents: Math.max(0, Math.round(Number(valueEur.replace(",", ".")) * 100 || 0)),
         note: note.trim() || null,
+        set_id: setId,
+        sequence_order: sequenceOrder,
+
       });
       if (error) throw error;
       await resolveAssetUrl(path);

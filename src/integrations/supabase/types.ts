@@ -52,6 +52,59 @@ export type Database = {
           },
         ]
       }
+      content_sets: {
+        Row: {
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          model_id: string | null
+          name: string
+          price_cents: number
+          tags: string[]
+          tier: number
+          time_of_day: string
+          updated_at: string
+        }
+        Insert: {
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          model_id?: string | null
+          name: string
+          price_cents?: number
+          tags?: string[]
+          tier?: number
+          time_of_day?: string
+          updated_at?: string
+        }
+        Update: {
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          model_id?: string | null
+          name?: string
+          price_cents?: number
+          tags?: string[]
+          tier?: number
+          time_of_day?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_sets_model_id_fkey"
+            columns: ["model_id"]
+            isOneToOne: false
+            referencedRelation: "model_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversation_reads: {
         Row: {
           conversation_id: string
@@ -430,6 +483,8 @@ export type Database = {
           note: string | null
           response_count: number
           revenue_total_cents: number
+          sequence_order: number
+          set_id: string | null
           tags: string[]
           thumbnail_url: string | null
           tier: number
@@ -449,6 +504,8 @@ export type Database = {
           note?: string | null
           response_count?: number
           revenue_total_cents?: number
+          sequence_order?: number
+          set_id?: string | null
           tags?: string[]
           thumbnail_url?: string | null
           tier?: number
@@ -468,6 +525,8 @@ export type Database = {
           note?: string | null
           response_count?: number
           revenue_total_cents?: number
+          sequence_order?: number
+          set_id?: string | null
           tags?: string[]
           thumbnail_url?: string | null
           tier?: number
@@ -482,6 +541,13 @@ export type Database = {
             columns: ["model_id"]
             isOneToOne: false
             referencedRelation: "model_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "model_assets_set_id_fkey"
+            columns: ["set_id"]
+            isOneToOne: false
+            referencedRelation: "content_sets"
             referencedColumns: ["id"]
           },
         ]

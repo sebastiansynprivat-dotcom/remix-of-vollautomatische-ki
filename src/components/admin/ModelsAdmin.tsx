@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ModelSetsManager } from "@/components/admin/ModelSetsManager";
-import { ContentCloud } from "@/components/cloud/ContentCloud";
+import { ContentSets } from "@/components/cloud/ContentSets";
 import { ModelCreateModal } from "@/components/admin/ModelCreateModal";
 import { PlatformsTab } from "@/components/admin/PlatformsTab";
 import { SteckbriefUpload } from "@/components/admin/SteckbriefUpload";
@@ -327,7 +327,7 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
     { id: "stufen", label: "Stufen" },
     { id: "schutz", label: "Schutz" },
     { id: "platforms", label: "Plattformen" },
-    { id: "assets", label: "Assets" },
+    { id: "assets", label: "Content-Ordner" },
     { id: "sets", label: "Sets" },
   ];
 
@@ -523,9 +523,10 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
 
         {tab === "assets" && (
           <div style={{ marginTop: 16 }}>
-            <ContentCloud model={m} returnConvId={null} onBackToChat={() => setTab("profil")} />
+            <ContentSets modelId={id} stepConfig={m.step_config} />
           </div>
         )}
+
 
         {tab === "sets" && (
           <Panel title="PPV Sets">
