@@ -91,6 +91,8 @@ export function ContentSets({ modelId, stepConfig }: {
         key={open.id}
         modelId={modelId}
         set={open}
+        sets={sets}
+        steps={steps}
         onBack={() => setOpenId(null)}
         onChanged={reload}
         onDeleted={() => { setOpenId(null); void reload(); }}
@@ -100,8 +102,6 @@ export function ContentSets({ modelId, stepConfig }: {
 
   return (
     <div style={{ animation: "sbFadeIn 200ms ease" }}>
-      <CoverageBar sets={sets} steps={steps} />
-
       <header style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
         <div>
           <div style={{ fontSize: 16, fontWeight: 600, color: "var(--text-strong)" }}>Content-Ordner</div>
