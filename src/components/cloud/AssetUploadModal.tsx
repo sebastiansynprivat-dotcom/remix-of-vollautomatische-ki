@@ -28,7 +28,7 @@ const field: React.CSSProperties = {
   fontSize: 13, outline: "none", resize: "vertical",
 };
 
-export function AssetUploadModal({ modelId, onClose, onSaved }: Props) {
+export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, onClose, onSaved }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
