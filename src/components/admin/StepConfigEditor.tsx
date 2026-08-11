@@ -232,18 +232,21 @@ export function StepConfigEditor({ modelId, value, onSaved, onChange }: {
         + Stufe hinzufügen
       </button>
 
-      <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 18 }}>
-        <button
-          type="button" onClick={save} disabled={saving}
-          style={{
-            padding: "10px 22px", borderRadius: 999, border: "none", cursor: saving ? "default" : "pointer",
-            background: "linear-gradient(135deg, hsl(243 75% 59%), hsl(270 70% 58%))",
-            color: "#fff", fontSize: 13, fontWeight: 600, opacity: saving ? 0.6 : 1,
-          }}
-        >
-          {saving ? "Speichere…" : "Speichern"}
-        </button>
-      </div>
+      {!onChange && (
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 18 }}>
+          <button
+            type="button" onClick={save} disabled={saving}
+            style={{
+              padding: "10px 22px", borderRadius: 999, border: "none", cursor: saving ? "default" : "pointer",
+              background: "linear-gradient(135deg, hsl(243 75% 59%), hsl(270 70% 58%))",
+              color: "#fff", fontSize: 13, fontWeight: 600, opacity: saving ? 0.6 : 1,
+            }}
+          >
+            {saving ? "Speichere…" : "Speichern"}
+          </button>
+        </div>
+      )}
+
     </div>
   );
 }
