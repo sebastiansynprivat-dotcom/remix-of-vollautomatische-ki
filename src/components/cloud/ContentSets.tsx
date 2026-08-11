@@ -91,6 +91,8 @@ export function ContentSets({ modelId, stepConfig }: {
         key={open.id}
         modelId={modelId}
         set={open}
+        sets={sets}
+        steps={steps}
         onBack={() => setOpenId(null)}
         onChanged={reload}
         onDeleted={() => { setOpenId(null); void reload(); }}
@@ -100,8 +102,6 @@ export function ContentSets({ modelId, stepConfig }: {
 
   return (
     <div style={{ animation: "sbFadeIn 200ms ease" }}>
-      <CoverageBar sets={sets} steps={steps} />
-
       <header style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
         <div>
           <div style={{ fontSize: 16, fontWeight: 600, color: "var(--text-strong)" }}>Content-Ordner</div>
@@ -313,9 +313,11 @@ function TodCoverage({ ok, icon, label }: { ok: boolean; icon: React.ReactNode; 
 
 /* ───────────────────────── Detail ───────────────────────── */
 
-function SetDetail({ modelId, set, onBack, onChanged, onDeleted }: {
+function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: {
   modelId: string;
   set: ContentSetWithAssets;
+  sets: ContentSetWithAssets[];
+  steps: FunnelStageConfig[];
   onBack: () => void;
   onChanged: () => void | Promise<void>;
   onDeleted: () => void;
@@ -406,6 +408,8 @@ function SetDetail({ modelId, set, onBack, onChanged, onDeleted }: {
           </button>
         </div>
       </div>
+
+      <CoverageBar sets={sets} steps={steps} />
 
       <div style={{ ...CARD, padding: 16, marginTop: 14 }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
