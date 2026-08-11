@@ -157,22 +157,32 @@ export function emojiCap(freq: EmojiFrequency): number {
   }
 }
 
-/** Liegt `now` innerhalb der Aktivzeiten? */
+/** Liegt `now` in mindestens einem der Aktiv-Fenster? */
 export function isWithinActiveHours(b: ChatBehavior, now: Date = new Date()): boolean {
   const toMin = (s: string) => {
     const [h, m] = s.split(":").map(Number);
     return (h % 24) * 60 + (m % 60);
   };
   const cur = now.getHours() * 60 + now.getMinutes();
-  const from = toMin(b.activeFrom);
-  const to = toMin(b.activeTo);
-  if (from === to) return true;
-  return from < to ? cur >= from && cur <= to : cur >= from || cur <= to;
+  const windows = b.activeWindows?.length ? b.activeWindows : [{ from: b.activeFrom, to: b.activeTo }];
+  return windows.some((w) => {
+    const from = toMin(w.from);
+    const to = toMin(w.to);
+    if (from === to) return true;
+    return from < to ? cur >= from && cur <= to : cur >= from || cur <= to;
+  });
 }
 
-/** Delay-Faktor: außerhalb der Aktivzeiten antwortet sie langsamer. */
+/**
+ * Delay-Faktor: außerhalb der Aktivzeiten antwortet sie langsamer.
+ * Multiplikator (keine Zeiteinheit), zufällig zwischen Min und Max.
+ */
 export function delayFactor(b: ChatBehavior, now: Date = new Date()): number {
-  return isWithinActiveHours(b, now) ? 1 : b.offHoursDelayFactor;
+  if (isWithinActiveHours(b, now)) return 1;
+  const min = Math.max(1, b.offHoursDelayFactor);
+  const max = Math.max(min, b.offHoursDelayFactorMax ?? min);
+  return min + Math.random() * (max - min);
+
 }
 
 export const LENGTH_LABEL: Record<MessageLength, string> = {
