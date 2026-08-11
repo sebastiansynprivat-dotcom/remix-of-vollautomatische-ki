@@ -564,7 +564,7 @@ function MediaRow({ asset, index, onDragStart, onDrop, onRemove, onTier }: {
             {asset.media_type === "video" ? "Video" : "Foto"} · Stufe
           </span>
           {TIERS.map((t) => {
-            const active = asset.level === t.level;
+            const active = asset.tier === t.level;
             return (
               <button
                 key={t.level}
