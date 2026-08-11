@@ -570,9 +570,10 @@ function MediaRow({ asset, index, onDragStart, onDrop, onRemove, onTier, onEdit 
       </div>
 
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 13, color: "var(--text-strong)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <div onClick={onEdit} title="Bearbeiten" style={{ fontSize: 13, color: "var(--text-strong)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", cursor: "pointer" }}>
           {asset.description || "Ohne Beschreibung"}
         </div>
+
         <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
           <span style={{ fontSize: 11.5, color: "var(--text-subtle)" }}>
             {asset.media_type === "video" ? "Video" : "Foto"} · Stufe
