@@ -486,7 +486,24 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
               <PersonaEditor
                 persona={resolvePersonaConfig(m.persona_config) ?? DEFAULT_PERSONA}
                 modelName={m.display_name}
-                onChange={(p: PersonaConfig) => set("persona_config", p)}
+                onChange={(p: PersonaConfig) => setM({
+                  ...m,
+                  persona_config: p,
+                  // Legacy-Stilfelder gespiegelt, damit die KI dieselben Werte liest
+                  emojis: p.emoji_set ?? [],
+                  signature_phrases: p.signature_phrases ?? [],
+                  taboo_words: p.avoid_words ?? [],
+                })}
+                emojiExtras={
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                    <Select label="Emoji-Häufigkeit" value={resolveEmojiFrequency(m.emoji_frequency)}
+                      options={Object.entries(EMOJI_FREQ_LABEL).map(([v, l]) => ({ value: v, label: l }))}
+                      onChange={(v) => set("emoji_frequency", v as EmojiFrequency)} />
+                    <Select label="Nachrichtenlänge" value={resolveChatBehavior(m.chat_behavior).messageLength}
+                      options={Object.entries(LENGTH_LABEL).map(([v, l]) => ({ value: v, label: l }))}
+                      onChange={(v) => set("chat_behavior", { ...resolveChatBehavior(m.chat_behavior), messageLength: v as MessageLength })} />
+                  </div>
+                }
               />
 
               <SubSection title="Persona & Stil (Freitext)">
@@ -669,17 +686,8 @@ function ChatBehaviorTab({ m, set }: { m: any; set: (k: string, v: any) => void 
       </Panel>
 
       <Panel title="Schreibstil">
-        <ArrayField label="Emojis" value={Array.isArray(m.emojis) ? m.emojis : []} onChange={(v) => set("emojis", v)} />
-        <Select label="Emoji-Häufigkeit" value={resolveEmojiFrequency(m.emoji_frequency)}
-          options={Object.entries(EMOJI_FREQ_LABEL).map(([v, l]) => ({ value: v, label: l }))}
-          onChange={(v) => set("emoji_frequency", v as EmojiFrequency)} />
-        <Select label="Nachrichtenlänge" value={b.messageLength}
-          options={Object.entries(LENGTH_LABEL).map(([v, l]) => ({ value: v, label: l }))}
-          onChange={(v) => setB({ messageLength: v as MessageLength })} />
         <Toggle label="Alles kleingeschrieben" value={b.lowercase} onChange={(v) => setB({ lowercase: v })} />
-        <ArrayField label="Signature-Phrasen" value={Array.isArray(m.signature_phrases) ? m.signature_phrases : []} onChange={(v) => set("signature_phrases", v)} />
         <ArrayField label="Kosenamen für den Fan" value={b.petNames} onChange={(v) => setB({ petNames: v })} />
-        <ArrayField label="Tabu-Wörter (nie benutzen)" value={Array.isArray(m.taboo_words) ? m.taboo_words : []} onChange={(v) => set("taboo_words", v)} />
         <ArrayField label="Opener (erste Nachricht)" value={Array.isArray(m.openers) ? m.openers : []} onChange={(v) => set("openers", v)} />
       </Panel>
 
