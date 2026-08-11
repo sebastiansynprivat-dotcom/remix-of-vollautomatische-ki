@@ -73,6 +73,9 @@ export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, onC
         tags,
         value_cents: Math.max(0, Math.round(Number(valueEur.replace(",", ".")) * 100 || 0)),
         note: note.trim() || null,
+        set_id: setId,
+        sequence_order: sequenceOrder,
+
       });
       if (error) throw error;
       await resolveAssetUrl(path);
