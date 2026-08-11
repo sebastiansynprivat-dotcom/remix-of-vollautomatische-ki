@@ -223,7 +223,8 @@ export function computeFunnelState(messages: readonly Message[], fanId: string, 
   // Wiederholung darf ab 10 € moderat rabattiert werden — mehr Abschlüsse,
   // ohne den Wert der Stufe zu zerstören.
   const basePriceCents = stageNow.priceCents;
-  const { priceCents, discountPct } = retryPriceCents(basePriceCents, retryCount);
+  const floorCents = Math.round((stageNow.config.minPriceEur ?? stageNow.config.priceEur) * 100);
+  const { priceCents, discountPct } = retryPriceCents(basePriceCents, retryCount, floorCents);
   const stage: FunnelStage = { ...stageNow, priceCents };
 
   const lastOffer = ppvs[ppvs.length - 1];
@@ -364,7 +365,8 @@ export function funnelPayload(state: FunnelState) {
     retryCount: state.retryCount,
     listPriceEur: state.basePriceCents / 100,
     discountPct: state.discountPct,
-    discountAllowed: state.basePriceCents >= DISCOUNT_MIN_PRICE_CENTS,
+    discountAllowed: Math.round((state.stage.config.minPriceEur ?? state.stage.config.priceEur) * 100) < state.basePriceCents,
+    minPriceEur: state.stage.config.minPriceEur ?? state.stage.config.priceEur,
     maxDiscountPct: DISCOUNT_MAX_PCT,
     /** Brücken-Nachricht vor dem Angebot ist Pflicht. */
     bridgeRequired: true,
