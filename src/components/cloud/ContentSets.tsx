@@ -559,10 +559,30 @@ function MediaRow({ asset, index, onDragStart, onDrop, onRemove, onTier }: {
         <div style={{ fontSize: 13, color: "var(--text-strong)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {asset.description || "Ohne Beschreibung"}
         </div>
-        <div style={{ fontSize: 11.5, color: "var(--text-subtle)", marginTop: 2 }}>
-          {asset.media_type === "video" ? "Video" : "Foto"} · Tier {asset.tier}
+        <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 11.5, color: "var(--text-subtle)" }}>
+            {asset.media_type === "video" ? "Video" : "Foto"} · Stufe
+          </span>
+          {TIERS.map((t) => {
+            const active = asset.tier === t.tier;
+            return (
+              <button
+                key={t.tier}
+                title={t.label}
+                onClick={() => onTier(t.tier)}
+                style={{
+                  width: 22, height: 22, borderRadius: 999, cursor: "pointer", fontSize: 10.5, fontWeight: 600,
+                  color: active ? "#fff" : "var(--text-subtle)",
+                  background: active ? t.gradient : "transparent",
+                  border: `1px solid ${active ? "transparent" : "#1E1E22"}`,
+                  transition: "all 150ms ease",
+                }}
+              >{t.tier}</button>
+            );
+          })}
         </div>
       </div>
+
 
       <span style={{ fontSize: 11.5, color: "var(--money)", fontVariantNumeric: "tabular-nums" }}>
         {euro(asset.value_cents)}
