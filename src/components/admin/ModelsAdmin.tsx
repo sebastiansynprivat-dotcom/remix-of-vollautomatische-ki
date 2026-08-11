@@ -333,7 +333,7 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
 
   return (
     <div className="shex" style={{ paddingBottom: 120 }}>
-      <button onClick={onBack} style={{
+      <button onClick={handleBack} style={{
         fontSize: 10.5, letterSpacing: "0.18em", textTransform: "uppercase",
         fontWeight: 600, color: "hsl(0 0% 50%)",
         display: "inline-flex", alignItems: "center", gap: 8, paddingTop: 8,
@@ -355,9 +355,12 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
             {!m.avatar_url && (m.display_name?.[0] ?? "?").toUpperCase()}
           </div>
           <div style={{ flex: 1, minWidth: 240 }}>
-            <h1 className="shex-h1" style={{ margin: 0, fontSize: "clamp(32px, 3vw + 10px, 48px)" }}>
-              {m.display_name || "Unbenannt"}
-            </h1>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
+              <h1 className="shex-h1" style={{ margin: 0, fontSize: "clamp(32px, 3vw + 10px, 48px)" }}>
+                {m.display_name || "Unbenannt"}
+              </h1>
+              <SaveIndicator state={saveState} />
+            </div>
             <div style={{ marginTop: 10, display: "inline-flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
               <span className="kpi-label" style={{ color: "var(--text-subtle)" }}>@{m.handle}</span>
               <span style={{ width: 1, height: 10, background: "hsl(0 0% 100% / 0.12)" }} />
@@ -370,6 +373,8 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
             </div>
           </div>
         </div>
+      </header>
+
       </header>
 
       <div className="shex-tabs reveal-stagger">
