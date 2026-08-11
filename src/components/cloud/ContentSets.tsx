@@ -5,7 +5,7 @@ import {
   useContentSets, createContentSet, updateContentSet, deleteContentSet, saveSequence,
   coversTime, TIME_OF_DAY_META, type ContentSetWithAssets, type TimeOfDay,
 } from "@/lib/contentSets";
-import { euro, tierMeta, TIERS, useResolvedUrl, type ModelAsset } from "@/lib/modelAssets";
+import { euro, TIERS, useResolvedUrl, type ModelAsset } from "@/lib/modelAssets";
 import { normalizeStepConfig, getFunnelStages, type FunnelStageConfig } from "@/lib/funnelConfig";
 import { AssetUploadModal } from "@/components/cloud/AssetUploadModal";
 import { supabase } from "@/integrations/supabase/client";
