@@ -240,7 +240,59 @@ export function SteckbriefUpload({ modelId, current, onApply }: {
 
   return (
     <div>
+      {hasStored && !busy && (
+        <div className="sb-panel" style={{ marginBottom: 12, animation: "sbFadeIn 200ms ease" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <span style={{ color: "hsl(152 55% 62%)", fontSize: 16, lineHeight: 1 }}>✓</span>
+            <div style={{ flex: 1, minWidth: 180 }}>
+              <div style={{ fontSize: 13, fontWeight: 500, color: "hsl(152 55% 72%)" }}>
+                Steckbrief hinterlegt
+              </div>
+              <div className="module-desc" style={{ margin: "3px 0 0" }}>
+                {storedFilled} von {storedRows.length} Feldern gefüllt
+                {fileInfo && ` · ${fileInfo.name}`}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowStored((s) => !s)}
+              className="shex-btn shex-btn-ghost"
+              style={{ fontSize: 11 }}
+            >
+              {showStored ? "Ausblenden" : "Anzeigen"}
+            </button>
+          </div>
+
+          {showStored && (
+            <div style={{
+              maxHeight: 320, overflow: "auto", marginTop: 14,
+              display: "flex", flexDirection: "column", gap: 16,
+              animation: "sbSlideDown 200ms ease",
+            }}>
+              {storedGroups
+                .filter((g) => g.rows.some((r) => !isEmpty(r.value)))
+                .map((g) => (
+                  <div key={g.title}>
+                    <div className="kpi-label" style={{ color: "var(--text-subtle)", marginBottom: 8 }}>{g.title}</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 10 }}>
+                      {g.rows.filter((r) => !isEmpty(r.value)).map((r) => (
+                        <div key={r.label} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                          <span className="shex-field-label" style={{ width: 96, flexShrink: 0, marginTop: 2 }}>{r.label}</span>
+                          <span style={{ flex: 1, fontSize: 13, color: "var(--text-strong)" }}>
+                            {LONG_LABELS.has(r.label) ? trunc(r.value) : display(r.value)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <div
+
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
