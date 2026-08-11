@@ -1016,13 +1016,11 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
     const selectedAsset = (setAssets[0] ?? matchingAssets?.[0] ?? null) as Json | null;
 
 
-    // Auch die Caption darf keine Wiederholung sein.
-    const assetNote = typeof selectedAsset?.description === "string" ? selectedAsset.description.trim() : "";
-    const caption = assetNote
-      ? assetNote
-      : hinted && filterFresh([hinted], avoidLines).fresh.length > 0
-        ? hinted
-        : `${funnelNow.stage.config.label.toLowerCase()} — nur für dich 🙈`;
+    // Die Bildbeschreibung ist NUR Kontext für die KI (was auf dem Medium zu sehen ist),
+    // niemals die Caption an den Fan. Die Caption kommt vom Copilot.
+    const caption = hinted && filterFresh([hinted], avoidLines).fresh.length > 0
+      ? hinted
+      : `${funnelNow.stage.config.label.toLowerCase()} — nur für dich 🙈`;
 
     const { error: ppvError } = await admin.from("messages").insert({
       conversation_id: convId,
