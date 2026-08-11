@@ -171,7 +171,7 @@ function Pill({ active, onClick, icon, children }: {
 function SetCard({ set, onOpen }: { set: ContentSetWithAssets; onOpen: () => void }) {
   const [hover, setHover] = useState(false);
   const cover = useResolvedUrl(set.cover_url ?? set.assets[0]?.thumbnail_url ?? set.assets[0]?.url ?? null);
-  const tm = tierMeta(set.tier);
+  const tm = tierMeta(set.level);
   const tod = TIME_OF_DAY_META[set.time_of_day];
   const sent = set.assets.reduce((n, a) => n + (a.use_count ?? 0), 0);
 
@@ -197,7 +197,7 @@ function SetCard({ set, onOpen }: { set: ContentSetWithAssets; onOpen: () => voi
           </div>
         )}
 
-        <span title={`Tier ${set.tier} · ${tm.label}`} style={{
+        <span title={`Tier ${set.level} · ${tm.label}`} style={{
           position: "absolute", top: 8, left: 8, width: 20, height: 20, borderRadius: 999,
           background: tm.gradient, boxShadow: "0 2px 8px rgba(0,0,0,0.45)",
         }} />
@@ -327,7 +327,7 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
     description: set.description ?? "",
     price: String(set.price_cents / 100),
     time_of_day: set.time_of_day,
-    tier: set.tier,
+    tier: set.level,
     tags: set.tags,
   });
   const [tagDraft, setTagDraft] = useState("");
@@ -345,7 +345,7 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
       description: draft.description.trim() || null,
       price_cents: Math.max(0, Math.round(Number(draft.price.replace(",", ".")) * 100 || 0)),
       time_of_day: draft.time_of_day,
-      tier: draft.tier,
+      tier: draft.level,
       tags: draft.tags,
     });
     setSaving(false);
@@ -564,12 +564,12 @@ function MediaRow({ asset, index, onDragStart, onDrop, onRemove, onTier }: {
             {asset.media_type === "video" ? "Video" : "Foto"} · Stufe
           </span>
           {TIERS.map((t) => {
-            const active = asset.tier === t.tier;
+            const active = asset.level === t.level;
             return (
               <button
-                key={t.tier}
+                key={t.level}
                 title={t.label}
-                onClick={() => onTier(t.tier)}
+                onClick={() => onTier(t.level)}
                 style={{
                   width: 22, height: 22, borderRadius: 999, cursor: "pointer", fontSize: 10.5, fontWeight: 600,
                   color: active ? "#fff" : "var(--text-subtle)",
@@ -577,7 +577,7 @@ function MediaRow({ asset, index, onDragStart, onDrop, onRemove, onTier }: {
                   border: `1px solid ${active ? "transparent" : "#1E1E22"}`,
                   transition: "all 150ms ease",
                 }}
-              >{t.tier}</button>
+              >{t.level}</button>
             );
           })}
         </div>
