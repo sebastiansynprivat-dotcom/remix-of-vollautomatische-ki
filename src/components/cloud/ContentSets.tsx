@@ -382,7 +382,13 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
     await onChanged();
   };
 
-  const tm = tierMeta(draft.tier);
+  const setAssetTier = async (assetId: string, tier: number) => {
+    setOrder((o) => o.map((a) => (a.id === assetId ? { ...a, tier } : a)));
+    const { error } = await supabase.from("model_assets").update({ tier } as never).eq("id", assetId);
+    if (error) { toast.error(error.message); return; }
+    await onChanged();
+  };
+
 
   return (
     <div style={{ animation: "sbSlideInRight 200ms ease" }}>
