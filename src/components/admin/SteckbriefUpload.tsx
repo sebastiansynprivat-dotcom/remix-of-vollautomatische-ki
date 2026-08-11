@@ -190,7 +190,18 @@ export function SteckbriefUpload({ modelId, current, onApply }: {
   const storedGroups = current ? buildGroups(current) : [];
   const storedRows = storedGroups.flatMap((g) => g.rows);
   const storedFilled = storedRows.filter((r) => !isEmpty(r.value)).length;
-  const hasStored = storedFilled > 0;
+
+  // Ein Steckbrief gilt nur als hinterlegt, wenn typische Steckbrief-Felder
+  // gefüllt sind — der bloße Modellname (bei Neuanlage gesetzt) zählt nicht.
+  const steckbriefSignals: unknown[] = current
+    ? [
+        current.age, current.birthday, current.location, current.birthplace,
+        current.job, current.relationship_status, current.dream, current.hobbies,
+        current.content_info, current.no_gos, current.additional_info,
+        current.physical, current.favorites,
+      ]
+    : [];
+  const hasStored = steckbriefSignals.filter((v) => !isEmpty(v)).length >= 2;
 
 
   if (data) {
