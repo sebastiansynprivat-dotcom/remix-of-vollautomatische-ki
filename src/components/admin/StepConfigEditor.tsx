@@ -52,10 +52,12 @@ export function StepConfigEditor({ modelId, value, onSaved, onChange }: {
       id: `s${Date.now()}`,
       label: `Stufe ${rs.length + 1}`,
       priceEur: (rs[rs.length - 1]?.priceEur ?? 0) + 10,
+      minPriceEur: (rs[rs.length - 1]?.priceEur ?? 0) + 10,
       mediaType: rs[rs.length - 1]?.mediaType ?? "photo",
       intensity: Math.min(5, (rs[rs.length - 1]?.intensity ?? 1) + 1),
       minFanTurns: Math.min(20, (rs[rs.length - 1]?.minFanTurns ?? 8) + 2),
     }]);
+
 
   const drop = (target: number) => {
     apply(rs => {
