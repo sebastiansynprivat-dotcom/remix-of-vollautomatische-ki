@@ -469,7 +469,7 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
         </div>
       </section>
 
-      <SetPreview assets={order} priceCents={Math.max(0, Math.round(Number(draft.price.replace(",", ".")) * 100 || 0))} />
+      <SetPreview assets={order} priceCents={order.reduce((s, a) => s + (a.value_cents ?? 0), 0)} />
 
       {uploading && (
         <AssetUploadModal
