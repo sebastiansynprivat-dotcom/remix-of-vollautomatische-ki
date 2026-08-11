@@ -602,6 +602,10 @@ function MediaRow({ asset, index, onDragStart, onDrop, onRemove, onTier, onEdit 
       <span style={{ fontSize: 11.5, color: "var(--money)", fontVariantNumeric: "tabular-nums" }}>
         {euro(asset.value_cents)}
       </span>
+      <button onClick={onEdit} aria-label="Medium bearbeiten" title="Bearbeiten" style={{
+        background: "transparent", border: "none", color: "var(--text-subtle)", cursor: "pointer", display: "grid",
+      }}><Ico size={16} d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></button>
+
       <button onClick={onRemove} aria-label="Aus Ordner entfernen" style={{
         background: "transparent", border: "none", color: "var(--text-subtle)", cursor: "pointer", display: "grid",
       }}><XIcon size={16} /></button>
