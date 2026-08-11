@@ -93,11 +93,14 @@ export function LimitsEditor({ modelId, value, onSaved, onChange }: {
         </LimitCard>
       </div>
 
-      <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 20 }}>
-        <button onClick={save} disabled={saving} className="shex-btn shex-btn-primary">
-          {saving ? "Speichere…" : "Speichern"}
-        </button>
-      </div>
+      {!onChange && (
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 20 }}>
+          <button onClick={save} disabled={saving} className="shex-btn shex-btn-primary">
+            {saving ? "Speichere…" : "Speichern"}
+          </button>
+        </div>
+      )}
+
     </section>
   );
 }
