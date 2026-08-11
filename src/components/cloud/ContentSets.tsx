@@ -409,6 +409,8 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
         </div>
       </div>
 
+      <CoverageBar sets={sets} steps={steps} />
+
       <div style={{ ...CARD, padding: 16, marginTop: 14 }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
           <label style={{ display: "grid", gap: 6 }}>
