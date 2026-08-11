@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ModelSetsManager } from "@/components/admin/ModelSetsManager";
 import { ContentSets } from "@/components/cloud/ContentSets";
 import { ModelCreateModal } from "@/components/admin/ModelCreateModal";
 import { PlatformsTab } from "@/components/admin/PlatformsTab";
@@ -231,7 +230,7 @@ function ModelsListInline({ onEdit }: { onEdit: (id: string) => void }) {
 
 
 
-type Tab = "profil" | "kommunikation" | "stufen" | "schutz" | "platforms" | "assets" | "sets";
+type Tab = "profil" | "kommunikation" | "stufen" | "schutz" | "platforms" | "assets";
 
 function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
   const [tab, setTab] = useState<Tab>("profil");
@@ -330,7 +329,6 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
     { id: "schutz", label: "Schutz" },
     { id: "platforms", label: "Plattformen" },
     { id: "assets", label: "Content-Ordner" },
-    { id: "sets", label: "Sets" },
   ];
 
   return (
