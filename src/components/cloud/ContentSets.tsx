@@ -79,10 +79,11 @@ export function ContentSets({ modelId, stepConfig }: {
 
   const open = sets.find((s) => s.id === openId) ?? null;
 
-  const addSet = async () => {
-    const { data, error } = await createContentSet(modelId, "Neuer Ordner");
+  const addSet = async (name: string, tod: TimeOfDay) => {
+    const { data, error } = await createContentSet(modelId, name, tod);
     if (error || !data) { toast.error(error?.message ?? "Anlegen fehlgeschlagen"); return; }
     await reload();
+    setCreating(false);
     setOpenId(data.id);
     toast.success("Content-Ordner angelegt");
   };
@@ -104,6 +105,16 @@ export function ContentSets({ modelId, stepConfig }: {
 
   return (
     <div style={{ animation: "sbFadeIn 200ms ease" }}>
+      {creating && (
+        <SetSettingsDialog
+          title="Neuer Content-Ordner"
+          initialName=""
+          initialTod="any"
+          confirmLabel="Ordner anlegen"
+          onCancel={() => setCreating(false)}
+          onSave={(n, t) => addSet(n, t)}
+        />
+      )}
       <header style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
         <div>
           <div style={{ fontSize: 16, fontWeight: 600, color: "var(--text-strong)" }}>Content-Ordner</div>
@@ -111,13 +122,14 @@ export function ContentSets({ modelId, stepConfig }: {
             Gruppen von Medien die als Einheit verschickt werden
           </div>
         </div>
-        <button onClick={addSet} style={{
+        <button onClick={() => setCreating(true)} style={{
           background: "var(--accent-grad)", color: "#fff", border: "none",
           borderRadius: 10, padding: "9px 16px", fontSize: 13, fontWeight: 600,
           cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 7,
         }}>
           <span style={{ fontSize: 15, lineHeight: 1 }}>+</span> Ordner hinzufügen
         </button>
+
       </header>
 
       <div style={{ display: "flex", gap: 8, marginTop: 14, flexWrap: "wrap" }}>
