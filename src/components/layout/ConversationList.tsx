@@ -6,7 +6,7 @@ import {
 import { Avatar } from "@/components/sx/Avatar";
 import { StatusDot, UnreadBadge } from "@/components/sx/Badge";
 import { fx } from "@/lib/feedback";
-import { useLastOverride, useChat } from "@/lib/chatStore";
+import { useLastOverride } from "@/lib/chatStore";
 import { useSimRuns, setAllSimStates } from "@/lib/simRuns";
 import { ProfileMasterBar } from "@/components/profile/ProfileMasterBar";
 
