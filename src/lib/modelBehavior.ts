@@ -10,6 +10,11 @@ export type EmojiFrequency = "none" | "sparse" | "normal" | "many";
 export type MessageLength = "short" | "medium" | "long";
 export type SalesTempo = "slow" | "normal" | "fast";
 
+/** Ein Aktiv-Fenster (lokale Uhrzeit, "HH:MM") */
+export type ActiveWindow = { from: string; to: string };
+
+
+
 export type ChatBehavior = {
   /** Wartezeit bevor die erste Nachricht rausgeht (Sekunden) */
   replyDelayMinSec: number;
@@ -30,15 +35,23 @@ export type ChatBehavior = {
   messageLength: MessageLength;
   typoRate: number; // 0–100
   petNames: string[];
-  /** Aktivzeiten (lokale Uhrzeit, "HH:MM") */
+  /** Aktivzeiten (lokale Uhrzeit, "HH:MM") — Legacy-Feld, entspricht dem ersten Fenster */
   activeFrom: string;
   activeTo: string;
-  /** Faktor auf die Verzögerung außerhalb der Aktivzeiten */
+  /** Mehrere Aktiv-Fenster pro Tag (z. B. mittags + abends) */
+  activeWindows: ActiveWindow[];
+  /**
+   * Multiplikator auf ALLE Wartezeiten außerhalb der Aktivzeiten.
+   * Keine Zeiteinheit — 1 = gleich schnell, 3 = dreimal so lange Pausen.
+   * Pro Antwort wird ein Zufallswert zwischen Min und Max gezogen.
+   */
   offHoursDelayFactor: number;
+  offHoursDelayFactorMax: number;
   /** Verkauf */
   salesStartStage: number; // 0 = erste Stufe (gratis)
   salesTempo: SalesTempo;
 };
+
 
 export const DEFAULT_CHAT_BEHAVIOR: ChatBehavior = {
   replyDelayMinSec: 0.9,
@@ -56,7 +69,10 @@ export const DEFAULT_CHAT_BEHAVIOR: ChatBehavior = {
   petNames: [],
   activeFrom: "08:00",
   activeTo: "23:59",
+  activeWindows: [{ from: "08:00", to: "23:59" }],
   offHoursDelayFactor: 1,
+  offHoursDelayFactorMax: 1,
+
   salesStartStage: 0,
   salesTempo: "normal",
 };
@@ -73,14 +89,26 @@ const strArr = (v: unknown): string[] =>
 const time = (v: unknown, fallback: string): string =>
   typeof v === "string" && /^\d{1,2}:\d{2}$/.test(v.trim()) ? v.trim().padStart(5, "0") : fallback;
 
+/** Fenster-Liste aus jsonb lesen; fällt auf das alte from/to-Paar zurück. */
+function resolveWindows(r: Record<string, unknown>, d: ChatBehavior): ActiveWindow[] {
+  const raw = Array.isArray(r.activeWindows) ? r.activeWindows : [];
+  const list: ActiveWindow[] = raw
+    .filter((w): w is Record<string, unknown> => !!w && typeof w === "object")
+    .map((w) => ({ from: time(w.from, "08:00"), to: time(w.to, "23:59") }))
+    .slice(0, 6);
+  if (list.length) return list;
+  return [{ from: time(r.activeFrom, d.activeFrom), to: time(r.activeTo, d.activeTo) }];
+}
+
 /** Rohes jsonb aus der DB in ein vollständiges, valides Verhalten überführen. */
 export function resolveChatBehavior(raw: unknown): ChatBehavior {
   const d = DEFAULT_CHAT_BEHAVIOR;
-  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return { ...d };
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return { ...d, activeWindows: [...d.activeWindows] };
   const r = raw as Record<string, unknown>;
 
   const lengths: MessageLength[] = ["short", "medium", "long"];
   const tempos: SalesTempo[] = ["slow", "normal", "fast"];
+  const windows = resolveWindows(r, d);
 
   const b: ChatBehavior = {
     replyDelayMinSec: num(r.replyDelayMinSec, d.replyDelayMinSec, 0, 600),
@@ -96,9 +124,11 @@ export function resolveChatBehavior(raw: unknown): ChatBehavior {
     messageLength: lengths.includes(r.messageLength as MessageLength) ? (r.messageLength as MessageLength) : d.messageLength,
     typoRate: Math.round(num(r.typoRate, d.typoRate, 0, 100)),
     petNames: strArr(r.petNames).slice(0, 8),
-    activeFrom: time(r.activeFrom, d.activeFrom),
-    activeTo: time(r.activeTo, d.activeTo),
+    activeFrom: windows[0].from,
+    activeTo: windows[0].to,
+    activeWindows: windows,
     offHoursDelayFactor: num(r.offHoursDelayFactor, d.offHoursDelayFactor, 1, 20),
+    offHoursDelayFactorMax: num(r.offHoursDelayFactorMax, num(r.offHoursDelayFactor, d.offHoursDelayFactorMax, 1, 20), 1, 20),
     salesStartStage: Math.round(num(r.salesStartStage, d.salesStartStage, 0, 10)),
     salesTempo: tempos.includes(r.salesTempo as SalesTempo) ? (r.salesTempo as SalesTempo) : d.salesTempo,
   };
@@ -107,6 +137,7 @@ export function resolveChatBehavior(raw: unknown): ChatBehavior {
   if (b.replyDelayMaxSec < b.replyDelayMinSec) b.replyDelayMaxSec = b.replyDelayMinSec;
   if (b.multiGapMaxSec < b.multiGapMinSec) b.multiGapMaxSec = b.multiGapMinSec;
   if (b.ppvDelayMaxSec < b.ppvDelayMinSec) b.ppvDelayMaxSec = b.ppvDelayMinSec;
+
   if (b.multiReplyMax < b.multiReplyMin) b.multiReplyMax = b.multiReplyMin;
   return b;
 }
@@ -126,22 +157,32 @@ export function emojiCap(freq: EmojiFrequency): number {
   }
 }
 
-/** Liegt `now` innerhalb der Aktivzeiten? */
+/** Liegt `now` in mindestens einem der Aktiv-Fenster? */
 export function isWithinActiveHours(b: ChatBehavior, now: Date = new Date()): boolean {
   const toMin = (s: string) => {
     const [h, m] = s.split(":").map(Number);
     return (h % 24) * 60 + (m % 60);
   };
   const cur = now.getHours() * 60 + now.getMinutes();
-  const from = toMin(b.activeFrom);
-  const to = toMin(b.activeTo);
-  if (from === to) return true;
-  return from < to ? cur >= from && cur <= to : cur >= from || cur <= to;
+  const windows = b.activeWindows?.length ? b.activeWindows : [{ from: b.activeFrom, to: b.activeTo }];
+  return windows.some((w) => {
+    const from = toMin(w.from);
+    const to = toMin(w.to);
+    if (from === to) return true;
+    return from < to ? cur >= from && cur <= to : cur >= from || cur <= to;
+  });
 }
 
-/** Delay-Faktor: außerhalb der Aktivzeiten antwortet sie langsamer. */
+/**
+ * Delay-Faktor: außerhalb der Aktivzeiten antwortet sie langsamer.
+ * Multiplikator (keine Zeiteinheit), zufällig zwischen Min und Max.
+ */
 export function delayFactor(b: ChatBehavior, now: Date = new Date()): number {
-  return isWithinActiveHours(b, now) ? 1 : b.offHoursDelayFactor;
+  if (isWithinActiveHours(b, now)) return 1;
+  const min = Math.max(1, b.offHoursDelayFactor);
+  const max = Math.max(min, b.offHoursDelayFactorMax ?? min);
+  return min + Math.random() * (max - min);
+
 }
 
 export const LENGTH_LABEL: Record<MessageLength, string> = {

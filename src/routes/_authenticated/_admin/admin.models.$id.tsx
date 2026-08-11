@@ -2,6 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ModelSetsManager } from "@/components/admin/ModelSetsManager";
+import { ActiveHoursEditor } from "@/components/admin/ActiveHoursEditor";
+
 import {
   type ChatBehavior, type EmojiFrequency, type MessageLength, type SalesTempo,
   DEFAULT_CHAT_BEHAVIOR, resolveChatBehavior, resolveEmojiFrequency,
@@ -299,16 +301,9 @@ function ChatBehaviorTab({ m, set }: { m: any; set: (k: string, v: any) => void 
       </Panel>
 
       <Panel title="Aktivzeiten">
-        <div className="module-desc" style={{ margin: 0 }}>
-          Außerhalb dieser Zeiten antwortet sie langsamer — wirkt menschlicher.
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-          <Field label="Aktiv von" type="time" value={b.activeFrom} onChange={(v) => setB({ activeFrom: v })} />
-          <Field label="Aktiv bis" type="time" value={b.activeTo} onChange={(v) => setB({ activeTo: v })} />
-        </div>
-        <NumField label="Verzögerungsfaktor außerhalb" value={b.offHoursDelayFactor} step={0.1}
-          onChange={(v) => setB({ offHoursDelayFactor: Math.max(1, v) })} />
+        <ActiveHoursEditor b={b} setB={setB} />
       </Panel>
+
 
       <Panel title="Verkaufstempo">
         <Select label="Tempo der Verkaufstreppe" value={b.salesTempo}

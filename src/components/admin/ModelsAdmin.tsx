@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { PersonaEditor, PresetGrid } from "@/components/admin/PersonaEditor";
 import { StepConfigEditor } from "@/components/admin/StepConfigEditor";
 import { LimitsEditor } from "@/components/admin/LimitsEditor";
+import { ActiveHoursEditor } from "@/components/admin/ActiveHoursEditor";
+
 import { resolveLimits, shieldState, SHIELD_COLOR, type ProfileLimits } from "@/lib/profileLimits";
 import type { FunnelStageConfig } from "@/lib/funnelConfig";
 import { DEFAULT_PERSONA, presetById, resolvePersonaConfig, type PersonaConfig } from "@/lib/personaPresets";
@@ -692,16 +694,9 @@ function ChatBehaviorTab({ m, set }: { m: any; set: (k: string, v: any) => void 
       </Panel>
 
       <Panel title="Aktivzeiten">
-        <div className="module-desc" style={{ margin: 0 }}>
-          Außerhalb dieser Zeiten antwortet sie langsamer — wirkt menschlicher.
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-          <Field label="Aktiv von" type="time" value={b.activeFrom} onChange={(v) => setB({ activeFrom: v })} />
-          <Field label="Aktiv bis" type="time" value={b.activeTo} onChange={(v) => setB({ activeTo: v })} />
-        </div>
-        <NumField label="Verzögerungsfaktor außerhalb" value={b.offHoursDelayFactor} step={0.1}
-          onChange={(v) => setB({ offHoursDelayFactor: Math.max(1, v) })} />
+        <ActiveHoursEditor b={b} setB={setB} />
       </Panel>
+
 
       <Panel title="Verkaufstempo">
         <Select label="Tempo der Verkaufstreppe" value={b.salesTempo}
