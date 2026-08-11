@@ -211,8 +211,8 @@ function ProfileNavItem({
   return (
     <button onClick={onClick} style={{
       position: "relative",
-      display: "flex", alignItems: "center", gap: 8,
-      padding: "6px 10px", borderRadius: 6,
+      display: "flex", alignItems: "center", gap: 10,
+      padding: "8px 12px", borderRadius: 6,
       background: active ? "#1F1F25" : "transparent",
       border: "1px solid transparent",
       transition: "background-color 150ms var(--easing), color 150ms var(--easing)",
@@ -223,7 +223,7 @@ function ProfileNavItem({
     >
       <span style={{
         position: "absolute", left: 0, top: "50%", width: 3,
-        height: active ? 16 : 0, transform: "translateY(-50%)",
+        height: active ? 20 : 0, transform: "translateY(-50%)",
         background: "var(--accent)",
         borderRadius: 999, transition: "height 200ms var(--easing)",
       }} />
@@ -232,28 +232,28 @@ function ProfileNavItem({
           src={avatarUrl}
           alt={name}
           loading="lazy"
-          width={20} height={20}
+          width={24} height={24}
           style={{
-            width: 20, height: 20, borderRadius: "50%", objectFit: "cover",
+            width: 24, height: 24, borderRadius: "50%", objectFit: "cover",
           }}
         />
       </span>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
           color: active ? "var(--text-strong)" : "var(--text)",
-          fontSize: 12, fontWeight: 500, letterSpacing: -0.1,
+          fontSize: 13, fontWeight: 500, letterSpacing: -0.1,
           overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
         }}>{name}</div>
         <div style={{
-          color: "var(--text-subtle)", fontSize: 10,
+          color: "var(--text-subtle)", fontSize: 11,
           overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
         }}>{handle}</div>
       </div>
       {unread > 0 && (
         <span className="tabular-nums" style={{
-          minWidth: 16, height: 16, padding: "0 5px", borderRadius: 999,
+          minWidth: 18, height: 18, padding: "0 6px", borderRadius: 999,
           background: "var(--surface-3)", color: "var(--text-strong)",
-          fontSize: 10, fontWeight: 500,
+          fontSize: 11, fontWeight: 500,
           display: "grid", placeItems: "center",
         }}>{unread}</span>
       )}
