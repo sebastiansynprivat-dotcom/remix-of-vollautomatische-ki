@@ -324,7 +324,66 @@ function TodCoverage({ ok, icon, label }: { ok: boolean; icon: React.ReactNode; 
   );
 }
 
+/* ──────────────── Ordner-Einstellungen (Name + Tageszeit) ──────────────── */
+
+function SetSettingsDialog({ title, initialName, initialTod, confirmLabel, onCancel, onSave }: {
+  title: string;
+  initialName: string;
+  initialTod: TimeOfDay;
+  confirmLabel: string;
+  onCancel: () => void;
+  onSave: (name: string, tod: TimeOfDay) => void | Promise<void>;
+}) {
+  const [name, setName] = useState(initialName);
+  const [tod, setTod] = useState<TimeOfDay>(initialTod);
+  const [busy, setBusy] = useState(false);
+
+  const submit = async () => {
+    setBusy(true);
+    await onSave(name, tod);
+    setBusy(false);
+  };
+
+  return (
+    <div onClick={onCancel} style={{
+      position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", backdropFilter: "blur(3px)",
+      display: "grid", placeItems: "center", zIndex: 60, padding: 20,
+    }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ ...CARD, padding: 20, width: "min(420px, 100%)" }}>
+        <div style={{ fontSize: 14.5, fontWeight: 600, color: "var(--text-strong)" }}>{title}</div>
+        <div style={{ display: "grid", gap: 12, marginTop: 14 }}>
+          <label style={{ display: "grid", gap: 6 }}>
+            <span style={LBL}>Name</span>
+            <input autoFocus value={name} onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") void submit(); }}
+              placeholder="z. B. Strand-Set" style={FIELD} />
+          </label>
+          <label style={{ display: "grid", gap: 6 }}>
+            <span style={LBL}>Tageszeit</span>
+            <select value={tod} onChange={(e) => setTod(e.target.value as TimeOfDay)} style={FIELD}>
+              <option value="day">Tagsüber</option>
+              <option value="night">Nachts</option>
+              <option value="any">Jederzeit</option>
+            </select>
+          </label>
+        </div>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 18 }}>
+          <button onClick={onCancel} style={{
+            background: "transparent", border: "1px solid #1E1E22", borderRadius: 9,
+            color: "var(--text)", fontSize: 12.5, padding: "8px 14px", cursor: "pointer",
+          }}>Abbrechen</button>
+          <button onClick={() => void submit()} disabled={busy} style={{
+            background: "var(--accent-grad)", border: "none", borderRadius: 9,
+            color: "#fff", fontSize: 12.5, fontWeight: 600, padding: "8px 16px", cursor: "pointer",
+          }}>{busy ? "…" : confirmLabel}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ───────────────────────── Detail ───────────────────────── */
+
 
 function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: {
   modelId: string;
