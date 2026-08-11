@@ -557,11 +557,12 @@ function MediaRow({ asset, index, onDragStart, onDrop, onRemove, onTier, onEdit 
         flexShrink: 0,
       }}>{index + 1}</span>
 
-      <div style={{
+      <div onClick={onEdit} title="Bearbeiten" style={{
         width: 64, height: 64, borderRadius: 8, overflow: "hidden", flexShrink: 0,
         background: "#0A0A0B", display: "grid", placeItems: "center", color: "var(--text-subtle)",
-        position: "relative",
+        position: "relative", cursor: "pointer",
       }}>
+
         {thumb ? <img src={thumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <FolderIcon size={18} />}
         {asset.media_type === "video" && (
           <span style={{ position: "absolute", color: "#fff", opacity: 0.9 }}><PlayIcon /></span>
