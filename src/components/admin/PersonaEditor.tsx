@@ -164,8 +164,14 @@ export function PresetGrid({
 /* ── Persona-Editor ──────────────────────────────────────── */
 
 export function PersonaEditor({
-  persona, onChange, modelName,
-}: { persona: PersonaConfig; onChange: (p: PersonaConfig) => void; modelName?: string }) {
+  persona, onChange, modelName, emojiExtras,
+}: {
+  persona: PersonaConfig;
+  onChange: (p: PersonaConfig) => void;
+  modelName?: string;
+  /** Zusatzfelder, die direkt unter dem Emoji-Set erscheinen. */
+  emojiExtras?: React.ReactNode;
+}) {
   const set = <K extends keyof PersonaConfig>(k: K, v: PersonaConfig[K]) =>
     onChange({ ...persona, [k]: v });
 
