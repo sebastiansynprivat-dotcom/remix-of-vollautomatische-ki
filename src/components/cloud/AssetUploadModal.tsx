@@ -37,6 +37,7 @@ export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, ste
   const [dragging, setDragging] = useState(false);
   const [description, setDescription] = useState("");
   const [stepIdx, setStepIdx] = useState(0);
+  const stage = stages[Math.min(stepIdx, stages.length - 1)] ?? stages[0];
   const [tags, setTags] = useState<string[]>([]);
   const [tagDraft, setTagDraft] = useState("");
   const [saving, setSaving] = useState(false);
@@ -89,7 +90,6 @@ export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, ste
     }
   };
 
-  const stage = stages[Math.min(stepIdx, stages.length - 1)] ?? stages[0];
 
   return (
     <div
