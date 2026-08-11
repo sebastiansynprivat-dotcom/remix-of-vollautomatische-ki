@@ -22,7 +22,6 @@ export function AssetEditPanel({ asset, onClose, onSaved }: {
 }) {
   const thumb = useResolvedUrl(asset.thumbnail_url ?? asset.url);
   const [description, setDescription] = useState(asset.description ?? "");
-  const [note, setNote] = useState(asset.note ?? "");
   const [valueEur, setValueEur] = useState(String((asset.value_cents ?? 0) / 100));
   const [tier, setTier] = useState(asset.tier ?? 1);
   const [state, setState] = useState<SaveState>("idle");
@@ -35,7 +34,6 @@ export function AssetEditPanel({ asset, onClose, onSaved }: {
   useEffect(() => {
     dirty.current = false;
     setDescription(asset.description ?? "");
-    setNote(asset.note ?? "");
     setValueEur(String((asset.value_cents ?? 0) / 100));
     setTier(asset.tier ?? 1);
     setState("idle");
@@ -49,7 +47,6 @@ export function AssetEditPanel({ asset, onClose, onSaved }: {
     timer.current = setTimeout(async () => {
       const patch = {
         description: description.trim() || null,
-        note: note.trim() || null,
         value_cents: Math.max(0, Math.round(Number(valueEur.replace(",", ".")) * 100 || 0)),
         tier,
       };
@@ -59,7 +56,7 @@ export function AssetEditPanel({ asset, onClose, onSaved }: {
       onSaved(patch as Partial<ModelAsset>);
     }, 900);
     return () => { if (timer.current) clearTimeout(timer.current); };
-  }, [description, note, valueEur, tier, assetId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [description, valueEur, tier, assetId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const touch = <T,>(setter: (v: T) => void) => (v: T) => { dirty.current = true; setter(v); };
 
@@ -119,12 +116,6 @@ export function AssetEditPanel({ asset, onClose, onSaved }: {
           <span style={LBL}>Wert (€)</span>
           <input value={valueEur} onChange={(e) => touch(setValueEur)(e.target.value)} inputMode="decimal"
             placeholder="0 für gratis" style={{ ...FIELD, color: "var(--accent, #d4af6a)" }} />
-        </label>
-
-        <label style={{ display: "grid", gap: 6 }}>
-          <span style={LBL}>Notiz für die KI</span>
-          <textarea rows={3} value={note} onChange={(e) => touch(setNote)(e.target.value)}
-            placeholder="Optionale Notiz" style={{ ...FIELD, fontSize: 12 }} />
         </label>
 
         <div style={{ fontSize: 11.5, color: state === "error" ? "var(--danger, #ef4444)" : "var(--text-subtle)" }}>

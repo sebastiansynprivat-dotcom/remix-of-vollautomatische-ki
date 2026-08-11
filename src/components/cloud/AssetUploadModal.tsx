@@ -36,7 +36,6 @@ export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, onC
   const [description, setDescription] = useState("");
   const [tier, setTier] = useState(1);
   const [valueEur, setValueEur] = useState("0");
-  const [note, setNote] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [tagDraft, setTagDraft] = useState("");
   const [saving, setSaving] = useState(false);
@@ -70,7 +69,6 @@ export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, onC
         tier,
         tags,
         value_cents: Math.max(0, Math.round(Number(valueEur.replace(",", ".")) * 100 || 0)),
-        note: note.trim() || null,
         set_id: setId,
         sequence_order: sequenceOrder,
 
@@ -179,13 +177,6 @@ export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, onC
             <input value={valueEur} onChange={e => setValueEur(e.target.value)} inputMode="decimal"
               placeholder="0 für gratis, oder Wert in Euro"
               style={{ ...field, color: "var(--accent, #d4af6a)" }} />
-          </label>
-
-          <label style={{ display: "grid", gap: 6 }}>
-            <span style={lbl}>Notiz (optional)</span>
-            <textarea rows={2} value={note} onChange={e => setNote(e.target.value)}
-              placeholder="Optionale Notiz für die KI"
-              style={{ ...field, fontFamily: "ui-monospace, SFMono-Regular, monospace", fontSize: 12 }} />
           </label>
 
           <div style={{ display: "grid", gap: 6 }}>
