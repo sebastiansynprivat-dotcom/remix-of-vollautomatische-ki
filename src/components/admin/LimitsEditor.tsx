@@ -4,10 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { resolveLimits, type ProfileLimits } from "@/lib/profileLimits";
 
 /** Schutz & Limits pro Profil — Obergrenzen und Auto-Pause. */
-export function LimitsEditor({ modelId, value, onSaved }: {
+export function LimitsEditor({ modelId, value, onSaved, onChange }: {
   modelId: string;
   value: unknown;
   onSaved?: (limits: ProfileLimits) => void;
+  /** Wenn gesetzt: kein eigener Speichern-Button, Parent übernimmt Auto-Save. */
+  onChange?: (limits: ProfileLimits) => void;
 }) {
   const initial = useMemo(() => resolveLimits(value), [value]);
   const [lim, setLim] = useState<ProfileLimits>(initial);
@@ -15,7 +17,11 @@ export function LimitsEditor({ modelId, value, onSaved }: {
 
   useEffect(() => { setLim(initial); }, [initial]);
 
-  const patch = (p: Partial<ProfileLimits>) => setLim((l) => ({ ...l, ...p }));
+  const patch = (p: Partial<ProfileLimits>) => setLim((l) => {
+    const next = { ...l, ...p };
+    onChange?.(next);
+    return next;
+  });
 
   const save = async () => {
     setSaving(true);
@@ -28,6 +34,7 @@ export function LimitsEditor({ modelId, value, onSaved }: {
     onSaved?.(lim);
     toast.success("Schutz-Einstellungen gespeichert");
   };
+
 
   return (
     <section style={{
