@@ -8,6 +8,8 @@ import {
 import { euro, TIERS, useResolvedUrl, type ModelAsset } from "@/lib/modelAssets";
 import { normalizeStepConfig, getFunnelStages, type FunnelStageConfig } from "@/lib/funnelConfig";
 import { AssetUploadModal } from "@/components/cloud/AssetUploadModal";
+import { AssetEditPanel } from "@/components/cloud/AssetEditPanel";
+
 import { supabase } from "@/integrations/supabase/client";
 
 const CARD: React.CSSProperties = {
