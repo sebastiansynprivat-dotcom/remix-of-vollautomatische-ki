@@ -24,11 +24,13 @@ export function ProfileMasterBar({ modelId }: Props) {
   const refresh = useCallback(async () => {
     const { data } = await supabase
       .from("conversations")
-      .select("id, autopilot_enabled")
+      .select("id, autopilot_enabled, fans!inner(external_ref)")
       .eq("model_id", modelId);
-    const rows = data ?? [];
+    const rows = (data ?? []).filter(
+      (r: any) => r.fans?.external_ref !== MANUAL_TEST_REF,
+    );
     setTotal(rows.length);
-    setAutoOn(rows.filter(r => r.autopilot_enabled).length);
+    setAutoOn(rows.filter((r: any) => r.autopilot_enabled).length);
   }, [modelId]);
 
   useEffect(() => { void refresh(); }, [refresh]);
@@ -37,10 +39,14 @@ export function ProfileMasterBar({ modelId }: Props) {
 
   const apply = async (next: boolean) => {
     setBusy(true);
-    const { error } = await supabase
+    // Der manuelle Test-Chat bleibt von Massen-Aktionen unberührt.
+    const testIds = await manualTestConversationIds(modelId);
+    let query = supabase
       .from("conversations")
       .update({ autopilot_enabled: next })
       .eq("model_id", modelId);
+    if (testIds.length > 0) query = query.not("id", "in", `(${testIds.join(",")})`);
+    const { error } = await query;
     setBusy(false);
     if (error) { toast.error("Änderung fehlgeschlagen: " + error.message); return; }
     setAutoOn(next ? total : 0);
@@ -48,6 +54,7 @@ export function ProfileMasterBar({ modelId }: Props) {
     else toast.warning("Auto-Modus für alle Conversations deaktiviert");
     void refresh();
   };
+
 
   const onToggle = () => {
     if (busy) return;
