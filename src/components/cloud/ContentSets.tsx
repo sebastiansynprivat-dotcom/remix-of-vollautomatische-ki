@@ -171,7 +171,7 @@ function Pill({ active, onClick, icon, children }: {
 function SetCard({ set, onOpen }: { set: ContentSetWithAssets; onOpen: () => void }) {
   const [hover, setHover] = useState(false);
   const cover = useResolvedUrl(set.cover_url ?? set.assets[0]?.thumbnail_url ?? set.assets[0]?.url ?? null);
-  const tm = tierMeta(set.level);
+  
   const tod = TIME_OF_DAY_META[set.time_of_day];
   const sent = set.assets.reduce((n, a) => n + (a.use_count ?? 0), 0);
 
