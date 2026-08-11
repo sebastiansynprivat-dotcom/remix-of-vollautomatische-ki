@@ -164,13 +164,15 @@ export function PresetGrid({
 /* ── Persona-Editor ──────────────────────────────────────── */
 
 export function PersonaEditor({
-  persona, onChange, modelName, emojiExtras,
+  persona, onChange, modelName, emojiExtras, emojiFrequency, messageLength,
 }: {
   persona: PersonaConfig;
   onChange: (p: PersonaConfig) => void;
   modelName?: string;
   /** Zusatzfelder, die direkt unter dem Emoji-Set erscheinen. */
   emojiExtras?: ReactNode;
+  emojiFrequency?: string;
+  messageLength?: string;
 }) {
   const set = <K extends keyof PersonaConfig>(k: K, v: PersonaConfig[K]) =>
     onChange({ ...persona, [k]: v });
@@ -178,6 +180,8 @@ export function PersonaEditor({
   const [preview, setPreview] = useState<string[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [chat, setChat] = useState<PreviewTurn[] | null>(null);
+  const [chatBusy, setChatBusy] = useState(false);
 
   const generate = async () => {
     setBusy(true); setErr(null);
@@ -208,6 +212,28 @@ export function PersonaEditor({
       setBusy(false);
     }
   };
+
+  const generateChat = async () => {
+    setChatBusy(true); setErr(null);
+    try {
+      const res = await generatePreviewChat({
+        data: {
+          modelName: modelName || "Creatorin",
+          persona: persona as unknown as Record<string, unknown>,
+          emojiFrequency,
+          messageLength,
+          turns: 40,
+        },
+      });
+      if (res.error) throw new Error(res.error);
+      setChat(res.turns);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Vorschau fehlgeschlagen.");
+    } finally {
+      setChatBusy(false);
+    }
+  };
+
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
