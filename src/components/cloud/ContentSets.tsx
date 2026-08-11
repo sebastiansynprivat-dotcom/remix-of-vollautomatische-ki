@@ -430,17 +430,6 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
               <option value="any">Jederzeit</option>
             </select>
           </label>
-          <div style={{ display: "grid", gap: 6 }}>
-            <span style={LBL}>Tier</span>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <input type="range" min={1} max={5} step={1} value={draft.tier}
-                onChange={(e) => patch({ tier: Number(e.target.value) })}
-                style={{ flex: 1, accentColor: "#7c3aed" }} />
-              <span style={{ background: tm.gradient, color: "#fff", fontSize: 11, fontWeight: 600, padding: "2px 10px", borderRadius: 999 }}>
-                {draft.tier} · {tm.label}
-              </span>
-            </div>
-          </div>
           <label style={{ display: "grid", gap: 6, gridColumn: "1 / -1" }}>
             <span style={LBL}>Beschreibung</span>
             <textarea rows={2} value={draft.description} onChange={(e) => patch({ description: e.target.value })} style={FIELD} />
