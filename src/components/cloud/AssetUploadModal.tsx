@@ -35,7 +35,6 @@ export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, onC
   const [dragging, setDragging] = useState(false);
   const [description, setDescription] = useState("");
   const [tier, setTier] = useState(1);
-  const [category, setCategory] = useState<string>("portrait");
   const [valueEur, setValueEur] = useState("0");
   const [note, setNote] = useState("");
   const [tags, setTags] = useState<string[]>([]);
