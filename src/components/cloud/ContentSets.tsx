@@ -517,9 +517,10 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
   );
 }
 
-function MediaRow({ asset, index, onDragStart, onDrop, onRemove }: {
+function MediaRow({ asset, index, onDragStart, onDrop, onRemove, onTier }: {
   asset: ModelAsset; index: number;
   onDragStart: () => void; onDrop: () => void; onRemove: () => void;
+  onTier: (tier: number) => void;
 }) {
   const thumb = useResolvedUrl(asset.thumbnail_url ?? asset.url);
   const [over, setOver] = useState(false);
