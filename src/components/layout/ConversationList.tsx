@@ -101,41 +101,23 @@ export function ConversationList({
   const unreadCount = conversations.filter(c => (unreadMap[c.id] ?? c.unreadCount) > 0).length;
   const unansweredCount = conversations.filter(c => !c.lastMessage.fromMe).length;
 
-  const heatScore = (id: string) => {
-    const b = chat.getCopilotBrief(id);
-    if (!b) return 0;
-    return b.sentiment.score * 0.6 + b.buyIntent.score * 0.4;
-  };
-  const hasOpenPpv = (id: string) => {
-    const msgs = chat.getMessages(id);
-    return msgs.some(m => m.contentType === "ppv" && m.ppv && !m.ppv.isPurchased);
-  };
-
   const filtered = conversations
     .filter(c => c.participant.displayName.toLowerCase().includes(search.toLowerCase()))
     .filter(c => {
       if (filter === "unread") return (unreadMap[c.id] ?? c.unreadCount) > 0;
       if (filter === "unanswered") return !c.lastMessage.fromMe;
-      if (filter === "open_money") return hasOpenPpv(c.id);
       return true;
     })
     .sort((a, b) => {
       if (!!a.isAutopilot !== !!b.isAutopilot) return a.isAutopilot ? -1 : 1;
       if (a.id === "conv-ai-mia") return -1;
       if (b.id === "conv-ai-mia") return 1;
-      if (filter === "hot") return heatScore(b.id) - heatScore(a.id);
-      if (filter === "open_money") {
-        // sort by spend among those with open PPV
-        return b.totalSpent - a.totalSpent;
-      }
       return b.totalSpent - a.totalSpent;
     });
 
-  const sortLabel = filter === "hot"
-    ? "Sortiert nach Hitze"
-    : filter === "open_money"
-      ? "Offene PPVs · Geld liegt rum"
-      : "Sortiert nach Ausgaben";
+  const sortLabel = filter === "unread"
+    ? "Ungelesene Chats"
+    : "Noch nicht beantwortet";
 
   return (
     <div
