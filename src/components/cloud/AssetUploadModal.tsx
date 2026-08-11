@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  CATEGORIES, CATEGORY_LABEL, TIERS, tierMeta, uploadAssetFile, resolveAssetUrl, ASSET_BUCKET,
+  TIERS, tierMeta, uploadAssetFile, resolveAssetUrl, ASSET_BUCKET,
 } from "@/lib/modelAssets";
 
 interface Props {
