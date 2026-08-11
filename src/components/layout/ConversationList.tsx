@@ -69,9 +69,10 @@ interface Props {
 
 const SWIPE_THRESHOLD = 76;
 
-type FilterId = "unread" | "unanswered";
+type FilterId = "all" | "unread" | "unanswered";
 
 const FILTERS: { id: FilterId; label: string }[] = [
+  { id: "all",         label: "Alle" },
   { id: "unread",      label: "Ungelesen" },
   { id: "unanswered",  label: "Unbeantwortet" },
 ];
@@ -116,7 +117,9 @@ export function ConversationList({
 
   const sortLabel = filter === "unread"
     ? "Ungelesene Chats"
-    : "Noch nicht beantwortet";
+    : filter === "unanswered"
+      ? "Noch nicht beantwortet"
+      : "Alle Chats";
 
   return (
     <div
@@ -170,7 +173,7 @@ export function ConversationList({
       }}>
         {FILTERS.map(f => {
           const active = filter === f.id;
-          const badge = f.id === "unread" ? unreadCount : f.id === "unanswered" ? unansweredCount : null;
+          const badge = f.id === "unread" ? unreadCount : f.id === "unanswered" ? unansweredCount : conversations.length;
           return (
             <button key={f.id} onClick={() => setFilter(f.id)} style={{
               display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0,
