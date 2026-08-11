@@ -95,8 +95,9 @@ function buildGroups(d: ExtractedProfile): Group[] {
 
 const LONG_LABELS = new Set(["Content", "No-Gos", "Notizen"]);
 
-export function SteckbriefUpload({ modelId, onApply }: {
+export function SteckbriefUpload({ modelId, current, onApply }: {
   modelId: string;
+  current?: ExtractedProfile | null;
   onApply: (fields: Record<string, unknown>) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -107,6 +108,8 @@ export function SteckbriefUpload({ modelId, onApply }: {
   const [data, setData] = useState<ExtractedProfile | null>(null);
   const [closing, setClosing] = useState(false);
   const [imported, setImported] = useState(false);
+  const [showStored, setShowStored] = useState(false);
+
 
   const handleFile = async (file: File) => {
     if (!file.name.toLowerCase().endsWith(".pdf") && file.type !== "application/pdf") {
