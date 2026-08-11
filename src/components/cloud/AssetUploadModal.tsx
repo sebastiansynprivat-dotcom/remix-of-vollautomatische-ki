@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  CATEGORIES, CATEGORY_LABEL, TIERS, tierMeta, uploadAssetFile, resolveAssetUrl, ASSET_BUCKET,
+  TIERS, tierMeta, uploadAssetFile, resolveAssetUrl, ASSET_BUCKET,
 } from "@/lib/modelAssets";
 
 interface Props {
@@ -35,7 +35,6 @@ export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, onC
   const [dragging, setDragging] = useState(false);
   const [description, setDescription] = useState("");
   const [tier, setTier] = useState(1);
-  const [category, setCategory] = useState<string>("portrait");
   const [valueEur, setValueEur] = useState("0");
   const [note, setNote] = useState("");
   const [tags, setTags] = useState<string[]>([]);
@@ -69,7 +68,6 @@ export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, onC
         media_type: mediaType,
         description: description.trim() || null,
         tier,
-        category,
         tags,
         value_cents: Math.max(0, Math.round(Number(valueEur.replace(",", ".")) * 100 || 0)),
         note: note.trim() || null,
@@ -176,20 +174,12 @@ export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, onC
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-            <label style={{ display: "grid", gap: 6 }}>
-              <span style={lbl}>Kategorie</span>
-              <select value={category} onChange={e => setCategory(e.target.value)} style={field}>
-                {CATEGORIES.map(c => <option key={c} value={c}>{CATEGORY_LABEL[c]}</option>)}
-              </select>
-            </label>
-            <label style={{ display: "grid", gap: 6 }}>
-              <span style={lbl}>Wert (€)</span>
-              <input value={valueEur} onChange={e => setValueEur(e.target.value)} inputMode="decimal"
-                placeholder="0 für gratis, oder Wert in Euro"
-                style={{ ...field, color: "var(--accent, #d4af6a)" }} />
-            </label>
-          </div>
+          <label style={{ display: "grid", gap: 6 }}>
+            <span style={lbl}>Wert (€)</span>
+            <input value={valueEur} onChange={e => setValueEur(e.target.value)} inputMode="decimal"
+              placeholder="0 für gratis, oder Wert in Euro"
+              style={{ ...field, color: "var(--accent, #d4af6a)" }} />
+          </label>
 
           <label style={{ display: "grid", gap: 6 }}>
             <span style={lbl}>Notiz (optional)</span>
