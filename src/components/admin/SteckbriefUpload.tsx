@@ -95,8 +95,9 @@ function buildGroups(d: ExtractedProfile): Group[] {
 
 const LONG_LABELS = new Set(["Content", "No-Gos", "Notizen"]);
 
-export function SteckbriefUpload({ modelId, onApply }: {
+export function SteckbriefUpload({ modelId, current, onApply }: {
   modelId: string;
+  current?: ExtractedProfile | null;
   onApply: (fields: Record<string, unknown>) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -107,6 +108,8 @@ export function SteckbriefUpload({ modelId, onApply }: {
   const [data, setData] = useState<ExtractedProfile | null>(null);
   const [closing, setClosing] = useState(false);
   const [imported, setImported] = useState(false);
+  const [showStored, setShowStored] = useState(false);
+
 
   const handleFile = async (file: File) => {
     if (!file.name.toLowerCase().endsWith(".pdf") && file.type !== "application/pdf") {
@@ -184,6 +187,12 @@ export function SteckbriefUpload({ modelId, onApply }: {
   const allRows = groups.flatMap((g) => g.rows);
   const filled = allRows.filter((r) => !isEmpty(r.value)).length;
 
+  const storedGroups = current ? buildGroups(current) : [];
+  const storedRows = storedGroups.flatMap((g) => g.rows);
+  const storedFilled = storedRows.filter((r) => !isEmpty(r.value)).length;
+  const hasStored = storedFilled > 0;
+
+
   if (data) {
     return (
       <div className="sb-panel" style={{ animation: closing ? "sbSlideUp 200ms ease forwards" : "sbSlideDown 200ms ease" }}>
@@ -231,7 +240,59 @@ export function SteckbriefUpload({ modelId, onApply }: {
 
   return (
     <div>
+      {hasStored && !busy && (
+        <div className="sb-panel" style={{ marginBottom: 12, animation: "sbFadeIn 200ms ease" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <span style={{ color: "hsl(152 55% 62%)", fontSize: 16, lineHeight: 1 }}>✓</span>
+            <div style={{ flex: 1, minWidth: 180 }}>
+              <div style={{ fontSize: 13, fontWeight: 500, color: "hsl(152 55% 72%)" }}>
+                Steckbrief hinterlegt
+              </div>
+              <div className="module-desc" style={{ margin: "3px 0 0" }}>
+                {storedFilled} von {storedRows.length} Feldern gefüllt
+                {fileInfo && ` · ${fileInfo.name}`}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowStored((s) => !s)}
+              className="shex-btn shex-btn-ghost"
+              style={{ fontSize: 11 }}
+            >
+              {showStored ? "Ausblenden" : "Anzeigen"}
+            </button>
+          </div>
+
+          {showStored && (
+            <div style={{
+              maxHeight: 320, overflow: "auto", marginTop: 14,
+              display: "flex", flexDirection: "column", gap: 16,
+              animation: "sbSlideDown 200ms ease",
+            }}>
+              {storedGroups
+                .filter((g) => g.rows.some((r) => !isEmpty(r.value)))
+                .map((g) => (
+                  <div key={g.title}>
+                    <div className="kpi-label" style={{ color: "var(--text-subtle)", marginBottom: 8 }}>{g.title}</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 10 }}>
+                      {g.rows.filter((r) => !isEmpty(r.value)).map((r) => (
+                        <div key={r.label} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                          <span className="shex-field-label" style={{ width: 96, flexShrink: 0, marginTop: 2 }}>{r.label}</span>
+                          <span style={{ flex: 1, fontSize: 13, color: "var(--text-strong)" }}>
+                            {LONG_LABELS.has(r.label) ? trunc(r.value) : display(r.value)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <div
+
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -257,7 +318,10 @@ export function SteckbriefUpload({ modelId, onApply }: {
               <div style={{ fontSize: 13, fontWeight: 500, color: "hsl(239 84% 80%)" }}>Loslassen zum Hochladen</div>
             ) : (
               <>
-                <div style={{ fontSize: 13, fontWeight: 500, color: "hsl(0 0% 78%)" }}>Steckbrief hochladen</div>
+                <div style={{ fontSize: 13, fontWeight: 500, color: "hsl(0 0% 78%)" }}>
+                  {hasStored ? "Steckbrief ersetzen" : "Steckbrief hochladen"}
+                </div>
+
                 <div className="module-desc" style={{ margin: "6px 0 0" }}>PDF hier ablegen oder klicken zum Auswählen</div>
                 <div className="module-desc" style={{ margin: "2px 0 0" }}>Das Profil wird automatisch ausgefüllt</div>
               </>

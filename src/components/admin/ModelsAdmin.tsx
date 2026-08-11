@@ -389,6 +389,8 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
             <Panel title="Steckbrief-Upload">
               <SteckbriefUpload
                 modelId={id}
+                current={m as any}
+
                 onApply={(patch: Record<string, unknown>) => setM((prev: any) => {
                   const next = { ...prev, ...patch };
                   setInitial(next);
