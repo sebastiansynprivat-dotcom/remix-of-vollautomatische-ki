@@ -549,12 +549,6 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
           </div>
         )}
 
-
-        {tab === "sets" && (
-          <Panel title="PPV Sets">
-            <ModelSetsManager modelId={id} />
-          </Panel>
-        )}
       </div>
 
     </div>
