@@ -173,7 +173,7 @@ export function ConversationList({
       }}>
         {FILTERS.map(f => {
           const active = filter === f.id;
-          const badge = f.id === "unread" ? unreadCount : f.id === "unanswered" ? unansweredCount : null;
+          const badge = f.id === "unread" ? unreadCount : f.id === "unanswered" ? unansweredCount : conversations.length;
           return (
             <button key={f.id} onClick={() => setFilter(f.id)} style={{
               display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0,
