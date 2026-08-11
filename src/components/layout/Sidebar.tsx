@@ -47,23 +47,33 @@ export function Sidebar({ view, setView, models }: Props) {
       </div>
 
       {/* Assigned profiles section */}
-      <SectionLabel>Meine Profile</SectionLabel>
-      <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 12 }}>
-        {models.map((p) => {
-          const active = view.kind === "messages" && view.profileId === p.id;
-          return (
-            <ProfileNavItem
-              key={p.id}
-              avatarUrl={p.avatarUrl}
-              name={p.displayName}
-              handle={p.handle}
-              unread={p.unread}
-              active={active}
-              onClick={() => setView({ kind: "messages", profileId: p.id })}
-            />
-          );
-        })}
-      </div>
+      <SectionLabel
+        collapsed={profilesCollapsed}
+        onToggle={() => setProfilesCollapsed(v => !v)}
+        count={models.length}
+      >
+        Meine Profile
+      </SectionLabel>
+      {!profilesCollapsed && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 12 }}>
+          {models.map((p) => {
+            const active = view.kind === "messages" && view.profileId === p.id;
+            return (
+              <ProfileNavItem
+                key={p.id}
+                avatarUrl={p.avatarUrl}
+                name={p.displayName}
+                handle={p.handle}
+                unread={p.unread}
+                active={active}
+                onClick={() => setView({ kind: "messages", profileId: p.id })}
+              />
+            );
+          })}
+        </div>
+      )}
+      {profilesCollapsed && <div style={{ marginBottom: 12 }} />}
+
 
 
       {/* Dev */}
