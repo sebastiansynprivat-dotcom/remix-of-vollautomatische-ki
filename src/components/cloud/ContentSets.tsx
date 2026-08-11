@@ -197,10 +197,7 @@ function SetCard({ set, onOpen }: { set: ContentSetWithAssets; onOpen: () => voi
           </div>
         )}
 
-        <span title={`Tier ${set.level} · ${tm.label}`} style={{
-          position: "absolute", top: 8, left: 8, width: 20, height: 20, borderRadius: 999,
-          background: tm.gradient, boxShadow: "0 2px 8px rgba(0,0,0,0.45)",
-        }} />
+
 
         <span style={{
           position: "absolute", top: 8, right: 8, display: "inline-flex", alignItems: "center", gap: 4,
