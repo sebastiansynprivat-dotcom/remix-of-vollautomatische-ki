@@ -496,6 +496,7 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
               onDragStart={() => setDragId(a.id)}
               onDrop={() => void drop(a.id)}
               onRemove={() => void detach(a.id)}
+              onTier={(t) => void setAssetTier(a.id, t)}
             />
           ))}
         </div>
