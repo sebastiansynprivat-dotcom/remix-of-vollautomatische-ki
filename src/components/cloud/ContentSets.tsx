@@ -391,20 +391,36 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
 
   return (
     <div style={{ animation: "sbSlideInRight 200ms ease" }}>
+      {settingsOpen && (
+        <SetSettingsDialog
+          title="Ordner bearbeiten"
+          initialName={set.name}
+          initialTod={set.time_of_day}
+          confirmLabel="Speichern"
+          onCancel={() => setSettingsOpen(false)}
+          onSave={(n, t) => save(n, t)}
+        />
+      )}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 14, minWidth: 0 }}>
           <button onClick={onBack} style={{
             background: "transparent", border: "none", color: "var(--text)", fontSize: 12.5, cursor: "pointer",
           }}>← Content-Ordner</button>
           <span style={{ fontSize: 16, fontWeight: 600, color: "var(--text-strong)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {draft.name || "Unbenannt"}
+            {set.name || "Unbenannt"}
           </span>
+          <span style={{
+            fontSize: 11, color: "var(--text-subtle)", border: "1px solid #1E1E22",
+            borderRadius: 999, padding: "2px 9px", whiteSpace: "nowrap",
+          }}>{TIME_OF_DAY_META[set.time_of_day].label}</span>
         </div>
         <div style={{ display: "inline-flex", gap: 8 }}>
-          <button onClick={save} disabled={saving} style={{
+          <button onClick={() => setSettingsOpen(true)} aria-label="Ordner bearbeiten" style={{
             background: "transparent", border: "1px solid #1E1E22", borderRadius: 9,
-            color: "var(--text)", fontSize: 12.5, padding: "7px 14px", cursor: "pointer",
-          }}>{saving ? "Speichert…" : "Speichern"}</button>
+            color: "var(--text-subtle)", padding: "7px 10px", cursor: "pointer",
+          }}>
+            <Ico size={16} d="M4 20h4L19 9l-4-4L4 16v4z" />
+          </button>
           <button onClick={removeSet} aria-label="Ordner löschen" style={{
             background: "transparent", border: "1px solid #1E1E22", borderRadius: 9,
             color: "var(--text-subtle)", padding: "7px 10px", cursor: "pointer",
@@ -416,56 +432,6 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
 
       <CoverageBar sets={sets} steps={steps} />
 
-      <div style={{ ...CARD, padding: 16, marginTop: 14 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
-          <label style={{ display: "grid", gap: 6 }}>
-            <span style={LBL}>Name</span>
-            <input value={draft.name} onChange={(e) => patch({ name: e.target.value })} style={FIELD} />
-          </label>
-          <label style={{ display: "grid", gap: 6 }}>
-            <span style={LBL}>Preis (€)</span>
-            <input value={draft.price} onChange={(e) => patch({ price: e.target.value })} inputMode="decimal"
-              style={{ ...FIELD, color: "var(--money)", fontVariantNumeric: "tabular-nums" }} />
-          </label>
-          <label style={{ display: "grid", gap: 6 }}>
-            <span style={LBL}>Tageszeit</span>
-            <select value={draft.time_of_day} onChange={(e) => patch({ time_of_day: e.target.value as TimeOfDay })} style={FIELD}>
-              <option value="day">Tagsüber</option>
-              <option value="night">Nachts</option>
-              <option value="any">Jederzeit</option>
-            </select>
-          </label>
-          <label style={{ display: "grid", gap: 6, gridColumn: "1 / -1" }}>
-            <span style={LBL}>Beschreibung</span>
-            <textarea rows={2} value={draft.description} onChange={(e) => patch({ description: e.target.value })} style={FIELD} />
-          </label>
-          <div style={{ display: "grid", gap: 6, gridColumn: "1 / -1" }}>
-            <span style={LBL}>Tags</span>
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {draft.tags.map((t) => (
-                <span key={t} style={{
-                  display: "inline-flex", alignItems: "center", gap: 6, fontSize: 11,
-                  background: "#0A0A0B", border: "1px solid #1E1E22", color: "var(--text-strong)",
-                  padding: "3px 10px", borderRadius: 999,
-                }}>
-                  {t}
-                  <button onClick={() => patch({ tags: draft.tags.filter((x) => x !== t) })}
-                    style={{ background: "transparent", border: "none", color: "var(--text-subtle)", cursor: "pointer", lineHeight: 1 }}>×</button>
-                </span>
-              ))}
-            </div>
-            <input value={tagDraft} onChange={(e) => setTagDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key !== "Enter") return;
-                e.preventDefault();
-                const t = tagDraft.trim().toLowerCase();
-                if (t && !draft.tags.includes(t)) patch({ tags: [...draft.tags, t] });
-                setTagDraft("");
-              }}
-              placeholder="Tag eingeben und Enter" style={FIELD} />
-          </div>
-        </div>
-      </div>
 
       <section style={{ marginTop: 18 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
