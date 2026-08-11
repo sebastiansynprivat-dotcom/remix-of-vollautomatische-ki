@@ -66,6 +66,8 @@ export function ContentSets({ modelId, stepConfig }: {
   const { sets, loading, reload } = useContentSets(modelId);
   const [filter, setFilter] = useState<"all" | "day" | "night">("all");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+
 
   const steps: FunnelStageConfig[] = useMemo(
     () => normalizeStepConfig(stepConfig) ?? getFunnelStages(),
