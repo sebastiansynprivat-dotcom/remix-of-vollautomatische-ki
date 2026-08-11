@@ -38,14 +38,17 @@ export function StepConfigEditor({ modelId, value, onSaved, onChange }: {
   };
 
 
+  const apply = (fn: (rs: FunnelStageConfig[]) => FunnelStageConfig[]) =>
+    setSteps(rs => { const next = fn(rs); emit(next); return next; });
+
   const patch = (i: number, p: Partial<FunnelStageConfig>) =>
-    setSteps(rs => rs.map((r, idx) => (idx === i ? { ...r, ...p } : r)));
+    apply(rs => rs.map((r, idx) => (idx === i ? { ...r, ...p } : r)));
 
   const removeAt = (i: number) =>
-    setSteps(rs => (rs.length > 1 ? rs.filter((_, idx) => idx !== i) : rs));
+    apply(rs => (rs.length > 1 ? rs.filter((_, idx) => idx !== i) : rs));
 
   const addStep = () =>
-    setSteps(rs => [...rs, {
+    apply(rs => [...rs, {
       id: `s${Date.now()}`,
       label: `Stufe ${rs.length + 1}`,
       priceEur: (rs[rs.length - 1]?.priceEur ?? 0) + 10,
@@ -55,7 +58,7 @@ export function StepConfigEditor({ modelId, value, onSaved, onChange }: {
     }]);
 
   const drop = (target: number) => {
-    setSteps(rs => {
+    apply(rs => {
       if (dragIdx === null || dragIdx === target) return rs;
       const next = [...rs];
       const [moved] = next.splice(dragIdx, 1);
@@ -65,6 +68,7 @@ export function StepConfigEditor({ modelId, value, onSaved, onChange }: {
     setDragIdx(null);
     setOverIdx(null);
   };
+
 
   const resetToDefault = async () => {
     if (!confirm("Stufen wirklich auf den Standard zurücksetzen?")) return;
