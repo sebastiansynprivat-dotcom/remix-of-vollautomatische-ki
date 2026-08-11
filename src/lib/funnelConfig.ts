@@ -45,15 +45,25 @@ let hydrated = false;
 const listeners = new Set<() => void>();
 
 function clampStage(s: Partial<FunnelStageConfig> & { minInteractions?: number }, i: number): FunnelStageConfig {
+  const priceEur = Math.max(0, Math.round(Number(s.priceEur) || 0));
+  const rawMin = s.minPriceEur === undefined || s.minPriceEur === null ? priceEur : Number(s.minPriceEur);
   return {
     id: typeof s.id === "string" && s.id ? s.id : `s${i + 1}`,
     label: typeof s.label === "string" && s.label.trim() ? s.label.trim() : `Stufe ${i + 1}`,
-    priceEur: Math.max(0, Math.round(Number(s.priceEur) || 0)),
+    priceEur,
+    minPriceEur: Math.min(priceEur, Math.max(0, Math.round(Number.isFinite(rawMin) ? rawMin : priceEur))),
     mediaType: s.mediaType === "video" ? "video" : "photo",
     intensity: Math.min(5, Math.max(1, Math.round(Number(s.intensity) || 1))),
     minFanTurns: Math.min(20, Math.max(1, Math.round(Number(s.minFanTurns ?? s.minInteractions) || 3))),
   };
 }
+
+/** Stufen-Index (1-basiert) zu einem gespeicherten Medien-Wert finden. */
+export function stepIndexForValueCents(steps: FunnelStageConfig[], cents: number): number {
+  const i = steps.findIndex((s) => Math.round(s.priceEur * 100) === Math.round(cents || 0));
+  return i >= 0 ? i + 1 : 0;
+}
+
 
 /**
  * Profil-eigene Stufen (JSON aus der Datenbank) in eine saubere Liste bringen.
