@@ -1,5 +1,7 @@
 import { useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { ensureManualTestChat } from "@/lib/manualTestChat";
+
 import { PresetGrid, PersonaEditor } from "@/components/admin/PersonaEditor";
 import {
   DEFAULT_PERSONA, presetById, type PersonaConfig,
