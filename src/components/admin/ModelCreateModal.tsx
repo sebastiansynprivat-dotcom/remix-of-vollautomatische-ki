@@ -65,7 +65,10 @@ export function ModelCreateModal({
       .select("id").single();
     setBusy(false);
     if (error) { setErr(error.message); return; }
+    // Fester manueller Test-Chat für das neue Profil.
+    await ensureManualTestChat(data.id);
     onCreated(data.id);
+
   };
 
   return (
