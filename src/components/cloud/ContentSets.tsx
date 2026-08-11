@@ -5,7 +5,7 @@ import {
   useContentSets, createContentSet, updateContentSet, deleteContentSet, saveSequence,
   coversTime, TIME_OF_DAY_META, type ContentSetWithAssets, type TimeOfDay,
 } from "@/lib/contentSets";
-import { euro, tierMeta, TIERS, useResolvedUrl, type ModelAsset } from "@/lib/modelAssets";
+import { euro, TIERS, useResolvedUrl, type ModelAsset } from "@/lib/modelAssets";
 import { normalizeStepConfig, getFunnelStages, type FunnelStageConfig } from "@/lib/funnelConfig";
 import { AssetUploadModal } from "@/components/cloud/AssetUploadModal";
 import { supabase } from "@/integrations/supabase/client";
@@ -171,7 +171,7 @@ function Pill({ active, onClick, icon, children }: {
 function SetCard({ set, onOpen }: { set: ContentSetWithAssets; onOpen: () => void }) {
   const [hover, setHover] = useState(false);
   const cover = useResolvedUrl(set.cover_url ?? set.assets[0]?.thumbnail_url ?? set.assets[0]?.url ?? null);
-  const tm = tierMeta(set.tier);
+  
   const tod = TIME_OF_DAY_META[set.time_of_day];
   const sent = set.assets.reduce((n, a) => n + (a.use_count ?? 0), 0);
 
@@ -197,10 +197,7 @@ function SetCard({ set, onOpen }: { set: ContentSetWithAssets; onOpen: () => voi
           </div>
         )}
 
-        <span title={`Tier ${set.tier} · ${tm.label}`} style={{
-          position: "absolute", top: 8, left: 8, width: 20, height: 20, borderRadius: 999,
-          background: tm.gradient, boxShadow: "0 2px 8px rgba(0,0,0,0.45)",
-        }} />
+
 
         <span style={{
           position: "absolute", top: 8, right: 8, display: "inline-flex", alignItems: "center", gap: 4,
@@ -327,7 +324,7 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
     description: set.description ?? "",
     price: String(set.price_cents / 100),
     time_of_day: set.time_of_day,
-    tier: set.tier,
+    
     tags: set.tags,
   });
   const [tagDraft, setTagDraft] = useState("");
@@ -345,7 +342,6 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
       description: draft.description.trim() || null,
       price_cents: Math.max(0, Math.round(Number(draft.price.replace(",", ".")) * 100 || 0)),
       time_of_day: draft.time_of_day,
-      tier: draft.tier,
       tags: draft.tags,
     });
     setSaving(false);
@@ -382,7 +378,13 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
     await onChanged();
   };
 
-  const tm = tierMeta(draft.tier);
+  const setAssetTier = async (assetId: string, tier: number) => {
+    setOrder((o) => o.map((a) => (a.id === assetId ? { ...a, tier } : a)));
+    const { error } = await supabase.from("model_assets").update({ tier } as never).eq("id", assetId);
+    if (error) { toast.error(error.message); return; }
+    await onChanged();
+  };
+
 
   return (
     <div style={{ animation: "sbSlideInRight 200ms ease" }}>
@@ -430,17 +432,6 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
               <option value="any">Jederzeit</option>
             </select>
           </label>
-          <div style={{ display: "grid", gap: 6 }}>
-            <span style={LBL}>Tier</span>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <input type="range" min={1} max={5} step={1} value={draft.tier}
-                onChange={(e) => patch({ tier: Number(e.target.value) })}
-                style={{ flex: 1, accentColor: "#7c3aed" }} />
-              <span style={{ background: tm.gradient, color: "#fff", fontSize: 11, fontWeight: 600, padding: "2px 10px", borderRadius: 999 }}>
-                {draft.tier} · {tm.label}
-              </span>
-            </div>
-          </div>
           <label style={{ display: "grid", gap: 6, gridColumn: "1 / -1" }}>
             <span style={LBL}>Beschreibung</span>
             <textarea rows={2} value={draft.description} onChange={(e) => patch({ description: e.target.value })} style={FIELD} />
@@ -501,6 +492,7 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
               onDragStart={() => setDragId(a.id)}
               onDrop={() => void drop(a.id)}
               onRemove={() => void detach(a.id)}
+              onTier={(t) => void setAssetTier(a.id, t)}
             />
           ))}
         </div>
@@ -521,9 +513,10 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
   );
 }
 
-function MediaRow({ asset, index, onDragStart, onDrop, onRemove }: {
+function MediaRow({ asset, index, onDragStart, onDrop, onRemove, onTier }: {
   asset: ModelAsset; index: number;
   onDragStart: () => void; onDrop: () => void; onRemove: () => void;
+  onTier: (tier: number) => void;
 }) {
   const thumb = useResolvedUrl(asset.thumbnail_url ?? asset.url);
   const [over, setOver] = useState(false);
@@ -562,10 +555,30 @@ function MediaRow({ asset, index, onDragStart, onDrop, onRemove }: {
         <div style={{ fontSize: 13, color: "var(--text-strong)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {asset.description || "Ohne Beschreibung"}
         </div>
-        <div style={{ fontSize: 11.5, color: "var(--text-subtle)", marginTop: 2 }}>
-          {asset.media_type === "video" ? "Video" : "Foto"} · Tier {asset.tier}
+        <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 11.5, color: "var(--text-subtle)" }}>
+            {asset.media_type === "video" ? "Video" : "Foto"} · Stufe
+          </span>
+          {TIERS.map((t) => {
+            const active = asset.tier === t.level;
+            return (
+              <button
+                key={t.level}
+                title={t.label}
+                onClick={() => onTier(t.level)}
+                style={{
+                  width: 22, height: 22, borderRadius: 999, cursor: "pointer", fontSize: 10.5, fontWeight: 600,
+                  color: active ? "#fff" : "var(--text-subtle)",
+                  background: active ? t.gradient : "transparent",
+                  border: `1px solid ${active ? "transparent" : "#1E1E22"}`,
+                  transition: "all 150ms ease",
+                }}
+              >{t.level}</button>
+            );
+          })}
         </div>
       </div>
+
 
       <span style={{ fontSize: 11.5, color: "var(--money)", fontVariantNumeric: "tabular-nums" }}>
         {euro(asset.value_cents)}
