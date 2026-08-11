@@ -187,6 +187,12 @@ export function SteckbriefUpload({ modelId, current, onApply }: {
   const allRows = groups.flatMap((g) => g.rows);
   const filled = allRows.filter((r) => !isEmpty(r.value)).length;
 
+  const storedGroups = current ? buildGroups(current) : [];
+  const storedRows = storedGroups.flatMap((g) => g.rows);
+  const storedFilled = storedRows.filter((r) => !isEmpty(r.value)).length;
+  const hasStored = storedFilled > 0;
+
+
   if (data) {
     return (
       <div className="sb-panel" style={{ animation: closing ? "sbSlideUp 200ms ease forwards" : "sbSlideDown 200ms ease" }}>
