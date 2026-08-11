@@ -2,6 +2,8 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { ModelProfile, Conversation, Message } from "@/data/mockData";
 import { ingestCloudMessages, registerCloudConversations } from "@/lib/chatStore";
+import { ensureManualTestChat, MANUAL_TEST_REF } from "@/lib/manualTestChat";
+
 
 /**
  * Loads all model profiles (admin-only app).
