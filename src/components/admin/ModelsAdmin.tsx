@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { PersonaEditor, PresetGrid } from "@/components/admin/PersonaEditor";
 import { StepConfigEditor } from "@/components/admin/StepConfigEditor";
 import { LimitsEditor } from "@/components/admin/LimitsEditor";
+import { ActiveHoursEditor } from "@/components/admin/ActiveHoursEditor";
+
 import { resolveLimits, shieldState, SHIELD_COLOR, type ProfileLimits } from "@/lib/profileLimits";
 import type { FunnelStageConfig } from "@/lib/funnelConfig";
 import { DEFAULT_PERSONA, presetById, resolvePersonaConfig, type PersonaConfig } from "@/lib/personaPresets";
