@@ -423,9 +423,11 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
     await onChanged();
   };
 
-  const setAssetTier = async (assetId: string, tier: number) => {
-    setOrder((o) => o.map((a) => (a.id === assetId ? { ...a, tier } : a)));
-    const { error } = await supabase.from("model_assets").update({ tier } as never).eq("id", assetId);
+  // Stufe wählen = Preis der Stufe übernehmen (keine zweite Preis-Eingabe).
+  const setAssetStep = async (assetId: string, step: FunnelStageConfig) => {
+    const patch = { tier: step.intensity, value_cents: Math.round(step.priceEur * 100) };
+    setOrder((o) => o.map((a) => (a.id === assetId ? { ...a, ...patch } : a)));
+    const { error } = await supabase.from("model_assets").update(patch as never).eq("id", assetId);
     if (error) { toast.error(error.message); return; }
     await onChanged();
   };
@@ -499,11 +501,11 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
             </div>
           ) : order.map((a, i) => (
             <MediaRow
-              key={a.id} asset={a} index={i}
+              key={a.id} asset={a} index={i} steps={steps}
               onDragStart={() => setDragId(a.id)}
               onDrop={() => void drop(a.id)}
               onRemove={() => void detach(a.id)}
-              onTier={(t) => void setAssetTier(a.id, t)}
+              onStep={(st) => void setAssetStep(a.id, st)}
               onEdit={() => setEditingId(a.id)}
             />
           ))}
