@@ -117,7 +117,9 @@ export function ConversationList({
 
   const sortLabel = filter === "unread"
     ? "Ungelesene Chats"
-    : "Noch nicht beantwortet";
+    : filter === "unanswered"
+      ? "Noch nicht beantwortet"
+      : "Alle Chats";
 
   return (
     <div
