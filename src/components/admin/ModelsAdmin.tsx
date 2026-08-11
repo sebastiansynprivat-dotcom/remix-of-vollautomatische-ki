@@ -536,6 +536,43 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
   );
 }
 
+/** Dezenter Auto-Save-Status: nichts / Spinner / grüner Haken. */
+function SaveIndicator({ state }: { state: "idle" | "saving" | "saved" }) {
+  if (state === "idle") return null;
+  return (
+    <div style={{
+      display: "inline-flex", alignItems: "center", gap: 7, flexShrink: 0,
+      paddingTop: 10, animation: "sbFadeIn 150ms ease",
+    }}>
+      {state === "saving" ? (
+        <>
+          <span style={{
+            width: 12, height: 12, borderRadius: "50%", display: "block",
+            border: "1.5px solid hsl(243 75% 59% / 0.25)",
+            borderTopColor: "hsl(243 75% 66%)",
+            animation: "sbSpin 0.8s linear infinite",
+          }} />
+          <span style={{ fontSize: 11.5, color: "var(--text-subtle, hsl(0 0% 55%))", letterSpacing: "0.02em" }}>
+            Speichern…
+          </span>
+        </>
+      ) : (
+        <>
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M3 8.5l3.2 3.2L13 5" stroke="hsl(152 62% 60%)" strokeWidth="2"
+              strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span style={{ fontSize: 11.5, color: "hsl(152 62% 60%)", letterSpacing: "0.02em" }}>
+            Gespeichert
+          </span>
+        </>
+      )}
+    </div>
+  );
+}
+
+
+
 function setJson(
   m: any,
   set: (k: string, v: any) => void,
