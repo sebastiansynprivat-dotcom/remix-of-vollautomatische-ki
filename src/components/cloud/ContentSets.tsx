@@ -675,5 +675,3 @@ function PreviewBubble({ asset, priceCents }: { asset: ModelAsset; priceCents: n
     </div>
   );
 }
-
-export { TIERS };
