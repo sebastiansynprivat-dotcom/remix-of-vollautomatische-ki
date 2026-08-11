@@ -978,10 +978,8 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       .select("id, name, description, time_of_day, price_cents, tier")
       .eq("model_id", modelId)
       .eq("is_active", true)
-      .eq("price_cents", stageValueCents)
       .in("time_of_day", [todNow, "any"])
-      .lte("tier", stageTier)
-      .limit(10);
+      .limit(20);
 
     // Exakte Tageszeit schlägt "any".
     const chosenSet = (candidateSets ?? []).slice().sort((a: Json, b: Json) =>
@@ -995,6 +993,8 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
         .select("id, description, note, url, thumbnail_url, use_count, media_type")
         .eq("set_id", chosenSet.id as string)
         .eq("is_active", true)
+        .eq("value_cents", stageValueCents)
+        .lte("tier", stageTier)
         .order("sequence_order", { ascending: true });
       setAssets = (data ?? []) as Json[];
     }
