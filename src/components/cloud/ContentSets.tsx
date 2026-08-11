@@ -331,7 +331,9 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
   const [order, setOrder] = useState<ModelAsset[]>(set.assets);
   const [dragId, setDragId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
 
   const patch = (p: Partial<typeof draft>) => setDraft((d) => ({ ...d, ...p }));
 
