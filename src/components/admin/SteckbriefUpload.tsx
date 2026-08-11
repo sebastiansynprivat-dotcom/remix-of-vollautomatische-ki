@@ -318,7 +318,10 @@ export function SteckbriefUpload({ modelId, current, onApply }: {
               <div style={{ fontSize: 13, fontWeight: 500, color: "hsl(239 84% 80%)" }}>Loslassen zum Hochladen</div>
             ) : (
               <>
-                <div style={{ fontSize: 13, fontWeight: 500, color: "hsl(0 0% 78%)" }}>Steckbrief hochladen</div>
+                <div style={{ fontSize: 13, fontWeight: 500, color: "hsl(0 0% 78%)" }}>
+                  {hasStored ? "Steckbrief ersetzen" : "Steckbrief hochladen"}
+                </div>
+
                 <div className="module-desc" style={{ margin: "6px 0 0" }}>PDF hier ablegen oder klicken zum Auswählen</div>
                 <div className="module-desc" style={{ margin: "2px 0 0" }}>Das Profil wird automatisch ausgefüllt</div>
               </>
