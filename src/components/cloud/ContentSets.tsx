@@ -8,6 +8,8 @@ import {
 import { euro, TIERS, useResolvedUrl, type ModelAsset } from "@/lib/modelAssets";
 import { normalizeStepConfig, getFunnelStages, type FunnelStageConfig } from "@/lib/funnelConfig";
 import { AssetUploadModal } from "@/components/cloud/AssetUploadModal";
+import { AssetEditPanel } from "@/components/cloud/AssetEditPanel";
+
 import { supabase } from "@/integrations/supabase/client";
 
 const CARD: React.CSSProperties = {
@@ -331,7 +333,9 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
   const [order, setOrder] = useState<ModelAsset[]>(set.assets);
   const [dragId, setDragId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
 
   const patch = (p: Partial<typeof draft>) => setDraft((d) => ({ ...d, ...p }));
 
@@ -493,8 +497,10 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
               onDrop={() => void drop(a.id)}
               onRemove={() => void detach(a.id)}
               onTier={(t) => void setAssetTier(a.id, t)}
+              onEdit={() => setEditingId(a.id)}
             />
           ))}
+
         </div>
       </section>
 
@@ -509,15 +515,26 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
           onSaved={() => { void onChanged(); }}
         />
       )}
+
+      {editingId && order.some((a) => a.id === editingId) && (
+        <AssetEditPanel
+          asset={order.find((a) => a.id === editingId)!}
+          onClose={() => { setEditingId(null); void onChanged(); }}
+          onSaved={(patch) => setOrder((o) => o.map((a) => (a.id === editingId ? { ...a, ...patch } : a)))}
+        />
+      )}
     </div>
   );
 }
 
-function MediaRow({ asset, index, onDragStart, onDrop, onRemove, onTier }: {
+
+function MediaRow({ asset, index, onDragStart, onDrop, onRemove, onTier, onEdit }: {
   asset: ModelAsset; index: number;
   onDragStart: () => void; onDrop: () => void; onRemove: () => void;
   onTier: (tier: number) => void;
+  onEdit: () => void;
 }) {
+
   const thumb = useResolvedUrl(asset.thumbnail_url ?? asset.url);
   const [over, setOver] = useState(false);
   return (
@@ -540,11 +557,12 @@ function MediaRow({ asset, index, onDragStart, onDrop, onRemove, onTier }: {
         flexShrink: 0,
       }}>{index + 1}</span>
 
-      <div style={{
+      <div onClick={onEdit} title="Bearbeiten" style={{
         width: 64, height: 64, borderRadius: 8, overflow: "hidden", flexShrink: 0,
         background: "#0A0A0B", display: "grid", placeItems: "center", color: "var(--text-subtle)",
-        position: "relative",
+        position: "relative", cursor: "pointer",
       }}>
+
         {thumb ? <img src={thumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <FolderIcon size={18} />}
         {asset.media_type === "video" && (
           <span style={{ position: "absolute", color: "#fff", opacity: 0.9 }}><PlayIcon /></span>
@@ -552,9 +570,10 @@ function MediaRow({ asset, index, onDragStart, onDrop, onRemove, onTier }: {
       </div>
 
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 13, color: "var(--text-strong)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <div onClick={onEdit} title="Bearbeiten" style={{ fontSize: 13, color: "var(--text-strong)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", cursor: "pointer" }}>
           {asset.description || "Ohne Beschreibung"}
         </div>
+
         <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
           <span style={{ fontSize: 11.5, color: "var(--text-subtle)" }}>
             {asset.media_type === "video" ? "Video" : "Foto"} · Stufe
@@ -583,6 +602,10 @@ function MediaRow({ asset, index, onDragStart, onDrop, onRemove, onTier }: {
       <span style={{ fontSize: 11.5, color: "var(--money)", fontVariantNumeric: "tabular-nums" }}>
         {euro(asset.value_cents)}
       </span>
+      <button onClick={onEdit} aria-label="Medium bearbeiten" title="Bearbeiten" style={{
+        background: "transparent", border: "none", color: "var(--text-subtle)", cursor: "pointer", display: "grid",
+      }}><Ico size={16} d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></button>
+
       <button onClick={onRemove} aria-label="Aus Ordner entfernen" style={{
         background: "transparent", border: "none", color: "var(--text-subtle)", cursor: "pointer", display: "grid",
       }}><XIcon size={16} /></button>
