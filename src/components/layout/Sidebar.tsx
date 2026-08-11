@@ -20,6 +20,13 @@ interface Props {
 
 export function Sidebar({ view, setView, models }: Props) {
   const { user } = useAuth();
+  const [profilesCollapsed, setProfilesCollapsed] = useState(false);
+  useEffect(() => {
+    setProfilesCollapsed(localStorage.getItem("sidebar.profilesCollapsed") === "1");
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("sidebar.profilesCollapsed", profilesCollapsed ? "1" : "0");
+  }, [profilesCollapsed]);
   const email = user?.email ?? "";
   const metaName = (user?.user_metadata as { display_name?: string; full_name?: string } | undefined);
   const displayName = metaName?.display_name || metaName?.full_name || (email ? email.split("@")[0] : "Account");
