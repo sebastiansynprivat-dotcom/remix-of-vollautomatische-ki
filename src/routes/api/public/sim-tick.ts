@@ -955,19 +955,54 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
     const hint = brief.ppvHint as Json | undefined;
     const hinted = typeof hint?.caption === "string" ? hint.caption.trim() : "";
 
-    // Passendes Asset aus der Bibliothek wählen (am wenigsten genutzt zuerst).
+    // Passenden Content-Ordner zur Tageszeit wählen, sonst einzelnes Asset.
     const stageTier = funnelNow.stage.config.intensity;
     const stageValueCents = funnelNow.stage.priceCents;
-    const { data: matchingAssets } = await admin
-      .from("model_assets")
-      .select("id, description, note, url, thumbnail_url, use_count")
+    const nowHour = new Date(clock.ts).getHours();
+    const todNow = timeOfDayFromHour(nowHour);
+
+    const { data: candidateSets } = await admin
+      .from("content_sets")
+      .select("id, name, description, time_of_day, price_cents, tier")
       .eq("model_id", modelId)
       .eq("is_active", true)
+      .eq("price_cents", stageValueCents)
+      .in("time_of_day", [todNow, "any"])
       .lte("tier", stageTier)
-      .eq("value_cents", stageValueCents)
-      .order("use_count", { ascending: true })
-      .limit(5);
-    const selectedAsset = (matchingAssets?.[0] as Json | undefined) ?? null;
+      .limit(10);
+
+    // Exakte Tageszeit schlägt "any".
+    const chosenSet = (candidateSets ?? []).slice().sort((a: Json, b: Json) =>
+      (a.time_of_day === todNow ? 0 : 1) - (b.time_of_day === todNow ? 0 : 1),
+    )[0] as Json | undefined;
+
+    let setAssets: Json[] = [];
+    if (chosenSet?.id) {
+      const { data } = await admin
+        .from("model_assets")
+        .select("id, description, note, url, thumbnail_url, use_count, media_type")
+        .eq("set_id", chosenSet.id as string)
+        .eq("is_active", true)
+        .order("sequence_order", { ascending: true });
+      setAssets = (data ?? []) as Json[];
+    }
+
+    let matchingAssets: Json[] | null = null;
+    if (setAssets.length === 0) {
+      const { data } = await admin
+        .from("model_assets")
+        .select("id, description, note, url, thumbnail_url, use_count")
+        .eq("model_id", modelId)
+        .eq("is_active", true)
+        .is("set_id", null)
+        .lte("tier", stageTier)
+        .eq("value_cents", stageValueCents)
+        .order("use_count", { ascending: true })
+        .limit(5);
+      matchingAssets = (data ?? []) as Json[];
+    }
+    const selectedAsset = (setAssets[0] ?? matchingAssets?.[0] ?? null) as Json | null;
+
 
     // Auch die Caption darf keine Wiederholung sein.
     const assetNote = typeof selectedAsset?.note === "string" ? selectedAsset.note.trim() : "";
