@@ -978,26 +978,28 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       .select("id, name, description, time_of_day, price_cents, tier")
       .eq("model_id", modelId)
       .eq("is_active", true)
-      .eq("price_cents", stageValueCents)
       .in("time_of_day", [todNow, "any"])
-      .lte("tier", stageTier)
-      .limit(10);
+      .limit(20);
 
-    // Exakte Tageszeit schlägt "any".
-    const chosenSet = (candidateSets ?? []).slice().sort((a: Json, b: Json) =>
+    // Exakte Tageszeit schlägt "any"; genommen wird der erste Ordner,
+    // der Medien in der aktuellen Preis-Stufe enthält.
+    const sortedSets = (candidateSets ?? []).slice().sort((a: Json, b: Json) =>
       (a.time_of_day === todNow ? 0 : 1) - (b.time_of_day === todNow ? 0 : 1),
-    )[0] as Json | undefined;
+    ) as Json[];
 
     let setAssets: Json[] = [];
-    if (chosenSet?.id) {
+    for (const cand of sortedSets) {
       const { data } = await admin
         .from("model_assets")
         .select("id, description, note, url, thumbnail_url, use_count, media_type")
-        .eq("set_id", chosenSet.id as string)
+        .eq("set_id", cand.id as string)
         .eq("is_active", true)
+        .eq("value_cents", stageValueCents)
+        .lte("tier", stageTier)
         .order("sequence_order", { ascending: true });
-      setAssets = (data ?? []) as Json[];
+      if ((data ?? []).length > 0) { setAssets = data as Json[]; break; }
     }
+
 
     let matchingAssets: Json[] | null = null;
     if (setAssets.length === 0) {

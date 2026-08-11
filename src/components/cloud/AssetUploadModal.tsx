@@ -1,9 +1,8 @@
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  TIERS, tierMeta, uploadAssetFile, resolveAssetUrl, ASSET_BUCKET,
-} from "@/lib/modelAssets";
+import { uploadAssetFile, resolveAssetUrl, ASSET_BUCKET } from "@/lib/modelAssets";
+import { getFunnelStages, type FunnelStageConfig } from "@/lib/funnelConfig";
 
 interface Props {
   modelId: string;
@@ -11,6 +10,8 @@ interface Props {
   setId?: string | null;
   /** Position in der Versand-Reihenfolge des Ordners. */
   sequenceOrder?: number;
+  /** Stufen des Models — Preis kommt aus der gewählten Stufe. */
+  steps?: FunnelStageConfig[];
   onClose: () => void;
   onSaved: () => void;
 }
@@ -28,14 +29,15 @@ const field: React.CSSProperties = {
   fontSize: 13, outline: "none", resize: "vertical",
 };
 
-export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, onClose, onSaved }: Props) {
+export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, steps, onClose, onSaved }: Props) {
+  const stages = steps && steps.length > 0 ? steps : getFunnelStages();
   const fileRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const [description, setDescription] = useState("");
-  const [tier, setTier] = useState(1);
-  const [valueEur, setValueEur] = useState("0");
+  const [stepIdx, setStepIdx] = useState(0);
+  const stage = stages[Math.min(stepIdx, stages.length - 1)] ?? stages[0];
   const [tags, setTags] = useState<string[]>([]);
   const [tagDraft, setTagDraft] = useState("");
   const [saving, setSaving] = useState(false);
@@ -66,9 +68,9 @@ export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, onC
         thumbnail_url: path,
         media_type: mediaType,
         description: description.trim() || null,
-        tier,
+        tier: stage.intensity,
         tags,
-        value_cents: Math.max(0, Math.round(Number(valueEur.replace(",", ".")) * 100 || 0)),
+        value_cents: Math.max(0, Math.round(stage.priceEur * 100)),
         set_id: setId,
         sequence_order: sequenceOrder,
 
@@ -88,7 +90,6 @@ export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, onC
     }
   };
 
-  const tm = tierMeta(tier);
 
   return (
     <div
@@ -154,30 +155,27 @@ export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, onC
           </label>
 
           <div style={{ display: "grid", gap: 8 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={lbl}>Tier</span>
-              <span style={{
-                background: tm.gradient, color: "#fff", fontSize: 11, fontWeight: 600,
-                padding: "2px 10px", borderRadius: 999,
-              }}>{tier} · {tm.label}</span>
+            <span style={lbl}>Stufe</span>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {stages.map((st, i) => {
+                const active = i === Math.min(stepIdx, stages.length - 1);
+                return (
+                  <button key={st.id} onClick={() => setStepIdx(i)} title={st.label} style={{
+                    padding: "7px 12px", borderRadius: 999, cursor: "pointer", fontSize: 11.5, fontWeight: 600,
+                    color: active ? "#fff" : "var(--text-subtle)",
+                    background: active ? "linear-gradient(135deg,#7c3aed,#4f46e5)" : "transparent",
+                    border: `1px solid ${active ? "transparent" : "#1E1E22"}`,
+                  }}>
+                    {i + 1} · {st.priceEur === 0 ? "gratis" : `${st.priceEur} €`}
+                  </button>
+                );
+              })}
             </div>
-            <input type="range" min={1} max={5} step={1} value={tier}
-              onChange={e => setTier(Number(e.target.value))}
-              style={{
-                width: "100%", accentColor: "#7c3aed",
-                background: "#1E1E22", borderRadius: 999,
-              }} />
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "var(--text-subtle)" }}>
-              {TIERS.map(t => <span key={t.level}>{t.label}</span>)}
+            <div style={{ fontSize: 11.5, color: "var(--text-subtle)" }}>
+              {stage?.label} — Preis {stage?.priceEur === 0 ? "gratis" : `${stage?.priceEur} €`}
+              {stage && stage.minPriceEur < stage.priceEur ? ` · Rabatt bis ${stage.minPriceEur} €` : " · kein Rabatt"}
             </div>
           </div>
-
-          <label style={{ display: "grid", gap: 6 }}>
-            <span style={lbl}>Wert (€)</span>
-            <input value={valueEur} onChange={e => setValueEur(e.target.value)} inputMode="decimal"
-              placeholder="0 für gratis, oder Wert in Euro"
-              style={{ ...field, color: "var(--accent, #d4af6a)" }} />
-          </label>
 
           <div style={{ display: "grid", gap: 6 }}>
             <span style={lbl}>Tags</span>

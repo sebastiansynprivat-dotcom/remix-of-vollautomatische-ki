@@ -115,6 +115,8 @@ export function FunnelLadderEditor({ onClose }: { onClose: () => void }) {
               onClick={() => setRows(rs => [...rs, {
                 id: `s${Date.now()}`, label: `Stufe ${rs.length + 1}`,
                 priceEur: (rs[rs.length - 1]?.priceEur ?? 0) + 10,
+                minPriceEur: (rs[rs.length - 1]?.priceEur ?? 0) + 10,
+
                 mediaType: rs[rs.length - 1]?.mediaType ?? "photo",
                 intensity: Math.min(5, (rs[rs.length - 1]?.intensity ?? 1) + 1),
                 minFanTurns: (rs[rs.length - 1]?.minFanTurns ?? 4) + 1,

@@ -81,16 +81,26 @@ export const DISCOUNT_MIN_PRICE_CENTS = 1000;
 export const DISCOUNT_STEP_PCT = 10;
 export const DISCOUNT_MAX_PCT = 25;
 
-export function retryPriceCents(basePriceCents: number, retryCount: number): { priceCents: number; discountPct: number } {
-  if (retryCount <= 0 || basePriceCents < DISCOUNT_MIN_PRICE_CENTS) {
+export function retryPriceCents(
+  basePriceCents: number,
+  retryCount: number,
+  /** Untergrenze aus der Stufen-Konfiguration (Kundenrabatt-Spanne). */
+  floorCents?: number,
+): { priceCents: number; discountPct: number } {
+  const floor = Math.min(
+    basePriceCents,
+    Math.max(0, floorCents ?? Math.min(basePriceCents, DISCOUNT_MIN_PRICE_CENTS)),
+  );
+  if (retryCount <= 0 || floor >= basePriceCents) {
     return { priceCents: basePriceCents, discountPct: 0 };
   }
   const discountPct = Math.min(DISCOUNT_MAX_PCT, retryCount * DISCOUNT_STEP_PCT);
   const raw = basePriceCents * (1 - discountPct / 100);
   const rounded = Math.round(raw / 100) * 100;
-  const priceCents = Math.max(DISCOUNT_MIN_PRICE_CENTS, rounded);
+  const priceCents = Math.max(floor, Math.min(basePriceCents, rounded));
   return { priceCents, discountPct: Math.round((1 - priceCents / basePriceCents) * 100) };
 }
+
 
 export interface FunnelState {
   stage: FunnelStage;
@@ -213,7 +223,8 @@ export function computeFunnelState(messages: readonly Message[], fanId: string, 
   // Wiederholung darf ab 10 € moderat rabattiert werden — mehr Abschlüsse,
   // ohne den Wert der Stufe zu zerstören.
   const basePriceCents = stageNow.priceCents;
-  const { priceCents, discountPct } = retryPriceCents(basePriceCents, retryCount);
+  const floorCents = Math.round((stageNow.config.minPriceEur ?? stageNow.config.priceEur) * 100);
+  const { priceCents, discountPct } = retryPriceCents(basePriceCents, retryCount, floorCents);
   const stage: FunnelStage = { ...stageNow, priceCents };
 
   const lastOffer = ppvs[ppvs.length - 1];
@@ -354,7 +365,8 @@ export function funnelPayload(state: FunnelState) {
     retryCount: state.retryCount,
     listPriceEur: state.basePriceCents / 100,
     discountPct: state.discountPct,
-    discountAllowed: state.basePriceCents >= DISCOUNT_MIN_PRICE_CENTS,
+    discountAllowed: Math.round((state.stage.config.minPriceEur ?? state.stage.config.priceEur) * 100) < state.basePriceCents,
+    minPriceEur: state.stage.config.minPriceEur ?? state.stage.config.priceEur,
     maxDiscountPct: DISCOUNT_MAX_PCT,
     /** Brücken-Nachricht vor dem Angebot ist Pflicht. */
     bridgeRequired: true,
