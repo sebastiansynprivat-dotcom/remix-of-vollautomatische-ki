@@ -5,8 +5,8 @@ import {
   useContentSets, createContentSet, updateContentSet, deleteContentSet, saveSequence,
   coversTime, TIME_OF_DAY_META, type ContentSetWithAssets, type TimeOfDay,
 } from "@/lib/contentSets";
-import { euro, TIERS, useResolvedUrl, type ModelAsset } from "@/lib/modelAssets";
-import { normalizeStepConfig, getFunnelStages, type FunnelStageConfig } from "@/lib/funnelConfig";
+import { euro, useResolvedUrl, type ModelAsset } from "@/lib/modelAssets";
+import { normalizeStepConfig, getFunnelStages, stepIndexForValueCents, type FunnelStageConfig } from "@/lib/funnelConfig";
 import { AssetUploadModal } from "@/components/cloud/AssetUploadModal";
 import { AssetEditPanel } from "@/components/cloud/AssetEditPanel";
 
@@ -254,7 +254,7 @@ function SetCard({ set, onOpen }: { set: ContentSetWithAssets; onOpen: () => voi
 function CoverageBar({ sets, steps }: { sets: ContentSetWithAssets[]; steps: FunnelStageConfig[] }) {
   const covered = steps.map((s) => ({
     step: s,
-    ok: sets.some((x) => x.is_active && x.price_cents === Math.round(s.priceEur * 100) && x.assets.length > 0),
+    ok: sets.some((x) => x.is_active && x.assets.some((a) => Math.round(a.value_cents ?? 0) === Math.round(s.priceEur * 100))),
   }));
   const count = covered.filter((c) => c.ok).length;
   const ratio = steps.length ? count / steps.length : 0;
@@ -518,6 +518,7 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
           modelId={modelId}
           setId={set.id}
           sequenceOrder={order.length}
+          steps={steps}
           onClose={() => setUploading(false)}
           onSaved={() => { void onChanged(); }}
         />
@@ -526,6 +527,7 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
       {editingId && order.some((a) => a.id === editingId) && (
         <AssetEditPanel
           asset={order.find((a) => a.id === editingId)!}
+          steps={steps}
           onClose={() => { setEditingId(null); void onChanged(); }}
           onSaved={(patch) => setOrder((o) => o.map((a) => (a.id === editingId ? { ...a, ...patch } : a)))}
         />
@@ -535,12 +537,14 @@ function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: 
 }
 
 
-function MediaRow({ asset, index, onDragStart, onDrop, onRemove, onTier, onEdit }: {
+function MediaRow({ asset, index, steps, onDragStart, onDrop, onRemove, onStep, onEdit }: {
   asset: ModelAsset; index: number;
+  steps: FunnelStageConfig[];
   onDragStart: () => void; onDrop: () => void; onRemove: () => void;
-  onTier: (tier: number) => void;
+  onStep: (step: FunnelStageConfig) => void;
   onEdit: () => void;
 }) {
+  const activeStep = stepIndexForValueCents(steps, asset.value_cents ?? 0);
 
   const thumb = useResolvedUrl(asset.thumbnail_url ?? asset.url);
   const [over, setOver] = useState(false);
@@ -585,21 +589,21 @@ function MediaRow({ asset, index, onDragStart, onDrop, onRemove, onTier, onEdit 
           <span style={{ fontSize: 11.5, color: "var(--text-subtle)" }}>
             {asset.media_type === "video" ? "Video" : "Foto"} · Stufe
           </span>
-          {TIERS.map((t) => {
-            const active = asset.tier === t.level;
+          {steps.map((st, i) => {
+            const active = activeStep === i + 1;
             return (
               <button
-                key={t.level}
-                title={t.label}
-                onClick={() => onTier(t.level)}
+                key={st.id}
+                title={`${st.label} — ${st.priceEur === 0 ? "gratis" : `${st.priceEur} €`}`}
+                onClick={() => onStep(st)}
                 style={{
                   width: 22, height: 22, borderRadius: 999, cursor: "pointer", fontSize: 10.5, fontWeight: 600,
                   color: active ? "#fff" : "var(--text-subtle)",
-                  background: active ? t.gradient : "transparent",
+                  background: active ? "linear-gradient(135deg,#7c3aed,#4f46e5)" : "transparent",
                   border: `1px solid ${active ? "transparent" : "#1E1E22"}`,
                   transition: "all 150ms ease",
                 }}
-              >{t.level}</button>
+              >{i + 1}</button>
             );
           })}
         </div>
