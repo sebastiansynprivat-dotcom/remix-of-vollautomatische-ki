@@ -488,6 +488,9 @@ function ModelEditorInline({ id, onBack }: { id: string; onBack: () => void }) {
               <PersonaEditor
                 persona={resolvePersonaConfig(m.persona_config) ?? DEFAULT_PERSONA}
                 modelName={m.display_name}
+                emojiFrequency={EMOJI_FREQ_LABEL[resolveEmojiFrequency(m.emoji_frequency)]}
+                messageLength={LENGTH_LABEL[resolveChatBehavior(m.chat_behavior).messageLength]}
+
                 onChange={(p: PersonaConfig) => setM({
                   ...m,
                   persona_config: p,
