@@ -313,9 +313,11 @@ function TodCoverage({ ok, icon, label }: { ok: boolean; icon: React.ReactNode; 
 
 /* ───────────────────────── Detail ───────────────────────── */
 
-function SetDetail({ modelId, set, onBack, onChanged, onDeleted }: {
+function SetDetail({ modelId, set, sets, steps, onBack, onChanged, onDeleted }: {
   modelId: string;
   set: ContentSetWithAssets;
+  sets: ContentSetWithAssets[];
+  steps: FunnelStageConfig[];
   onBack: () => void;
   onChanged: () => void | Promise<void>;
   onDeleted: () => void;
