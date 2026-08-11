@@ -68,7 +68,6 @@ export function AssetUploadModal({ modelId, setId = null, sequenceOrder = 0, onC
         media_type: mediaType,
         description: description.trim() || null,
         tier,
-        category,
         tags,
         value_cents: Math.max(0, Math.round(Number(valueEur.replace(",", ".")) * 100 || 0)),
         note: note.trim() || null,
