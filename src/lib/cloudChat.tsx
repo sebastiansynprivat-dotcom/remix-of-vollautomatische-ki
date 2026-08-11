@@ -100,9 +100,8 @@ export function useConversationsForModel(modelId: string | null): Conversation[]
 
     // Jedes Profil bekommt seinen festen manuellen Test-Chat.
     void ensureManualTestChat(modelId).then(() => { if (!cancelled) void load(); });
-
-
     load();
+
 
     const channel = supabase
       .channel(`conv-${modelId}`)
