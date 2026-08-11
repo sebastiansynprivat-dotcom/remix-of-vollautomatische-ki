@@ -268,8 +268,13 @@ function previewOf(m: Message): string {
   return "";
 }
 
+const CONV_UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 async function persistMessage(convId: string, msg: Message) {
-  if (!cloudConvIds.has(convId)) return;
+  // Jede Cloud-Konversation (UUID) wird gespeichert — auch wenn sie noch nicht
+  // registriert ist (z. B. der frisch angelegte manuelle Test-Chat).
+  if (!cloudConvIds.has(convId) && !CONV_UUID_RE.test(convId)) return;
+  cloudConvIds.add(convId);
   const fromMe = msg.senderId === mockCurrentUser.id;
   const { error } = await supabase.from("messages").insert({
     id: msg.id,
@@ -287,6 +292,7 @@ async function persistMessage(convId: string, msg: Message) {
   });
   if (error) console.error("persistMessage failed", error);
 }
+
 
 // =========================================================================
 // Fan-Notizen + Fan-Facts → Cloud (public.fan_brain)
