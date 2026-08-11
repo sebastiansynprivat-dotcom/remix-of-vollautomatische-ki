@@ -6,7 +6,7 @@ import {
 import { Avatar } from "@/components/sx/Avatar";
 import { StatusDot, UnreadBadge } from "@/components/sx/Badge";
 import { fx } from "@/lib/feedback";
-import { useLastOverride, useChat } from "@/lib/chatStore";
+import { useLastOverride } from "@/lib/chatStore";
 import { useSimRuns, setAllSimStates } from "@/lib/simRuns";
 import { ProfileMasterBar } from "@/components/profile/ProfileMasterBar";
 
@@ -69,22 +69,18 @@ interface Props {
 
 const SWIPE_THRESHOLD = 76;
 
-type FilterId = "top" | "hot" | "open_money" | "unread" | "unanswered";
+type FilterId = "unread" | "unanswered";
 
 const FILTERS: { id: FilterId; label: string }[] = [
-  { id: "top",         label: "Top" },
-  { id: "hot",         label: "Heiß" },
-  { id: "open_money",  label: "$ offen" },
   { id: "unread",      label: "Ungelesen" },
-  { id: "unanswered",  label: "Unbeantw." },
+  { id: "unanswered",  label: "Unbeantwortet" },
 ];
 
 export function ConversationList({
   conversations, headerContext, activeId, setActiveId, onMenu,
 }: Props) {
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<FilterId>("top");
-  const chat = useChat();
+  const [filter, setFilter] = useState<FilterId>("unread");
   const [unreadMap, setUnreadMap] = useState<Record<string, number>>(() => (
     Object.fromEntries(conversations.map(c => [c.id, c.unreadCount]))
   ));
@@ -104,41 +100,23 @@ export function ConversationList({
   const unreadCount = conversations.filter(c => (unreadMap[c.id] ?? c.unreadCount) > 0).length;
   const unansweredCount = conversations.filter(c => !c.lastMessage.fromMe).length;
 
-  const heatScore = (id: string) => {
-    const b = chat.getCopilotBrief(id);
-    if (!b) return 0;
-    return b.sentiment.score * 0.6 + b.buyIntent.score * 0.4;
-  };
-  const hasOpenPpv = (id: string) => {
-    const msgs = chat.getMessages(id);
-    return msgs.some(m => m.contentType === "ppv" && m.ppv && !m.ppv.isPurchased);
-  };
-
   const filtered = conversations
     .filter(c => c.participant.displayName.toLowerCase().includes(search.toLowerCase()))
     .filter(c => {
       if (filter === "unread") return (unreadMap[c.id] ?? c.unreadCount) > 0;
       if (filter === "unanswered") return !c.lastMessage.fromMe;
-      if (filter === "open_money") return hasOpenPpv(c.id);
       return true;
     })
     .sort((a, b) => {
       if (!!a.isAutopilot !== !!b.isAutopilot) return a.isAutopilot ? -1 : 1;
       if (a.id === "conv-ai-mia") return -1;
       if (b.id === "conv-ai-mia") return 1;
-      if (filter === "hot") return heatScore(b.id) - heatScore(a.id);
-      if (filter === "open_money") {
-        // sort by spend among those with open PPV
-        return b.totalSpent - a.totalSpent;
-      }
       return b.totalSpent - a.totalSpent;
     });
 
-  const sortLabel = filter === "hot"
-    ? "Sortiert nach Hitze"
-    : filter === "open_money"
-      ? "Offene PPVs · Geld liegt rum"
-      : "Sortiert nach Ausgaben";
+  const sortLabel = filter === "unread"
+    ? "Ungelesene Chats"
+    : "Noch nicht beantwortet";
 
   return (
     <div
