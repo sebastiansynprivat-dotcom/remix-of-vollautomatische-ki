@@ -9,10 +9,12 @@ import {
  * Profil-eigene Stufen-Konfiguration.
  * Leer / nicht gesetzt → globale Standard-Stufen gelten.
  */
-export function StepConfigEditor({ modelId, value, onSaved }: {
+export function StepConfigEditor({ modelId, value, onSaved, onChange }: {
   modelId: string;
   value: unknown;
   onSaved?: (steps: FunnelStageConfig[] | null) => void;
+  /** Wenn gesetzt: kein eigener Speichern-Button, Parent übernimmt Auto-Save. */
+  onChange?: (steps: FunnelStageConfig[]) => void;
 }) {
   const initial = useMemo(
     () => normalizeStepConfig(value) ?? DEFAULT_FUNNEL_STAGES.map(s => ({ ...s })),
@@ -28,6 +30,13 @@ export function StepConfigEditor({ modelId, value, onSaved }: {
     if (mounted.current) setSteps(initial);
     mounted.current = true;
   }, [initial]);
+
+  const emit = (next: FunnelStageConfig[]) => {
+    if (!onChange) return;
+    const clean = normalizeStepConfig(next) ?? [];
+    if (JSON.stringify(clean) !== JSON.stringify(normalizeStepConfig(value) ?? [])) onChange(clean);
+  };
+
 
   const patch = (i: number, p: Partial<FunnelStageConfig>) =>
     setSteps(rs => rs.map((r, idx) => (idx === i ? { ...r, ...p } : r)));
