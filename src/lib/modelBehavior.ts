@@ -47,9 +47,11 @@ export type ChatBehavior = {
    */
   offHoursDelayFactor: number;
   offHoursDelayFactorMax: number;
-
+  /** Verkauf */
+  salesStartStage: number; // 0 = erste Stufe (gratis)
   salesTempo: SalesTempo;
 };
+
 
 export const DEFAULT_CHAT_BEHAVIOR: ChatBehavior = {
   replyDelayMinSec: 0.9,
