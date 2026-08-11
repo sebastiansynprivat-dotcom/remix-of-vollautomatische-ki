@@ -281,12 +281,66 @@ export function PersonaEditor({
         rows={4}
         placeholder="1–2 Beispielnachrichten im typischen Ton…"
         right={
-          <button type="button" onClick={generate} disabled={busy}
-            className="shex-btn shex-btn-ghost" style={{ padding: "6px 12px", fontSize: 10 }}>
-            {busy ? "Generiere…" : "✦ Generieren"}
-          </button>
+          <span style={{ display: "inline-flex", gap: 8 }}>
+            <button type="button" onClick={generate} disabled={busy}
+              className="shex-btn shex-btn-ghost" style={{ padding: "6px 12px", fontSize: 10 }}>
+              {busy ? "Generiere…" : "✦ Generieren"}
+            </button>
+            <button type="button" onClick={generateChat} disabled={chatBusy}
+              className="shex-btn shex-btn-ghost" style={{ padding: "6px 12px", fontSize: 10 }}>
+              {chatBusy ? "Baue Verlauf…" : "✦ 40-Nachrichten-Vorschau"}
+            </button>
+          </span>
         }
       />
+
+      {chatBusy && !chat && (
+        <div className="module-desc" style={{ fontSize: 12 }}>
+          Verlauf wird mit den aktuellen Einstellungen erzeugt – das dauert einen Moment…
+        </div>
+      )}
+
+      {chat && chat.length > 0 && (
+        <div className="premium-card" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span className="kpi-label">Chat-Vorschau · {chat.length} Nachrichten</span>
+            <span style={{ display: "inline-flex", gap: 8 }}>
+              <button type="button" onClick={generateChat} disabled={chatBusy}
+                className="shex-btn shex-btn-ghost" style={{ padding: "6px 12px", fontSize: 10 }}>
+                {chatBusy ? "Generiere…" : "Neu generieren"}
+              </button>
+              <button type="button" onClick={() => setChat(null)}
+                className="shex-btn shex-btn-ghost" style={{ padding: "6px 12px", fontSize: 10 }}>
+                Schließen
+              </button>
+            </span>
+          </div>
+          <div style={{
+            display: "flex", flexDirection: "column", gap: 8,
+            maxHeight: 460, overflowY: "auto", paddingRight: 4,
+          }}>
+            {chat.map((t, i) => (
+              <div key={i} style={{
+                alignSelf: t.role === "model" ? "flex-end" : "flex-start",
+                maxWidth: "78%", padding: "9px 13px", borderRadius: 14, fontSize: 13.5,
+                background: t.role === "model" ? "hsl(40 45% 55% / 0.12)" : "hsl(0 0% 100% / 0.05)",
+                border: t.role === "model" ? "1px solid hsl(40 45% 55% / 0.25)" : "1px solid hsl(0 0% 100% / 0.06)",
+                color: t.role === "model" ? "hsl(0 0% 92%)" : "hsl(0 0% 80%)",
+                whiteSpace: "pre-wrap",
+              }}>{t.text}</div>
+            ))}
+          </div>
+          <button
+            type="button"
+            className="shex-btn shex-btn-ghost"
+            style={{ alignSelf: "flex-end", padding: "6px 12px", fontSize: 10 }}
+            onClick={() => set("voice_sample", chat.filter((t) => t.role === "model").slice(0, 4).map((t) => t.text).join("\n"))}
+          >
+            Modell-Zeilen als Voice-Sample übernehmen
+          </button>
+        </div>
+      )}
+
 
       {err && (
         <div style={{
