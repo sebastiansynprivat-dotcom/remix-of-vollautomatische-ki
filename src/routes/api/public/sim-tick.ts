@@ -1017,7 +1017,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
 
 
     // Auch die Caption darf keine Wiederholung sein.
-    const assetNote = typeof selectedAsset?.note === "string" ? selectedAsset.note.trim() : "";
+    const assetNote = typeof selectedAsset?.description === "string" ? selectedAsset.description.trim() : "";
     const caption = assetNote
       ? assetNote
       : hinted && filterFresh([hinted], avoidLines).fresh.length > 0
