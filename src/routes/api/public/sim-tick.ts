@@ -1096,6 +1096,28 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
     nextPhase = purchasesInSession > 0 && nextFollowupDay < simDay ? "followup_due" : "break";
   }
 
+  // ---- 6a) Leerlauf-Schutz: ein Zug ohne jede Nachricht wird wiederholt ----
+  if (parts.length === 0 && fanTexts.length === 0) {
+    await admin.from("system_events").insert({
+      profile_id: modelId,
+      event_type: "error",
+      message: "Turn produced 0 messages — possible sim-tick failure",
+    });
+    log.push("empty-run-guard");
+    return {
+      note: log.join(" "),
+      simDay,
+      sessionTurn: nextSessionTurn,
+      phase: nextPhase,
+      purchasesInSession,
+      gapHours: 0,
+      simLastAt: clock.lastIso,
+      lastFollowupDay: nextFollowupDay,
+      done: false,
+    };
+  }
+
+
   // ---- 6b) Telemetrie pro Zug (Auswertung von Funnel & Wiederholungen) ----
   try {
     const { error: telError } = await admin.from("sim_telemetry").insert({
