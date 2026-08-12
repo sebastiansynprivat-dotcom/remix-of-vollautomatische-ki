@@ -1330,6 +1330,7 @@ Deno.serve(async (req) => {
         `→ Aufbau-Fortschritt: ${salesFunnel.fanTurnsSinceOffer ?? 0}/${salesFunnel.requiredFanTurns ?? "?"} Fan-Nachrichten seit dem letzten Angebot.`,
         `→ BRÜCKE IST PFLICHT und sie IST die ppvHint.caption: sie erscheint unter den Medien und knüpft am laufenden Thema an. Kein separater Text-Ping davor, keine Wiederholung der Slot-Texte in der caption.`,
         `Status: ${salesFunnel.reason}`,
+        salesFunnel.ppvHint ? `→ PPV-HINT (Mussangabe für die Caption): ${salesFunnel.ppvHint}` : "",
         salesFunnel.canOffer
           ? `→ JETZT überleiten: ppvHint.ready = true, suggested_price_eur = ${salesFunnel.nextPriceEur}. Die Überleitung steht KOMPLETT in ppvHint.caption (unter den Medien) — die Slot-Texte reagieren nur auf seine letzte Aussage und kündigen nichts an.`
           : `→ JETZT KEIN Angebot: ppvHint.ready = false. Nur weiter aufbauen (Thema vertiefen, EINE Frage). Erwähne keinen Preis und kündige nichts Bezahltes an.`,
