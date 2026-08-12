@@ -1116,6 +1116,8 @@ Deno.serve(async (req) => {
     const incomingBrain = body.fanBrain ?? null;
     const fanIdForWriteback: string | null = body.fanId ?? null;
     const autopilot: boolean = body.autopilot === true;
+    /** Sim-Tag für die emotionale Entwicklung der Model-Persona. */
+    const simDayNum = Number(body.simDay ?? 1);
     /** Extra-Regeln für Neustart nach Pause bzw. Käufer-Follow-up. */
     const sessionContext: string[] = Array.isArray(body.sessionContext)
       ? (body.sessionContext as unknown[]).map((s) => String(s)).filter(Boolean)
@@ -1131,6 +1133,14 @@ Deno.serve(async (req) => {
     const avoidLines: string[] = Array.isArray(body.avoidLines)
       ? (body.avoidLines as unknown[]).map((s) => String(s).trim()).filter(Boolean).slice(0, 60)
       : [];
+
+    const developmentBlock = simDayNum <= 2
+      ? `Tag ${simDayNum}: Sei zurückhaltend, frag nach Basics. Keine intimen Details.`
+      : simDayNum <= 5
+        ? `Tag ${simDayNum}: Du wirst vertrauter, erzählst mehr, machst Witze.`
+        : simDayNum <= 10
+          ? `Tag ${simDayNum}: Du teilst persönliche Dinge, inside jokes, öffnest dich.`
+          : `Tag ${simDayNum}: Echte Bindung. Du verhältst dich wie ein Stammfan — loyall, warm.`;
 
 
 
