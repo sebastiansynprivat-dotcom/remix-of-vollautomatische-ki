@@ -1024,7 +1024,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       ? hinted
       : `${funnelNow.stage.config.label.toLowerCase()} — nur für dich 🙈`;
 
-    const { error: ppvError } = await admin.from("messages").insert({
+    const { data: ppvInserted, error: ppvError } = await admin.from("messages").insert({
       conversation_id: convId,
       sender_type: "model",
       content_type: "ppv",
@@ -1036,13 +1036,21 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       ppv_media_count: Math.max(1, setAssets.length),
       ppv_is_purchased: false,
       created_at: clock.next(20, 90),
-    });
+    }).select("id").maybeSingle();
     // Fehler nicht verschlucken: sonst "verschwindet" das Angebot lautlos.
     if (ppvError) {
       log.push(`ppv-FEHLER:${ppvError.message}`);
     } else {
       lastPreview = caption;
       log.push(`ppv:${(stageValueCents / 100).toFixed(0)}€`);
+      // Gratis-Content blockiert die Treppe nicht: sofort als geöffnet markieren.
+      if (stageValueCents === 0 && (ppvInserted as Json)?.id) {
+        await admin
+          .from("messages")
+          .update({ ppv_is_purchased: true })
+          .eq("id", (ppvInserted as Json).id as string);
+        log.push("free-ppv-auto-purchased");
+      }
       if (selectedAsset?.id) {
         await admin
           .from("model_assets")
@@ -1051,6 +1059,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
         log.push("asset:genutzt");
       }
     }
+
 
   } else if (!isFollowup) {
     log.push(`kein-ppv:${funnelNow.reason.slice(0, 60)}`);
@@ -1086,6 +1095,28 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
   } else if (fanEndsSession) {
     nextPhase = purchasesInSession > 0 && nextFollowupDay < simDay ? "followup_due" : "break";
   }
+
+  // ---- 6a) Leerlauf-Schutz: ein Zug ohne jede Nachricht wird wiederholt ----
+  if (parts.length === 0 && fanTexts.length === 0) {
+    await admin.from("system_events").insert({
+      profile_id: modelId,
+      event_type: "error",
+      message: "Turn produced 0 messages — possible sim-tick failure",
+    });
+    log.push("empty-run-guard");
+    return {
+      note: log.join(" "),
+      simDay,
+      sessionTurn: nextSessionTurn,
+      phase: nextPhase,
+      purchasesInSession,
+      gapHours: 0,
+      simLastAt: clock.lastIso,
+      lastFollowupDay: nextFollowupDay,
+      done: false,
+    };
+  }
+
 
   // ---- 6b) Telemetrie pro Zug (Auswertung von Funnel & Wiederholungen) ----
   try {

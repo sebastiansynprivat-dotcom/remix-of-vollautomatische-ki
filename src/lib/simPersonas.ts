@@ -152,7 +152,7 @@ export const SIM_PERSONAS: Record<SimPersonaKey, SimPersona> = {
     ghostHours: [10, 22],},
   ghoster: {
     key: "ghoster",
-    label: "Ghoster",
+    label: "Geister",
     summary: "Verschwindet tagelang und kommt dann wieder zurück.",
     emotionalBias: -5,
     loyaltyBonusPct: 6,
@@ -161,8 +161,9 @@ export const SIM_PERSONAS: Record<SimPersonaKey, SimPersona> = {
     gapSec: [120, 500],
     sessionTurns: [2, 5],
     breakHours: [10, 24],
-    ghostChancePct: 55,
-    ghostHours: [30, 70],},
+    ghostChancePct: 15,
+    ghostHours: [12, 36],},
+
   starter_buyer: {
     key: "starter_buyer",
     label: "Einsteiger-Käufer",

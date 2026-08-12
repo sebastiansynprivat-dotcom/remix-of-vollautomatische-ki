@@ -298,17 +298,25 @@ ${personaPrompt}`;
     }
 
     // HARTER Filter: verbotene Satzanfänge werden abgeschnitten.
-    const BANNED_OPENERS = ["achso", "ach so", "achsoo", "verstehe 😊", "verstehe 😅"];
+    const BANNED_STARTERS = [
+      "ach so", "achso", "achsoo", "verstehe 😊", "verstehe 😅", "ach, ich", "ach ja", "ach nein",
+      "ach das", "ach echt", "ach gar", "ach voll", "ach super", "ach klar",
+      "ach stimmt", "ach logisch", "ach geil", "ach krass", "ach sweet",
+      "ach nö", "ach quatsch", "ach eh", "ach tja",
+    ];
     messages = messages.map((m: string) => {
-      const lower = m.toLowerCase().trim();
-      for (const banned of BANNED_OPENERS) {
+      const trimmed = m.trim();
+      const lower = trimmed.toLowerCase();
+      for (const banned of BANNED_STARTERS) {
         if (lower.startsWith(banned)) {
-          const rest = m.trim().slice(banned.length).replace(/^[\s,.!?]+/, "").trim();
-          return rest || m;
+          const rest = trimmed.slice(banned.length).replace(/^[\s,.!?]+/, "").trim();
+          return rest || null;
         }
       }
-      return m;
-    });
+      return trimmed;
+    }).filter(Boolean) as string[];
+    if (messages.length === 0) messages = ["..."];
+
 
     if (messages.length === 1 && messages[0].trim().toUpperCase() === "[END]") {
       end = true;
