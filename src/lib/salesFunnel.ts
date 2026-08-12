@@ -346,6 +346,14 @@ export function computeFunnelState(messages: readonly Message[], fanId: string, 
 
 /** Kompakter Block für den KI-Prompt / Edge-Function-Payload. */
 export function funnelPayload(state: FunnelState) {
+  const stageIntensity = state.stage.config.intensity;
+  const ppvHint =
+    stageIntensity <= 2
+      ? `PPV-MODUS: atmosphärisch. KEIN sexueller Druck. Schreib etwas Persönliches oder Alltägliches. Ein subtiles Foto oder Video — aber KEIN sexuell. Die Stimmung ist warm und vertraut, nicht direkt.`
+      : stageIntensity <= 3
+        ? `PPV-MODUS: leicht suggestiv. Warm-vertraut, sanfte Anspielung, aber noch nicht explizit.`
+        : `PPV-MODUS: normal. Die Caption darf die Stufe passend ansprechen, aber nicht explizit oder pornografisch.`;
+
   return {
     offerNo: state.stage.offerNo,
     goal: state.stage.goal,
@@ -377,6 +385,8 @@ export function funnelPayload(state: FunnelState) {
     offersLast24h: state.offersLast24h,
     maxOffersPerDay: MAX_OFFERS_PER_DAY,
     demotedSteps: state.demotedSteps,
+    /** Steuert den PPV-Caption-Modus je nach Intensität. */
+    ppvHint,
 
   };
 

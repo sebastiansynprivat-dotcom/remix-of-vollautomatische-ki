@@ -916,6 +916,7 @@ async function runTurn(admin: SupabaseAdmin, run: Json): Promise<TurnResult> {
       sessionContext,
       forceSingleMessage: isFollowup,
       avoidLines: [...avoidLines.slice(0, 60), ...extraAvoid],
+      simDay,
     }, modelId);
 
   const readParts = (b: Json) => {
